@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "689745322886",
+    "project_id": "djolis-e6ae6",
+    "storage_bucket": "djolis-e6ae6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689745322886:android:e459378426add138644207",
+        "android_client_info": {
+          "package_name": "uz.merasoft.flutter_djolis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEeecGF5J_NLiDNFHfEazIxJPSon6mzT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

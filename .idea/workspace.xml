@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="752edd38-cb0f-4bce-904e-1ef1959da589" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.metadata" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/google-services.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/debug/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/kotlin/uz/merasoft/flutter_djolis/MainActivity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable-v21/launch_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/launch_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher_adaptive_back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher_adaptive_fore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher_adaptive_back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher_adaptive_fore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher_adaptive_back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher_adaptive_fore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_adaptive_back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_adaptive_fore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_adaptive_back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_adaptive_fore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values-night/styles.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/network_security_config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/profile/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/settings.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/fonts/Inter-Bold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/fonts/Inter-Light.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/fonts/Inter-Medium.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/fonts/Inter-Regular.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/akt_sverka.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/bell.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/card.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/home_icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/pay.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/payment.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/profile.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/click.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/djolis_logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/no_image_available.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/payme.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/splashscreen.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/temp_prod.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/uzum.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/devtools_options.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/100.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/1024.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/114.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/120.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/144.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/152.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/167.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/180.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/29.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/40.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/50.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/57.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/58.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/72.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/76.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/80.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/87.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Runner/AppIcon.appiconset/Contents.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lang/ru.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lang/uz.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/app_localizations.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/core/db.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/core/mysettings.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/firebase_options.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/cart.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_balance.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_cat.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_groups.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_ord.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_prod.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/dic_user.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/doc_akt_sverka.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/my_table.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/notif.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/promo_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/account/login_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/common/photo.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/firebase_notifications/firebase_notification_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/akt_sverka.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/cart_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/detail_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/home.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/my_promo_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/orders.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/pay_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/pay_qr.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/profile_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/data_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/firebase_api.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/local_notification_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/utils.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/wrapper.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2n6SZ1VcV6P3If2FuQs8we8zKAN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "ScreenRecorder.SavePath": "/Users/user/Desktop",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/user/development/flutter_djolis",
+    "settings.editor.selected.configurable": "dart.settings",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/android/app/src/main/res" />
+      <recent name="$PROJECT_DIR$/assets/images" />
+      <recent name="$PROJECT_DIR$/ios/Runner" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SwiftWorkspaceSettings">
+    <option name="detectedToolchain" value="true" />
+    <option name="toolchainPathValue" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="752edd38-cb0f-4bce-904e-1ef1959da589" name="Changes" comment="" />
+      <created>1728292083747</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728292083747</updated>
+    </task>
+    <servers />
+  </component>
+</project>
