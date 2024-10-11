@@ -76,9 +76,9 @@
 
   "prod_info": "Mahsulot haqida ma'lumot",
   "price": "Narx",
-  "prod_price_kg": "Narx kg",
+  "prod_price_kg": "Narx",
   "exist_in_wh": "Omborda mavjud",
-  "amount": "Miqdori (kg)",
+  "amount": "Miqdori",
   "active_order": "Faol",
   "archive_order": "Arxiv",
 

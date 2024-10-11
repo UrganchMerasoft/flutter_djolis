@@ -79,9 +79,9 @@
 
   "prod_info": "Информация о продукте",
   "price": "Цена",
-  "prod_price_kg": "Цена за кг",
+  "prod_price_kg": "Цена",
   "exist_in_wh": "Наличие на складе",
-  "amount": "Кол-во (кг)",
+  "amount": "Кол-во",
   "active_order": "Активные",
   "archive_order": "Архив",
 

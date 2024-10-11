@@ -241,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool isValidPhoneNumber(String phone) {
-    final RegExp phoneRegExp = RegExp(r'^\+998\d{9}$');
+    final RegExp phoneRegExp = RegExp(r'^\+(998\d{9}|971\d{8,9})$');
     return phoneRegExp.hasMatch(phone);
   }
 
