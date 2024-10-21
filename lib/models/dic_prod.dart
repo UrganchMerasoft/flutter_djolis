@@ -19,6 +19,8 @@ class DicProd {
   late double ostQty;
   late String ostQtyText;
   late String info;
+  late String picUrl;
+  late String infoPicUrl;
 
   late double orderQty;
   late double orderSumm;
@@ -50,6 +52,8 @@ class DicProd {
     required this.ostQty,
     required this.ostQtyText,
     required this.info,
+    required this.picUrl,
+    required this.infoPicUrl,
   });
 
   factory DicProd.fromJson(Map<String, dynamic> json) {
@@ -73,6 +77,8 @@ class DicProd {
       ostQty: json['ostQty'] ?? 0.0,
       ostQtyText: json['ostQtyText'],
       info: json['info'],
+      picUrl: json['picUrl'],
+      infoPicUrl: json['infoPicUrl'],
     );
   }
 
@@ -98,6 +104,8 @@ class DicProd {
     'ostQty':ostQty,
     'ostQtyText':ostQtyText,
     'info':info,
+    'picUrl': picUrl,
+    'infoPicUrl':infoPicUrl,
   };
 
   Map<String,dynamic> toJson(){
@@ -121,6 +129,8 @@ class DicProd {
       "ostQty":ostQty,
       "ostQtyText":ostQtyText,
       "info":info,
+      "picUrl":picUrl,
+      "infoPicUrl":infoPicUrl,
     };
   }
 
@@ -144,5 +154,7 @@ class DicProd {
     ostQty = Utils.checkDouble(map['ostQty']);
     ostQtyText = map['ostQtyText'] ?? "";
     info = map['info'] ?? "";
+    picUrl = map['picUrl'] ?? "";
+    infoPicUrl = map['infoPicUrl'] ?? "";
   }
 }

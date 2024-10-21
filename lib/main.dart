@@ -89,6 +89,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [
         Locale("uz", "UZ"),
         Locale("ru", "RU"),
+        Locale("en", "US"),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -98,8 +99,7 @@ class MyApp extends StatelessWidget {
       ],
       localeResolutionCallback: (locale, supportedLocales) {
         for (var supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale!.languageCode &&
-              supportedLocale.countryCode == locale.countryCode) {
+          if (supportedLocale.languageCode == locale!.languageCode && supportedLocale.countryCode == locale.countryCode) {
             return supportedLocale;
           }
         }

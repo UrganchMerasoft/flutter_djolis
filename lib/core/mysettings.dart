@@ -41,7 +41,7 @@ class MySettings with ChangeNotifier {
 
   String baseName = "";
   String basePhone = "";
-  String serverUrl = "http://212.109.199.213:3143";
+  String serverUrl = "";
   List<CartModel> cartList = [];
   double get itogSumm {
     double d = 0.0;
@@ -77,6 +77,7 @@ class MySettings with ChangeNotifier {
     clientAddress = prefs.getString("clientAddress")??"";
     baseName = prefs.getString("baseName")??"";
     basePhone = prefs.getString("basePhone")??"";
+    serverUrl = prefs.getString("serverUrl")??"";
     if (prefs.getString("cartList") != null) {
       cartList = CartModel.fromJsonList(jsonDecode(prefs.getString("cartList") ?? ""));
     }
@@ -106,6 +107,7 @@ class MySettings with ChangeNotifier {
     await prefs.setString("clientAddress", clientAddress);
     await prefs.setString("baseName", baseName);
     await prefs.setString("basePhone", basePhone);
+    await prefs.setString("serverUrl", serverUrl);
     await prefs.setString("cartList", jsonEncode(cartList));
 
 
@@ -127,19 +129,19 @@ class MySettings with ChangeNotifier {
 
     saveAndNotify();
   }
-  String getThemeText(BuildContext context) {
-    if (theme == THEME_AUTO) return AppLocalizations.of(context).translate("auto");
-    if (theme == THEME_DARK) return AppLocalizations.of(context).translate("dark");
-    if (theme == THEME_LIGHT) return AppLocalizations.of(context).translate("light");
-    return "";
-  }
-
-  String getLangText(BuildContext context) {
-    if (language == THEME_AUTO) return AppLocalizations.of(context).translate("uzbek");
-    if (language == THEME_DARK) return AppLocalizations.of(context).translate("russian");
-    if (language == THEME_LIGHT) return AppLocalizations.of(context).translate("english");
-    return "";
-  }
+  // String getThemeText(BuildContext context) {
+  //   if (theme == THEME_AUTO) return AppLocalizations.of(context).translate("auto");
+  //   if (theme == THEME_DARK) return AppLocalizations.of(context).translate("dark");
+  //   if (theme == THEME_LIGHT) return AppLocalizations.of(context).translate("light");
+  //   return "";
+  // }
+  //
+  // String getLangText(BuildContext context) {
+  //   if (language == THEME_AUTO) return AppLocalizations.of(context).translate("uzbek");
+  //   if (language == THEME_DARK) return AppLocalizations.of(context).translate("russian");
+  //   if (language == THEME_LIGHT) return AppLocalizations.of(context).translate("english");
+  //   return "";
+  // }
 
   Map<String, String> httpHeaderDateNow() {
     return Utils.httpSimpleJsonHeader("Bearer ${token}", DateTime.now(), "");

@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_djolis/models/cart.dart';
 import 'package:flutter_djolis/models/dic_card.dart';
 import 'package:flutter_djolis/models/dic_groups.dart';
 import 'package:flutter_djolis/models/dic_prod.dart';
@@ -26,7 +23,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
 import '../common/photo.dart';
-import 'akt_sverka.dart';
+import 'my_chat_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -123,7 +120,54 @@ class _HomePageState extends State<HomePage> {
             ]
         ),
         body: SafeArea(
-          child: getBody(settings),
+          child: Stack(
+            children: [
+              getBody(settings),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Visibility(
+                    visible: _tabIndex == 0 && settings.itogSumm > 0,
+                    child: Container(
+                      height: 60,
+                      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(12)),
+                      color: Color.fromRGBO(94, 36, 66, 1),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                                onPressed: (){
+                                  setState(() {
+                                    _tabIndex = 1;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
+                                  child: Row(
+                                    children: [
+                                      Text(AppLocalizations.of(context).translate("gl_add"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: const Color.fromRGBO(94, 36, 66, 1),)),
+                                      const SizedBox(width: 8),
+                                      const Icon(Icons.shopping_cart_outlined, color: Color.fromRGBO(94, 36, 66, 1)),
+                                    ],
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: getBottomNavigationBar(settings),
       ),
@@ -132,7 +176,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget getBottomNavigationBar(MySettings settings) {
     return BottomNavigationBar(
-
       elevation: 0,
       selectedLabelStyle: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.w400),
       unselectedLabelStyle: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w400),
@@ -157,7 +200,6 @@ class _HomePageState extends State<HomePage> {
             return;
           }
           if (index == 4) {
-            // ProfilePage(settings: settings,);
             return;
           }
         }
@@ -201,7 +243,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(3),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/akt_sverka.png", color: _tabIndex == 3 ? Colors.red : Colors.black, height: 24),
+              Image.asset("assets/icons/chat_icon.png", color: _tabIndex == 3 ? Colors.red : Colors.black, height: 24),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_akt"),
@@ -239,8 +281,7 @@ class _HomePageState extends State<HomePage> {
         color: Colors.grey.shade200,
         child: Column(
           children: [
-            SizedBox(height: 2),
-
+            const SizedBox(height: 2),
             Expanded(
               child: _isLoading
                   ? Center(
@@ -264,8 +305,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ) : ListView.builder(
-                itemCount: grp.length,
+                itemCount: grp.length + 1,
                 itemBuilder: (context, index) {
+                  if (index == grp.length) {
+                    return const SizedBox(height: 70);
+                  }
                   return Visibility(
                     visible: grp[index].prodCount > 0,
                     child: InkWell(
@@ -284,7 +328,7 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.grey.shade300),
                             ),
-                            height: 96,
+                            height: 115,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +340,7 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                        SizedBox(
-                                          height: 50,
+                                          height: 60,
                                           child: Text(grp[index].name,maxLines: 2, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
                                        ),
                                        Row(
@@ -313,11 +357,11 @@ class _HomePageState extends State<HomePage> {
                                           Visibility(
                                             visible: grp[index].orderSumm > 0,
                                             child: Padding(
-                                              padding: EdgeInsets.only(right: 8),
+                                              padding: const EdgeInsets.only(right: 8),
                                               child: Row(
                                                 children: [
-                                                  Icon(CupertinoIcons.tags, size: 15),
-                                                  SizedBox(width: 5),
+                                                 const  Icon(CupertinoIcons.tags, size: 15),
+                                                 const SizedBox(width: 5),
                                                   Text(Utils.myNumFormat0(grp[index].orderSumm), style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey.shade700),),
                                                 ],
                                               ),
@@ -325,14 +369,14 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ],
                                       ),
+
                                     ],
                                   ),
                                 ),
                               const SizedBox(height: 12),
-
                               ],
                             ),
-                          )
+                          ),
                       ),
                     ),
                   );
@@ -378,8 +422,11 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredProds.length,
+              itemCount: filteredProds.length + 1,
               itemBuilder: (context, index) {
+                if (index == filteredProds.length) {
+                  return const SizedBox(height: 70);
+                }
                 return Visibility(
                   visible: filteredProds[index].ostQty > 0,
                   child: InkWell(
@@ -397,7 +444,7 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Container(
                       margin: const EdgeInsets.only(top: 8),
-                      height: (filteredProds[index].orderQty != 0 ? 111 : 96) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
+                      height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade300),
@@ -412,11 +459,11 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => PhotoPage(url: "${settings.serverUrl}/pics/${filteredProds[index].id}.jpg", title: "Photo")),);
+                                  Navigator.push(context,MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: CachedNetworkImage(imageUrl: "${settings.serverUrl}/pics/${filteredProds[index].id}.jpg", errorWidget: (context, v, d) {
+                                  child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
                                       return Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(12),
@@ -424,7 +471,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       );
                                     },
-                                    height: 54,
+                                    height: 53,
                                     width: 54,
                                     fit: BoxFit.contain,
                                   ),
@@ -439,8 +486,9 @@ class _HomePageState extends State<HomePage> {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 5),
                                       child: Text(
+                                        maxLines: 2,
                                         filteredProds[index].name,
-                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16),
+                                        style: Theme.of(context).textTheme.titleMedium,
                                       ),
                                     ),
                                   ],
@@ -468,8 +516,8 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 5),
-                                Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red),)),
+                                Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
+                                const SizedBox(height: 7),
                                 Visibility(
                                   visible: filteredProds[index].orderQty != 0,
                                   child: Row(
@@ -515,28 +563,32 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(AppLocalizations.of(context).translate("client_not_assigned")),
-         const SizedBox(height: 16,),
-          ElevatedButton(onPressed: () {
-            setState(() {
-              _shimmer = true;
-            });
-            getAll(settings);
-            Timer.periodic(const Duration(seconds: 5), (timer) {
-              if (_shimmer) {
+          const SizedBox(
+            height: 16,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _shimmer = true;
+                });
                 getAll(settings);
-              } else {
-                timer.cancel();
-              }
-            });
-          }, child: Text(AppLocalizations.of(context).translate("gl_refresh")))
+                Timer.periodic(const Duration(seconds: 5), (timer) {
+                  if (_shimmer) {
+                    getAll(settings);
+                  } else {
+                    timer.cancel();
+                  }
+                });
+              },
+              child: Text(AppLocalizations.of(context).translate("gl_refresh")))
         ],
-      ),);
+      ));
     }
 
     if (_tabIndex == 0) return _selectedGroupId == 0 && searchQueryController.text == "" ? getCategoryList(settings) : getProdsList(settings);
     if (_tabIndex == 1) return CartPage(refreshCart);
     if (_tabIndex == 2) return const PayPage();
-    if (_tabIndex == 3) return const AktSverka();
+    if (_tabIndex == 3) return const MyChatPage();
     if (_tabIndex == 4) return ProfilePage(settings: settings,);
     return const Text("");
   }
@@ -554,24 +606,22 @@ class _HomePageState extends State<HomePage> {
           controller: searchQueryController,
           autofocus: false,
           decoration: InputDecoration(
+            contentPadding: const EdgeInsets.only(top: 6, left: 12, bottom: 10),
             hintText: AppLocalizations.of(context).translate("gl_search"),
             border: InputBorder.none,
             hintStyle: const TextStyle(color: Colors.grey),
             suffixIcon: InkWell(
-              onTap: () {
-                setState(() {
-                  searchQueryController.text = "";
-                });
-
-                FocusManager.instance.primaryFocus?.unfocus();
-              },
-              child: Icon(Icons.clear)),
+                onTap: () {
+                  setState(() {
+                    searchQueryController.text = "";
+                  });
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                child: const Icon(Icons.clear)),
           ),
-          style: TextStyle(color: Colors.grey.shade800, fontSize: 16.0),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(height: 1),
           onChanged: (value) {
-            setState(() {
-
-            });
+            setState(() {});
           },
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart';
 import '../screens/firebase_notifications/firebase_notification_page.dart';
@@ -94,18 +95,20 @@ class FirebaseApi {
     }
 
     if (Platform.isIOS) {
-      // _firebaseMessaging.getAPNSToken().then((f) => print(f)).catchError((v) => print(v));
       String? apnsToken = await _firebaseMessaging.getAPNSToken();
-      print("APNS Token: $apnsToken");
+      debugPrint("APNS Token: $apnsToken");
+
+      fcmToken = await _firebaseMessaging.getToken();
+      debugPrint("FCM Token: $fcmToken");
+
       if (apnsToken == null) {
-        print('APNS token not available');
+        debugPrint('APNS token not available');
         return;
       }
     } else {
       fcmToken = await _firebaseMessaging.getToken();
-      print("FCM Token: $fcmToken");
+      debugPrint("FCM Token: $fcmToken");
     }
-
     await initPushNotifications();
   }
 }

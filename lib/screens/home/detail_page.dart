@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/app_localizations.dart';
 import 'package:flutter_djolis/core/mysettings.dart';
 import 'package:flutter_djolis/models/cart.dart';
 import 'package:flutter_djolis/models/dic_prod.dart';
+import 'package:flutter_djolis/screens/common/photo.dart';
 import 'package:flutter_djolis/services/utils.dart';
 import 'package:provider/provider.dart';
-
 class DetailPage extends StatefulWidget {
   final DicProd prod;
   const DetailPage(this.prod, {super.key});
@@ -31,7 +33,6 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _animation = Tween(begin: 300.0, end: 50.0).animate(_controller)
       ..addListener(() {
@@ -61,9 +62,9 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
     if (_first) {
-      print("${settings.serverUrl}/pics/${widget.prod.id}.jpg");
+        debugPrint("widget.prod.picUrl: ${widget.prod.picUrl}");
       _first = false;
-      getFirtData(settings);
+      getFirstData(settings);
     }
 
     return Scaffold(
@@ -87,29 +88,62 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                           Center(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
-                              child: CachedNetworkImage(
-                                imageUrl: "${settings.serverUrl}/pics/${widget.prod.id}.jpg",
-                                errorWidget: (context, v, d) {
-                                  return Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
-                                      ));
+                              child: InkWell(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> PhotoPage(url: widget.prod.picUrl, title: widget.prod.name)));
                                 },
-                                height: 310,
-                                width: 350,
-                                fit: BoxFit.contain,
+                                child: CachedNetworkImage(
+                                  imageUrl: widget.prod.picUrl,
+                                  errorWidget: (context, v, d) {
+                                    return Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
+                                        ),
+                                    );
+                                  },
+                                  height: 310,
+                                  width: 350,
+                                  fit: BoxFit.contain,
+                                ),
                               )
                             ),
                           ),
+
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 18, right: 18, top: 8),
-                        child: Text(widget.prod.name, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),),
+                        padding: const EdgeInsets.only(left: 18, right: 18, top: 4),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8, left: 50, right: 50),
+                              child: Visibility(
+                                visible: widget.prod.infoPicUrl.isNotEmpty,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(),
+                                  child: InkWell(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  PhotoPage(url: widget.prod.infoPicUrl, title: widget.prod.name)));
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.yellow,
+                                          borderRadius: BorderRadius.all(Radius.circular(12))
+                                      ),
+                                      child: Center(child: Text(AppLocalizations.of(context).translate("more_info"))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(widget.prod.name, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),),
+                          ],
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, top: 40),
+                        padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
                         child: Column(
                           children: [
                             Row(
@@ -160,7 +194,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: BorderSide(color: Colors.grey)),
                                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: BorderSide(color: Colors.grey))
                                          ),
-          
+
                                        ),
                                    ),
                                    IconButton(onPressed: (){
@@ -197,11 +231,19 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(summ)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
+                    Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(summ)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
                         onPressed: (){
-                          saveToCart(settings);
+                          if(summ > 0) {
+                            saveToCart(settings);
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:  Text(AppLocalizations.of(context).translate("add_product")),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.red.shade700,
+                            ));
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
@@ -223,10 +265,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     );
   }
 
-  void getFirtData(MySettings settings) {
+  void getFirstData(MySettings settings) {
     bool found = false;
     for (var c in settings.cartList) {
-      print(c.prod?.name);
+      debugPrint(c.prod?.name);
       if (c.prodId == widget.prod.id) {
         cart = c;
         qty = c.qty;
@@ -248,7 +290,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   void saveToCart(MySettings settings) {
     if (qty > widget.prod.ostQty / (widget.prod.coeff == 1000 ? 1000 : 1)) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Остаток не хватает"),
+        content: const Text("Остаток не хватает"),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red.shade700,
       ));

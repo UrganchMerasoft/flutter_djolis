@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:sms_autodetect/sms_autodetect.dart';
-
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
 import '../../services/utils.dart';
 import '../home/home.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,8 +17,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  bool _first = true;
   TextEditingController phoneController = TextEditingController();
   TextEditingController codeController = TextEditingController();
   FocusNode codeFocus = FocusNode();
@@ -34,20 +28,26 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   Timer? timer;
 
-  @override
-  void initState() {
-    super.initState();
-    phoneController.text = "+998977406675";
-    codeController.text = "12345";
+  String uzbUrl = "http://212.109.199.213:3143";
+  String dubaiUrl = "http://212.109.199.213:3147";
+
+  String getServerUrl(String phoneNumber) {
+    if (phoneNumber.startsWith('+998')) {
+      return uzbUrl;
+    } else if (phoneNumber.startsWith('+971')) {
+      return dubaiUrl;
+    } else {
+      debugPrint("Invalid server URL");
+      return '';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
-    return  Container(
-      decoration:  const BoxDecoration(
-          image: DecorationImage(image: AssetImage("assets/images/splashscreen.jpg"),fit: BoxFit.fill)
-      ),
+    return Container(
+      decoration: const BoxDecoration(
+          image: DecorationImage(image: AssetImage("assets/images/splashscreen.jpg"), fit: BoxFit.fill)),
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
               cursorColor: Colors.white,
               style: const TextStyle(color: Colors.white),
               onTap: (){
-                phoneController.selection = TextSelection(baseOffset: 4, extentOffset: phoneController.text.length);
+                // phoneController.selection = TextSelection(baseOffset: 4, extentOffset: phoneController.text.length);
               },
               controller: phoneController,
               validator: (v) => v!.isEmpty ? AppLocalizations.of(context).translate("gl_cannot_empty"): null,
@@ -144,6 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                 _isLoading = true;
                 await verifyPassword(settings);
                 setState(() {});
+                debugPrint("ServerUrl: ${settings.serverUrl}");
               },
               child: _isLoading ? const SpinKitCircle(color: Colors.white, size: 25.0) : Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,6 +162,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   Future<void> verifyPassword(MySettings settings) async {
     String phoneText = phoneController.text.trim();
     String passwordText = codeController.text.trim();
@@ -175,38 +177,37 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+
+     settings.serverUrl = getServerUrl(phoneText);
+    if (settings.serverUrl.isEmpty) {
+      showSnackBar(AppLocalizations.of(context).translate("invalid_number"));
+      return;
+    }
+    settings.saveAndNotify();
+
     try {
-      final response = await _myHttpPost(settings, settings.token, "${settings.serverUrl}/api-djolis/login",
-        {
-          "phone": phoneText,
-          "code": passwordText,
-        },
-      );
+      final response = await _myHttpPost(settings, settings.token, "${settings.serverUrl}/api-djolis/login", {
+        "phone": phoneText,
+        "code": passwordText,
+      });
 
       if (response == null) {
         showSnackBar(AppLocalizations.of(context).translate("fail_login1"));
         return;
       }
 
-      Map? data;
-      data = jsonDecode(response);
-      if (data == null) {
+      Map? data = jsonDecode(response);
+      if (data == null || data["token"] == null) {
         showSnackBar(AppLocalizations.of(context).translate("fail_login2"));
         return;
       }
-      if (data["token"] == null) {
-        showSnackBar(AppLocalizations.of(context).translate("fail_login3"));
-      }
-
-      print("Response: \n\n$response\n\n");
 
       settings.token = data["token"];
-      settings.clientPhone = phoneController.text.trim();
+      settings.clientPhone = phoneText;
       settings.clientName = data["d"]["name"] ?? '';
       settings.clientFio = data["d"]["contact_fio"] ?? '';
       settings.clientAddress = data["d"]["address"] ?? '';
       await settings.saveAndNotify();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
     } catch (e) {
       showSnackBar("${AppLocalizations.of(context).translate("error_verify_psw")} $e");
     }
@@ -214,28 +215,25 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<String?> _myHttpPost(MySettings settings, String token, String url, Map<String, dynamic> body) async {
     String fcmToken = await Utils.getToken();
-    String deviceName = (await Utils.getDeviceName())??"";
+    String deviceName = (await Utils.getDeviceName()) ?? "";
     try {
-      final response = await http.post(
-        Uri.parse(url), headers: {
-          "Content-Type": "application/json",
-          "lang": settings.locale.languageCode,
-          "fcm_token": fcmToken,
-          "phone": phoneController.text,
-          "code": codeController.text,
-          "device_name": deviceName,
-          "Authorization": "Bearer $token",
-        },
-        body: json.encode(body),
-      );
+      final response = await http.post(Uri.parse(url), headers: {
+        "Content-Type": "application/json",
+        "lang": settings.locale.languageCode,
+        "fcm_token": fcmToken,
+        "phone": phoneController.text,
+        "code": codeController.text,
+        "device_name": deviceName,
+        "Authorization": "Bearer $token",
+      }, body: json.encode(body));
       if (response.statusCode == 200 || response.statusCode == 202) {
         return response.body;
       } else {
-        print("Failed to login: ${response.statusCode}");
+        debugPrint("Failed to login: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("HTTP post error: $e");
+      debugPrint("HTTP post error: $e");
       return null;
     }
   }
@@ -248,18 +246,7 @@ class _LoginPageState extends State<LoginPage> {
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
-      behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.red.shade700,
-      margin: EdgeInsets.only(left: 6, right: 6, bottom: MediaQuery.of(context).size.height -80),
     ));
-  }
-
-  String? validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppLocalizations.of(context).translate("cannot_be_empty");
-    } else if (!isValidPhoneNumber(value)) {
-      return AppLocalizations.of(context).translate("invalid_number");
-    }
-    return null;
   }
 }

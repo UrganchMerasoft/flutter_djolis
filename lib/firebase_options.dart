@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBVLwJjAishHn9N3uqlB0o0_SZnHJrhf6M',
-    appId: '1:689745322886:ios:1b7f978b204c4ba3644207',
+    appId: '1:689745322886:ios:6fd566506621fea6644207',
     messagingSenderId: '689745322886',
     projectId: 'djolis-e6ae6',
     storageBucket: 'djolis-e6ae6.appspot.com',
-    iosBundleId: 'uz.merasoft.flutterUrgSagban',
+    iosBundleId: 'uz.merasoft.flutterDjolis',
   );
 
 }

@@ -1,7 +1,6 @@
 {
   "app_name": "Djolis",
 
-  "new_account_phone_prefix": "+1",
   "new_account_phone": "Telefon raqamni kiriting",
   "new_account_password": "Parolni kiriting",
   "new_account_send_sms": "Kirish",
@@ -15,18 +14,20 @@
   "resend_sms_text1": "raqamiga tekshiruv kodini yubordik. Kodni",
   "resend_sms_text2": "dan keyin qayta yuborishingiz mumkin",
 
-  "cannot_be_empty": "Номер телефона не может быть пустым",
-  "invalid_number": "Неправильный номер телефона",
-  "enter_phone_psw": "Пожалуйста, введите номер телефона",
-  "enter_sms_code": "Пожалуйста, введите 5-значний код",
-  "fail_login": "Не удалось войти. Попробуйте еще раз.",
-  "error_verify_psw":"Ошибка проверки пароля:",
-  "client_not_assigned": "Клиент не приклеплен",
+  "cannot_be_empty": "Telefon raqami bo‘sh bo‘lishi mumkin emas",
+  "invalid_number": "Yaroqsiz telefon raqami",
+  "enter_phone_psw": "Telefon raqamini kiriting",
+  "enter_sms_code": "Besh xonali kodni kiriting",
+  "fail_login1": "Kirish amalga oshmadi. Qayta urining (1)",
+  "fail_login2": "Kirish amalga oshmadi. Qayta urining (2)",
+  "fail_login3": "Kirish amalga oshmadi. Qayta urining (3)",
+  "error_verify_psw":"Parolni tasdiqlashda xato:",
+  "client_not_assigned": "Mijoz mahkamlanmagan",
 
   "home_catalog": "Katalog",
   "home_card_app_bar": "Buyurtmalar (Savat)",
   "home_card": "Savat",
-  "home_akt": "Akt-sverka",
+  "home_akt": "Chat",
   "home_profile": "Profil",
   "home_category": "Kategoriyalar",
   "home_pay": "To'lov",
@@ -131,12 +132,21 @@
   "language": "Til",
   "uzbek": "O'zbekcha",
   "russian": "Ruscha",
+  "english": "Inglizcha",
+  "arabic": "Arabcha",
 
   "warnings": "Bildirishnomalar",
 
   "delete_account": "Akkauntni o'chirish",
   "delete_account_info": "Akkaunt o'chirish uchun quyidagi telefon raqam yoki elektron pochtaga murojaat qiling.",
   "new_account": "Ro'yhatdan o'tish",
-  "new_account_info": "Yangi akkaunt ochish uchun quyidagi telefon raqam yoki elektron pochtaga murojaat qiling."
+  "new_account_info": "Yangi akkaunt ochish uchun quyidagi telefon raqam yoki elektron pochtaga murojaat qiling.",
+  "soon": "Bu bo'lim tez orada ishga tushadi!:)",
+  "more_info": "Batafsil",
+
+  "debt": "Qarz",
+  "cashback": "Keshbek",
+  "credit_limit": "Kredit limiti",
+  "add_product": "Iltimos, mahsulot qo'shing"
 
 }

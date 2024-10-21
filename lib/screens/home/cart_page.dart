@@ -41,7 +41,7 @@ class _CartPageState extends State<CartPage> {
               itemBuilder: (context, index) {
                 return settings.cartList[index].prod == null ? const Text("") : Container(
                     margin: const EdgeInsets.only(top: 8),
-                    height: 111,
+                    height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey.shade400),
@@ -78,12 +78,12 @@ class _CartPageState extends State<CartPage> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: "${settings.serverUrl}/pics/${settings.cartList[index].prodId}.jpg", title: "Photo")));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: settings.cartList[index].prod!.picUrl, title: settings.cartList[index].prod!.name)));
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(4.0),
                                   child: CachedNetworkImage(
-                                    imageUrl: "${settings.serverUrl}/pics/${settings.cartList[index].prodId}.jpg",
+                                    imageUrl: settings.cartList[index].prod!.picUrl,
                                     errorWidget: (context, v, d) {
                                       return Container(
                                           decoration: BoxDecoration(
@@ -91,8 +91,8 @@ class _CartPageState extends State<CartPage> {
                                             image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
                                           ));
                                     },
-                                    height: 54,
-                                    width: 54,
+                                    height: 60,
+                                    width: 55,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -105,7 +105,9 @@ class _CartPageState extends State<CartPage> {
                                     const SizedBox(height: 6),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 5),
-                                      child: Text(settings.cartList[index].prod!.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
+                                      child: Text(
+                                        maxLines: 2,
+                                          settings.cartList[index].prod!.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
                                     ),
                                   ],
                                 ),
@@ -116,12 +118,12 @@ class _CartPageState extends State<CartPage> {
                             padding: const EdgeInsets.only(right: 12, left: 8),
                             child: Column(
                               children: [
-                                Row(
-                                  children: [
-                                    Expanded(child: Text("", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
-                                  ],
-                                ),
-                                const SizedBox(height: 5),
+                                // Row(
+                                //   children: [
+                                //     Expanded(child: Text("", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
+                                //   ],
+                                // ),
+                                const SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.cartList[index].qty)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
