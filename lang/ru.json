@@ -31,6 +31,8 @@
   "home_profile": "Профиль",
   "home_category": "Категории",
   "home_pay": "Оплата",
+  "home_vitrina": "Остатки витрины",
+  "vitrina": "Витрина",
 
   "gl_cannot_empty": "Не должен быть пустым",
   "gl_prev": "Пред",
@@ -124,6 +126,10 @@
 
   "list_empty": "Список пуст",
   "order": "Заказ",
+  "sales": "Продажа",
+  "sales_vitrina": "Продажи с витрины",
+  "previous_ost": "Пред.ост",
+  "left_qty": "Остаток",
   "press_for_notes": "Нажмите для примечании",
   "sent_ord": "Заказ отправлен",
   "error": "Ошибка",

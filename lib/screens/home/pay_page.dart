@@ -20,14 +20,12 @@ class PayPage extends StatefulWidget {
   State<PayPage> createState() => _PayPageState();
 }
 
-
+// ❌❌❌❌❌ Бу page ишлатилмиди, Феруз акада vitrina_page ишлатилад
 class _PayPageState extends State<PayPage> {
 
   bool _shimmer = true;
   bool _isLoading = false;
-  int cashBack = 0;
-  int creditLimit = 0;
-  String debt = "";
+
 
 @override
   void initState() {
@@ -49,23 +47,14 @@ class _PayPageState extends State<PayPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InfoContainer(color: Colors.green.shade300, text1: "${AppLocalizations.of(context).translate("cashback")}:", text2: Utils.myNumFormat(Utils.numFormat0_00, cashBack.toDouble())),
-                  const SizedBox(width: 10),
-                  InfoContainer(color: Colors.red.shade200, text1: "${AppLocalizations.of(context).translate("debt")}:", text2: debt),
-                  const SizedBox(width: 10),
-                  InfoContainer(color: Colors.orange.shade300, text1: "${AppLocalizations.of(context).translate("credit_limit")}:", text2:  Utils.myNumFormat(Utils.numFormat0_00, creditLimit.toDouble())),
-                ],
-              ),
+
             const SizedBox(height: 12,),
             Container(
-                decoration: BoxDecoration(
-                    color: Colors.green.shade200,
-                    borderRadius: const BorderRadius.all(Radius.circular(8))
-                ),
-                padding: const EdgeInsets.all(12), child: Text(AppLocalizations.of(context).translate("pay_page_cards"), textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium,)),
+              decoration: BoxDecoration(
+                  color: Colors.green.shade200,
+                  borderRadius: const BorderRadius.all(Radius.circular(8))
+              ),
+              padding: const EdgeInsets.all(12), child: Text(AppLocalizations.of(context).translate("pay_page_cards"), textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium,)),
 
             ListView.builder(
               shrinkWrap: true,
@@ -407,51 +396,12 @@ class _PayPageState extends State<PayPage> {
       return;
     }
 
-    if (data["ok"] == 1) {
-      cashBack = data['d']["settings"]["cashback"]??0;
-      debt = data['d']["settings"]["dolg"]??"";
-      creditLimit = data['d']["settings"]["credit_limit"]??0;
-      print("${creditLimit = data['d']["settings"]["credit_limit"]??"??"}");
+    if(mounted){
+      setState(() {
+        _isLoading = false;
+        _shimmer = false;
+      });
     }
-
-      if(mounted){
-        setState(() {
-          _isLoading = false;
-          _shimmer = false;
-        });
-      }
   }
 }
 
-class InfoContainer extends StatelessWidget {
-  final String text1;
-  final String text2;
-  final Color color;
-  const InfoContainer({
-    super.key, required this.color, required this.text1, required this.text2,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        height: 60,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: color,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4, right: 4),
-              child: Text(maxLines: 1,text1, style: const TextStyle(fontWeight: FontWeight.w500)),
-            ),
-            Text(text2, style: const TextStyle(fontWeight: FontWeight.w500)),
-          ],
-        ),
-      ),
-    );
-  }
-}

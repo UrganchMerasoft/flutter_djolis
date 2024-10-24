@@ -31,6 +31,8 @@
   "home_profile": "Profile",
   "home_category": "Categories",
   "home_pay": "Payment",
+  "home_vitrina": "Remains of showcase",
+  "vitrina": "Showcase",
 
   "gl_cannot_empty": "Cannot be empty",
   "gl_prev": "Prev",
@@ -121,6 +123,10 @@
 
   "list_empty": "List is empty",
   "order": "Order",
+  "sales": "Sold",
+  "sales_vitrina": "Sales from showcase",
+  "previous_ost": "Prev.stock",
+  "left_qty": "Left",
   "press_for_notes": "Press for notes",
   "sent_ord": "Order sent",
   "error": "Error",

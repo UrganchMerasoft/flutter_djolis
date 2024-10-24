@@ -31,6 +31,8 @@
   "home_profile": "الملف الشخصي",
   "home_category": "الفئات",
   "home_pay": "الدفع",
+  "home_vitrina": "بقايا معرض",
+  "vitrina": "عرض",
 
   "gl_cannot_empty": "لا يمكن أن يكون فارغًا",
   "gl_prev": "السابق",
@@ -121,6 +123,10 @@
 
   "list_empty": "القائمة فارغة",
   "order": "طلب",
+  "sales": "غادر",
+  "sales_vitrina": "المبيعات من العرض",
+  "previous_ost": "الرصيد السابق",
+  "left_qty": "بقايا",
   "press_for_notes": "اضغط للملاحظات",
   "sent_ord": "تم إرسال الطلب",
   "error": "خطأ",

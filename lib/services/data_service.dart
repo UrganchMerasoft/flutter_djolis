@@ -15,6 +15,9 @@ class DataService {
   static List<DicProd> prods = [];
   static List<NotifModel> notifs = [];
   static List<DicCardModel> cards = [];
+  static double cashBack = 0.0;
+  static double creditLimit = 0.0;
+  static double debt = 0.0;
 
   static getCats(List<dynamic> list) {
     cats = list.map((i) => DicCatModel.fromMapObject(i)).toList();

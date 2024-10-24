@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_djolis/services/data_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_djolis/app_localizations.dart';
 import 'package:flutter_djolis/models/cart.dart';
@@ -25,6 +26,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   TextEditingController textEditingController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
@@ -34,151 +36,174 @@ class _CartPageState extends State<CartPage> {
         color: Colors.grey.shade200,
         padding: const EdgeInsets.all(8.0),
         child: Column(
-        children: [
-          Expanded(
-            child: settings.cartList.isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("list_empty")),) : ListView.builder(
-              itemCount: settings.cartList.length,
-              itemBuilder: (context, index) {
-                return settings.cartList[index].prod == null ? const Text("") : Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    height: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade400),
-                      color: Colors.white
-                      // color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
-                    ),
-                    child: Slidable(
-                      endActionPane: ActionPane(
-                          extentRatio: 0.20,
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              backgroundColor: Colors.red,
-                              icon: Icons.restore_from_trash_outlined,
-                              onPressed: (BuildContext context1) async {
-                                Future.delayed(const Duration(milliseconds: 200), () async {
-                                  deleteCart(settings, settings.cartList[index], index);
-                                  //onRefresh();
-                                });
-                              },
-                            ),
-                          ]
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InfoContainer(color: Colors.green.shade300, text1: "${AppLocalizations.of(context).translate("cashback")}:", text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.cashBack.toDouble())),
+                const SizedBox(width: 10),
+                InfoContainer(color: Colors.red.shade200, text1: "${AppLocalizations.of(context).translate("debt")}:", text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble())),
+                const SizedBox(width: 10),
+                InfoContainer(color: Colors.orange.shade300, text1: "${AppLocalizations.of(context).translate("credit_limit")}:", text2:  Utils.myNumFormat(Utils.numFormat0_00, DataService.creditLimit.toDouble())),
+              ],
+            ),
+            Expanded(
+              child: settings.cartList.isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("list_empty")),) : ListView.builder(
+                itemCount: settings.cartList.length,
+                itemBuilder: (context, index) {
+                  return settings.cartList[index].prod == null ? const Text("") : Container(
+                      margin: const EdgeInsets.only(top: 8),
+                      height: 120,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade400),
+                        color: Colors.white
+                        // color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
                       ),
-                      child: InkWell(
-                        onTap: () async {
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(settings.cartList[index].prod!)));
-                          widget.refreshCart(settings);
-                        },
-                        child: Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
+                      child: Slidable(
+                        endActionPane: ActionPane(
+                            extentRatio: 0.20,
+                            motion: const ScrollMotion(),
                             children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: settings.cartList[index].prod!.picUrl, title: settings.cartList[index].prod!.name)));
+                              SlidableAction(
+                                backgroundColor: Colors.red,
+                                icon: Icons.restore_from_trash_outlined,
+                                onPressed: (BuildContext context1) async {
+                                  Future.delayed(const Duration(milliseconds: 200), () async {
+                                    deleteCart(settings, settings.cartList[index], index);
+                                    //onRefresh();
+                                  });
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: CachedNetworkImage(
-                                    imageUrl: settings.cartList[index].prod!.picUrl,
-                                    errorWidget: (context, v, d) {
-                                      return Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
-                                            image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
-                                          ));
-                                    },
-                                    height: 60,
-                                    width: 55,
-                                    fit: BoxFit.contain,
+                              ),
+                            ]
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(settings.cartList[index].prod!, false)));
+                            widget.refreshCart(settings);
+                          },
+                          child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: settings.cartList[index].prod!.picUrl, title: settings.cartList[index].prod!.name)));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: CachedNetworkImage(
+                                      imageUrl: settings.cartList[index].prod!.picUrl,
+                                      errorWidget: (context, v, d) {
+                                        return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
+                                            ));
+                                      },
+                                      height: 60,
+                                      width: 55,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 6),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 5),
-                                      child: Text(
-                                        maxLines: 2,
-                                          settings.cartList[index].prod!.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 12, left: 8),
-                            child: Column(
-                              children: [
-                                // Row(
-                                //   children: [
-                                //     Expanded(child: Text("", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
-                                //   ],
-                                // ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.cartList[index].qty)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                                    Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.cartList[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
-                                    Row(
-                                      children: [
-                                        const Icon(CupertinoIcons.tags,size: 15,),
-                                        const SizedBox(width: 5),
-                                        Text(Utils.myNumFormat0(settings.cartList[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                                      ],
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 5),
+                                        child: Text(
+                                          maxLines: 2,
+                                            settings.cartList[index].prod!.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                                            ),
-                      ),
-                  ),
-                );
-              },
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12, left: 8),
+                              child: Column(
+                                children: [
+                                  // Row(
+                                  //   children: [
+                                  //     Expanded(child: Text("", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
+                                  //   ],
+                                  // ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.cartList[index].qty)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                      Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.cartList[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
+                                      Row(
+                                        children: [
+                                          const Icon(CupertinoIcons.tags,size: 15,),
+                                          const SizedBox(width: 5),
+                                          Text(Utils.myNumFormat0(settings.cartList[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                                              ),
+                        ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          Visibility(
-            visible: settings.cartList.isNotEmpty,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
-              child: SizedBox(height: 56, child: TextField(
-                controller: textEditingController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFB29696)), borderRadius: BorderRadius.circular(10)),
-                  fillColor: Theme.of(context).brightness == Brightness.dark ? null : Colors.white,
-                  isDense: true,
-                  labelText: AppLocalizations.of(context).translate("press_for_notes"),
-                ),), ),
+            Visibility(
+              visible: settings.cartList.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
+                child: SizedBox(height: 56, child: TextField(
+                  controller: textEditingController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFFB29696)), borderRadius: BorderRadius.circular(10)),
+                    fillColor: Theme.of(context).brightness == Brightness.dark ? null : Colors.white,
+                    isDense: true,
+                    labelText: AppLocalizations.of(context).translate("press_for_notes"),
+                  ),), ),
+              ),
             ),
-          ),
-        ],)
+          ],)
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 2, top: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("${AppLocalizations.of(context).translate("gl_summa")}:  ${Utils.myNumFormat0(settings.itogSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
+                  SizedBox(height: 4),
+                  Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
+                ],
               ),
-              onPressed: settings.cartList.isEmpty ? null : () {
-                sendOrder(settings);
-              },
-              child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white))),
-          ],
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: settings.cartList.isEmpty ? null : () {
+                  sendOrder(settings);
+                },
+                child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white))),
+            ],
+          ),
         ),
       ),
     );
@@ -287,5 +312,39 @@ class _CartPageState extends State<CartPage> {
 
   void showSuccessInfo(MySettings settings) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))));
+  }
+}
+
+
+class InfoContainer extends StatelessWidget {
+  final String text1;
+  final String text2;
+  final Color color;
+  const InfoContainer({
+    super.key, required this.color, required this.text1, required this.text2,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        height: 60,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: color,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 4),
+              child: Text(maxLines: 1,text1, style: const TextStyle(fontWeight: FontWeight.w500)),
+            ),
+            Text(text2, style: const TextStyle(fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
             title: _tabIndex == 0
                 ? getSearchBar(settings) : (_tabIndex == 1
                     ? Text(AppLocalizations.of(context).translate("home_card_app_bar"))
-                    : (_tabIndex == 2 ? Text(AppLocalizations.of(context).translate("home_pay")) : (_tabIndex == 3 ? Text(AppLocalizations.of(context).translate("home_akt")): Text(AppLocalizations.of(context).translate("profile_info"))) ) ),
+                    : (_tabIndex == 2 ? Text(AppLocalizations.of(context).translate("home_vitrina")) : (_tabIndex == 3 ? Text(AppLocalizations.of(context).translate("home_akt")): Text(AppLocalizations.of(context).translate("profile_info"))) ) ),
             actions: [
               Visibility(
                 visible: _tabIndex == 0 || _tabIndex == 1,
@@ -236,7 +236,7 @@ class _HomePageState extends State<HomePage> {
               Image.asset("assets/icons/pay.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24)
             ],
           ),
-          label: AppLocalizations.of(context).translate("home_pay"),
+          label: AppLocalizations.of(context).translate("vitrina"),
         ),
         BottomNavigationBarItem(
           icon: Column(
@@ -305,6 +305,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ) : ListView.builder(
+                key: PageStorageKey<String>('controllerA'),
                 itemCount: grp.length + 1,
                 itemBuilder: (context, index) {
                   if (index == grp.length) {
@@ -439,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                         ));
                         return;
                       }
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index])));
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], false)));
                       refreshCart(settings);
                     },
                     child: Container(
@@ -484,7 +485,7 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     const SizedBox(height: 6),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 5),
+                                      padding: const EdgeInsets.only(left: 5, right: 5),
                                       child: Text(
                                         maxLines: 2,
                                         filteredProds[index].name,
@@ -587,7 +588,8 @@ class _HomePageState extends State<HomePage> {
 
     if (_tabIndex == 0) return _selectedGroupId == 0 && searchQueryController.text == "" ? getCategoryList(settings) : getProdsList(settings);
     if (_tabIndex == 1) return CartPage(refreshCart);
-    if (_tabIndex == 2) return const PayPage();
+    //if (_tabIndex == 2) return const PayPage();
+    if (_tabIndex == 2) return getVitrinaList(settings);
     if (_tabIndex == 3) return const MyChatPage();
     if (_tabIndex == 4) return ProfilePage(settings: settings,);
     return const Text("");
@@ -695,6 +697,9 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
+      DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
+      DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
+      DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
       if(mounted){
         setState(() {
           _isLoading = false;
@@ -724,6 +729,9 @@ class _HomePageState extends State<HomePage> {
     for (var p in prods) {
       p.orderQty = 0;
       p.orderSumm = 0;
+      p.ostVitrina = 0;
+      p.savdoVitrina = 0;
+      p.savdoVitrinaSumm = 0;
     }
     for (var g in grp) {
       g.orderSumm = 0.0;
@@ -742,6 +750,18 @@ class _HomePageState extends State<HomePage> {
       for (var g in grp) {
         if (g.id == c.prod!.groupId) {
           g.orderSumm += c.summ;
+        }
+      }
+    }
+
+
+    for (var c in settings.vitrinaList) {
+      for (var p in prods) {
+        if (p.id == c.prodId) {
+          c.prod = p;
+          p.ostVitrina += c.ost;
+          p.savdoVitrina += c.qty;
+          p.savdoVitrinaSumm += c.summ;
         }
       }
     }
@@ -835,6 +855,176 @@ class _HomePageState extends State<HomePage> {
       }
       return;
     }
+  }
+
+  Widget getVitrinaList(MySettings settings) {
+    List<DicProd> filteredProds = prods.where((prod) => prod.hasVitrina == 1||prod.prevOstVitrina != 0||prod.ostVitrina != 0||prod.savdoVitrina != 0).toList();
+    if (searchQueryController.text != "") {
+      filteredProds = prods.where((prod) => prod.name.toLowerCase().contains(searchQueryController.text.toLowerCase())).toList();
+    }
+    return Container(
+      color: Colors.grey.shade200,
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.builder(
+        itemCount: filteredProds.length + 1,
+        itemBuilder: (context, index) {
+          if (index == filteredProds.length) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 60,
+                decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(12)),
+                  color: Color.fromRGBO(94, 36, 66, 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogVitrinaSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                          onPressed: (){
+                            setState(() {
+                              _tabIndex = 1;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
+                            child: Row(
+                              children: [
+                                Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: const Color.fromRGBO(94, 36, 66, 1),)),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.send, color: Color.fromRGBO(94, 36, 66, 1)),
+                              ],
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            );
+            //return const SizedBox(height: 70);
+          }
+          return InkWell(
+            onTap: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], true)));
+              refreshCart(settings);
+            },
+            child: Container(
+              margin: const EdgeInsets.only(top: 8),
+              height: 120,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: filteredProds[index].savdoVitrina != 0 ? Colors.orange : Colors.grey.shade300),
+                  color: filteredProds[index].savdoVitrina != 0 ? Colors.orange.shade50 : Colors.white
+                //color: index % 2 == 0 ? const Color(0xFFFFE9E8) : Colors.white,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
+                              ),
+                            );
+                          },
+                            height: 53,
+                            width: 54,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 6),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              child: Text(
+                                maxLines: 2,
+                                filteredProds[index].name,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12, left: 8),
+                    child: Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${AppLocalizations.of(context).translate("previous_ost")}: ${Utils.myNumFormat0(filteredProds[index].prevOstVitrina)} ",
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
+                              ),
+                            ),
+                            Text(
+                              "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].price)}",
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                        Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
+                        const SizedBox(height: 7),
+                        Visibility(
+                          visible: filteredProds[index].savdoVitrina != 0||filteredProds[index].ostVitrina != 0,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${AppLocalizations.of(context).translate("left_qty")}: ${Utils.myNumFormat0(filteredProds[index].ostVitrina)} ",
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  "${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(filteredProds[index].savdoVitrina)} ",
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(CupertinoIcons.tags, size: 15),
+                                  const SizedBox(width: 5),
+                                  Text("${Utils.myNumFormat0(filteredProds[index].savdoVitrina * filteredProds[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
 }

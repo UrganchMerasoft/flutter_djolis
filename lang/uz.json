@@ -31,6 +31,8 @@
   "home_profile": "Profil",
   "home_category": "Kategoriyalar",
   "home_pay": "To'lov",
+  "home_vitrina": "Vitrina qoldiqlari",
+  "vitrina": "Витрина",
 
   "gl_cannot_empty": "Bo'sh bo'lmasligi kerak",
   "gl_prev": "Oldingi",
@@ -118,6 +120,10 @@
 
   "list_empty": "Ro'yxat bo'sh",
   "order": "Buyurtma",
+  "sales": "Savdo",
+  "sales_vitrina": "Vitrinadan sotuvlar",
+  "previous_ost": "Oldingi qoldiq",
+  "left_qty": "Qoldiq",
   "press_for_notes": "Izoh yozish",
   "sent_ord": "Buyurtma yuborildi",
   "error": "Xatolik",

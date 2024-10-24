@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/cart.dart';
+import 'package:flutter_djolis/models/vitrina.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app_localizations.dart';
@@ -43,9 +44,18 @@ class MySettings with ChangeNotifier {
   String basePhone = "";
   String serverUrl = "";
   List<CartModel> cartList = [];
+  List<VitrinaModel> vitrinaList = [];
   double get itogSumm {
     double d = 0.0;
     for (var c in cartList) {
+      d += c.summ;
+    }
+    return d;
+  }
+
+  double get itogVitrinaSumm {
+    double d = 0.0;
+    for (var c in vitrinaList) {
       d += c.summ;
     }
     return d;
@@ -81,6 +91,10 @@ class MySettings with ChangeNotifier {
     if (prefs.getString("cartList") != null) {
       cartList = CartModel.fromJsonList(jsonDecode(prefs.getString("cartList") ?? ""));
     }
+    if (prefs.getString("vitrinaList") != null) {
+      vitrinaList = VitrinaModel.fromJsonList(jsonDecode(prefs.getString("vitrinaList") ?? ""));
+    }
+
 
 
     timeOut = prefs.getInt("timeOut")??0;
@@ -109,6 +123,7 @@ class MySettings with ChangeNotifier {
     await prefs.setString("basePhone", basePhone);
     await prefs.setString("serverUrl", serverUrl);
     await prefs.setString("cartList", jsonEncode(cartList));
+    await prefs.setString("vitrinaList", jsonEncode(vitrinaList));
 
 
     ///

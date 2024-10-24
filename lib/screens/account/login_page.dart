@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
 
-     settings.serverUrl = getServerUrl(phoneText);
+    settings.serverUrl = getServerUrl(phoneText);
     if (settings.serverUrl.isEmpty) {
       showSnackBar(AppLocalizations.of(context).translate("invalid_number"));
       return;

@@ -21,6 +21,11 @@ class DicProd {
   late String info;
   late String picUrl;
   late String infoPicUrl;
+  late int hasVitrina;
+  late double prevOstVitrina;
+  late double ostVitrina;
+  late double savdoVitrina;
+  late double savdoVitrinaSumm;
 
   late double orderQty;
   late double orderSumm;
@@ -54,6 +59,11 @@ class DicProd {
     required this.info,
     required this.picUrl,
     required this.infoPicUrl,
+    required this.hasVitrina,
+    required this.prevOstVitrina,
+    required this.ostVitrina,
+    required this.savdoVitrina,
+    required this.savdoVitrinaSumm,
   });
 
   factory DicProd.fromJson(Map<String, dynamic> json) {
@@ -79,6 +89,11 @@ class DicProd {
       info: json['info'],
       picUrl: json['picUrl'],
       infoPicUrl: json['infoPicUrl'],
+      hasVitrina: json['hasVitrina'],
+      prevOstVitrina: json['prevOstVitrina'],
+      ostVitrina: json['ostVitrina'],
+      savdoVitrina: json['savdoVitrina'],
+      savdoVitrinaSumm: json['savdoVitrinaSumm'],
     );
   }
 
@@ -106,6 +121,11 @@ class DicProd {
     'info':info,
     'picUrl': picUrl,
     'infoPicUrl':infoPicUrl,
+    'hasVitrina':hasVitrina,
+    'prevOstVitrina':prevOstVitrina,
+    'ostVitrina':ostVitrina,
+    'savdoVitrina':savdoVitrina,
+    'savdoVitrinaSumm':savdoVitrinaSumm,
   };
 
   Map<String,dynamic> toJson(){
@@ -131,6 +151,11 @@ class DicProd {
       "info":info,
       "picUrl":picUrl,
       "infoPicUrl":infoPicUrl,
+      "hasVitrina":hasVitrina,
+      "prevOstVitrina":prevOstVitrina,
+      "ostVitrina":ostVitrina,
+      "savdoVitrina":savdoVitrina,
+      "savdoVitrinaSumm":savdoVitrinaSumm,
     };
   }
 
@@ -156,5 +181,10 @@ class DicProd {
     info = map['info'] ?? "";
     picUrl = map['picUrl'] ?? "";
     infoPicUrl = map['infoPicUrl'] ?? "";
+    hasVitrina = Utils.checkDouble(map['hasVitrina']).toInt();
+    prevOstVitrina = Utils.checkDouble(map['prevOstVitrina']);
+    ostVitrina = Utils.checkDouble(map['ostVitrina']);
+    savdoVitrina = Utils.checkDouble(map['savdoVitrina']);
+    savdoVitrinaSumm = Utils.checkDouble(map['savdoVitrinaSumm']);
   }
 }
