@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
                                   child: Row(
                                     children: [
-                                      Text(AppLocalizations.of(context).translate("gl_add"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: const Color.fromRGBO(94, 36, 66, 1),)),
+                                      Text(AppLocalizations.of(context).translate("home_card"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: const Color.fromRGBO(94, 36, 66, 1),)),
                                       const SizedBox(width: 8),
                                       const Icon(Icons.shopping_cart_outlined, color: Color.fromRGBO(94, 36, 66, 1)),
                                     ],
@@ -1015,7 +1015,7 @@ class _HomePageState extends State<HomePage> {
                                 Expanded(
                                   child: Text(
                                     "${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(filteredProds[index].savdoVitrina)} ",
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue),
                                   ),
                                 ),
                                 Row(

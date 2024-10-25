@@ -357,7 +357,6 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     for (var c in settings.vitrinaList) {
       if (c.prodId == widget.prod.id) {
         vitrina = c;
-        prevOst = widget.prod.prevOstVitrina;
         qty = c.ost;
         price = c.price;
         summ = c.summ;
@@ -370,6 +369,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
       vitrina = VitrinaModel(prodId: widget.prod.id, prevOst: widget.prod.prevOstVitrina, ost: 0, qty: 0, price: widget.prod.price, summ: 0);
       vitrina.prod = widget.prod;
     }
+    prevOst = widget.prod.prevOstVitrina;
     amountController.text = Utils.myNumFormat0(qty);
   }
 
