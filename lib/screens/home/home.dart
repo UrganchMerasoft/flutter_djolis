@@ -313,72 +313,77 @@ class _HomePageState extends State<HomePage> {
                   }
                   return Visibility(
                     visible: grp[index].prodCount > 0,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedGroupId = grp[index].id;
-                          _selectedGroupName = grp[index].name;
-                        });
-                      },
-                      child: Padding(
-                          padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                //color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            height: 115,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12, top: 12),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                       SizedBox(
-                                          height: 60,
-                                          child: Text(grp[index].name,maxLines: 2, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
-                                       ),
-                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.list_sharp, color: Colors.grey, size: 20,),
-                                             const SizedBox(width: 5),
-                                              Text("List: ${grp[index].prodCount}"),
-                                            ],
-                                          ),
-
-                                          Visibility(
-                                            visible: grp[index].orderSumm > 0,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(right: 8),
-                                              child: Row(
-                                                children: [
-                                                 const  Icon(CupertinoIcons.tags, size: 15),
-                                                 const SizedBox(width: 5),
-                                                  Text(Utils.myNumFormat0(grp[index].orderSumm), style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey.shade700),),
-                                                ],
+                    child: Padding(
+                        padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              //color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          height: 115,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                Future.delayed(Duration(milliseconds: 200), () {
+                                  setState(() {
+                                    _selectedGroupId = grp[index].id;
+                                    _selectedGroupName = grp[index].name;
+                                  });
+                                });
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12, top: 12),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                         SizedBox(
+                                            height: 60,
+                                            child: Text(grp[index].name,maxLines: 2, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
+                                         ),
+                                         Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.list_sharp, color: Colors.grey, size: 20,),
+                                               const SizedBox(width: 5),
+                                                Text("List: ${grp[index].prodCount}"),
+                                              ],
+                                            ),
+                            
+                                            Visibility(
+                                              visible: grp[index].orderSumm > 0,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(right: 8),
+                                                child: Row(
+                                                  children: [
+                                                   const  Icon(CupertinoIcons.tags, size: 15),
+                                                   const SizedBox(width: 5),
+                                                    Text(Utils.myNumFormat0(grp[index].orderSumm), style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey.shade700),),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-
-                                    ],
+                                          ],
+                                        ),
+                            
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              const SizedBox(height: 12),
-                              ],
+                                const SizedBox(height: 12),
+                                ],
+                              ),
                             ),
                           ),
-                      ),
+                        ),
                     ),
                   );
                 },
@@ -430,120 +435,125 @@ class _HomePageState extends State<HomePage> {
                 }
                 return Visibility(
                   visible: filteredProds[index].ostQty > 0,
-                  child: InkWell(
-                    onTap: () async {
-                      if (filteredProds[index].ostQty == 0) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(AppLocalizations.of(context).translate("lack_of_prods")),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.red.shade700,
-                        ));
-                        return;
-                      }
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], false)));
-                      refreshCart(settings);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade300),
-                        color: filteredProds[index].orderQty > 0 ? Colors.orange.shade50 : Colors.white
-                        //color: index % 2 == 0 ? const Color(0xFFFFE9E8) : Colors.white,
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(context,MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
-                                          image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
-                                        ),
-                                      );
-                                    },
-                                    height: 53,
-                                    width: 54,
-                                    fit: BoxFit.contain,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade300),
+                      color: filteredProds[index].orderQty > 0 ? Colors.orange.shade50 : Colors.white
+                      //color: index % 2 == 0 ? const Color(0xFFFFE9E8) : Colors.white,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () async {
+                          Future.delayed(Duration(milliseconds: 200), () async {
+                            if (filteredProds[index].ostQty == 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context).translate("lack_of_prods")),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.red.shade700,
+                              ));
+                              return;
+                            }
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], false)));
+                            refreshCart(settings);
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
+                                          ),
+                                        );
+                                      },
+                                      height: 53,
+                                      width: 54,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 6),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 5, right: 5),
-                                      child: Text(
-                                        maxLines: 2,
-                                        filteredProds[index].name,
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 12, left: 8),
-                            child: Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: filteredProds[index].ostQty == 0 ? Text(AppLocalizations.of(context).translate("not_exist"),
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.w500, fontSize: 12),
-                                      ) : Text(AppLocalizations.of(context).translate("exist"),
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500, fontSize: 12),
-                                      ),
-                                    ),
-                                    Text(
-                                      "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].price)}",
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                                Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
-                                const SizedBox(height: 7),
-                                Visibility(
-                                  visible: filteredProds[index].orderQty != 0,
-                                  child: Row(
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
+                                      const SizedBox(height: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 5, right: 5),
                                         child: Text(
-                                          "${AppLocalizations.of(context).translate("order")}: ${filteredProds[index].getOrderQty} ",
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
+                                          maxLines: 2,
+                                          filteredProds[index].name,
+                                          style: Theme.of(context).textTheme.titleMedium,
                                         ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          const Icon(CupertinoIcons.tags, size: 15),
-                                          const SizedBox(width: 5),
-                                          Text("${Utils.myNumFormat0(filteredProds[index].orderSumm)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-
                               ],
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12, left: 8),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: filteredProds[index].ostQty == 0 ? Text(AppLocalizations.of(context).translate("not_exist"),
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.w500, fontSize: 12),
+                                        ) : Text(AppLocalizations.of(context).translate("exist"),
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500, fontSize: 12),
+                                        ),
+                                      ),
+                                      Text(
+                                        "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].price)}",
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                  Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
+                                  const SizedBox(height: 7),
+                                  Visibility(
+                                    visible: filteredProds[index].orderQty != 0,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            "${AppLocalizations.of(context).translate("order")}: ${filteredProds[index].getOrderQty} ",
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Icon(CupertinoIcons.tags, size: 15),
+                                            const SizedBox(width: 5),
+                                            Text("${Utils.myNumFormat0(filteredProds[index].orderSumm)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -908,117 +918,122 @@ class _HomePageState extends State<HomePage> {
             );
             //return const SizedBox(height: 70);
           }
-          return InkWell(
-            onTap: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], true)));
-              refreshCart(settings);
-            },
-            child: Container(
-              margin: const EdgeInsets.only(top: 8),
-              height: 120,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: filteredProds[index].savdoVitrina != 0 ? Colors.orange : Colors.grey.shade300),
-                  color: filteredProds[index].savdoVitrina != 0 ? Colors.orange.shade50 : Colors.white
-                //color: index % 2 == 0 ? const Color(0xFFFFE9E8) : Colors.white,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
-                              ),
-                            );
+          return Container(
+            margin: const EdgeInsets.only(top: 8),
+            height: 120,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: filteredProds[index].savdoVitrina != 0 ? Colors.orange : Colors.grey.shade300),
+                color: filteredProds[index].savdoVitrina != 0 ? Colors.orange.shade50 : Colors.white
+              //color: index % 2 == 0 ? const Color(0xFFFFE9E8) : Colors.white,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  Future.delayed(Duration(milliseconds: 200), () async {
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], true)));
+                    refreshCart(settings);
+                  });
+                },
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: filteredProds[index].picUrl, title: filteredProds[index].name)),);
                           },
-                            height: 53,
-                            width: 54,
-                            fit: BoxFit.contain,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: CachedNetworkImage(imageUrl: filteredProds[index].picUrl, errorWidget: (context, v, d) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
+                                ),
+                              );
+                            },
+                              height: 53,
+                              width: 54,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 6),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: Text(
-                                maxLines: 2,
-                                filteredProds[index].name,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12, left: 8),
-                    child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${AppLocalizations.of(context).translate("previous_ost")}: ${Utils.myNumFormat0(filteredProds[index].prevOstVitrina)} ",
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
-                              ),
-                            ),
-                            Text(
-                              "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].price)}",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                        Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
-                        const SizedBox(height: 7),
-                        Visibility(
-                          visible: filteredProds[index].savdoVitrina != 0||filteredProds[index].ostVitrina != 0,
-                          child: Row(
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
+                              const SizedBox(height: 6),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5, right: 5),
                                 child: Text(
-                                  "${AppLocalizations.of(context).translate("left_qty")}: ${Utils.myNumFormat0(filteredProds[index].ostVitrina)} ",
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
+                                  maxLines: 2,
+                                  filteredProds[index].name,
+                                  style: Theme.of(context).textTheme.titleMedium,
                                 ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(filteredProds[index].savdoVitrina)} ",
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(CupertinoIcons.tags, size: 15),
-                                  const SizedBox(width: 5),
-                                  Text("${Utils.myNumFormat0(filteredProds[index].savdoVitrina * filteredProds[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                                ],
                               ),
                             ],
                           ),
                         ),
-
                       ],
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12, left: 8),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${AppLocalizations.of(context).translate("previous_ost")}: ${Utils.myNumFormat0(filteredProds[index].prevOstVitrina)} ",
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
+                                ),
+                              ),
+                              Text(
+                                "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].price)}",
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                          Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
+                          const SizedBox(height: 7),
+                          Visibility(
+                            visible: filteredProds[index].savdoVitrina != 0||filteredProds[index].ostVitrina != 0,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "${AppLocalizations.of(context).translate("left_qty")}: ${Utils.myNumFormat0(filteredProds[index].ostVitrina)} ",
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(filteredProds[index].savdoVitrina)} ",
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700,),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(CupertinoIcons.tags, size: 15),
+                                    const SizedBox(width: 5),
+                                    Text("${Utils.myNumFormat0(filteredProds[index].savdoVitrina * filteredProds[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
