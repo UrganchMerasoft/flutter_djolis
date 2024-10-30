@@ -59,7 +59,7 @@ class PhotoPageState extends State<PhotoPage> with SingleTickerProviderStateMixi
               fit: BoxFit.contain,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, v, d) {
-                return Image.asset("assets/images/no_image_available.png");
+                return Image.asset("assets/images/no_image.jpg");
               },
             ),
           ),

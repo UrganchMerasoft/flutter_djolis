@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 myNavbarContainer(1),
                 const SizedBox(height: 10,),
-                Image.asset("assets/icons/card.png", color: _tabIndex == 1 ? Colors.red : Colors.black, height: 24),
+                Image.asset("assets/icons/shopping_bag.png", color: _tabIndex == 1 ? Colors.red : Colors.black, height: 24),
               ],
             ),
             label: AppLocalizations.of(context).translate("home_card")
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(2),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/pay.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24)
+              Image.asset("assets/icons/store.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24)
             ],
           ),
           label: AppLocalizations.of(context).translate("vitrina"),
@@ -305,7 +305,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ) : ListView.builder(
-                key: PageStorageKey<String>('controllerA'),
+                key:  PageStorageKey<String>('controllerA'),
                 itemCount: grp.length + 1,
                 itemBuilder: (context, index) {
                   if (index == grp.length) {
@@ -477,7 +477,7 @@ class _HomePageState extends State<HomePage> {
                                         return Container(
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(12),
-                                            image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
+                                            image: const DecorationImage(image: AssetImage("assets/images/no_image_red.jpg"), fit: BoxFit.cover),
                                           ),
                                         );
                                       },
@@ -952,7 +952,7 @@ class _HomePageState extends State<HomePage> {
                               return Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"), fit: BoxFit.cover),
+                                  image: const DecorationImage(image: AssetImage("assets/images/no_image_red.jpg"), fit: BoxFit.cover),
                                 ),
                               );
                             },

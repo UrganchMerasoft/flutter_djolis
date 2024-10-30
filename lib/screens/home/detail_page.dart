@@ -112,7 +112,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                     return Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(12),
-                                          image: const DecorationImage(image: AssetImage("assets/images/no_image_available.png"),fit: BoxFit.cover),
+                                          image: const DecorationImage(image: AssetImage("assets/images/no_image_red.jpg"),fit: BoxFit.cover),
                                         ),
                                     );
                                   },
@@ -266,7 +266,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                             return;
                           }
 
-                          if (summ != 0) {
+                          if (qty != 0) {
                             saveToCart(settings);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

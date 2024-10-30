@@ -45,6 +45,7 @@ class MySettings with ChangeNotifier {
   String serverUrl = "";
   List<CartModel> cartList = [];
   List<VitrinaModel> vitrinaList = [];
+
   double get itogSumm {
     double d = 0.0;
     for (var c in cartList) {
