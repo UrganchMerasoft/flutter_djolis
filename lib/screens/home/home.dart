@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -11,8 +12,8 @@ import 'package:flutter_djolis/models/dic_prod.dart';
 import 'package:flutter_djolis/models/notif.dart';
 import 'package:flutter_djolis/screens/firebase_notifications/firebase_notification_page.dart';
 import 'package:flutter_djolis/screens/home/cart_page.dart';
+import 'package:flutter_djolis/screens/home/dashboard_page.dart';
 import 'package:flutter_djolis/screens/home/detail_page.dart';
-import 'package:flutter_djolis/screens/home/pay_page.dart';
 import 'package:flutter_djolis/screens/home/profile_page.dart';
 import 'package:flutter_djolis/services/data_service.dart';
 import 'package:flutter_djolis/services/utils.dart';
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   int _tabIndex = 0;
   int _selectedGroupId = 0;
+  int _listTab = 1;
   String _selectedGroupName = "";
   bool _shimmer = true;
   bool _isLoading = false;
@@ -81,48 +83,169 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-            title: _tabIndex == 0
-                ? getSearchBar(settings) : (_tabIndex == 1
-                    ? Text(AppLocalizations.of(context).translate("home_card_app_bar"))
-                    : (_tabIndex == 2 ? Text(AppLocalizations.of(context).translate("home_vitrina")) : (_tabIndex == 3 ? Text(AppLocalizations.of(context).translate("home_akt")): Text(AppLocalizations.of(context).translate("profile_info"))) ) ),
-            actions: [
-              Visibility(
-                visible: _tabIndex == 0 || _tabIndex == 1,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Badge(
-                    label: Text(DataService.notifs.where((v) => v.has_read == false).toList().length.toString()),
-                    isLabelVisible: DataService.notifs.where((v) => v.has_read == false).toList().isNotEmpty,
-                    offset: const Offset(-4, 0),
-                    textStyle: const TextStyle(fontWeight: FontWeight.w500),
-                    largeSize: 20,
-                    smallSize: 18,
-                    backgroundColor: Colors.yellow,
-                    textColor: Colors.red,
-                    child: IconButton(onPressed: () async {
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => const FirebaseNotificationPage()));
-                      setState(() {
-
-                      });
-                    }, icon: const Icon(CupertinoIcons.bell)),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: _tabIndex == 0
+              ? Text(AppLocalizations.of(context).translate("home_dash"))
+              : (_tabIndex == 1
+              ? getSearchBar(settings)
+              : (_tabIndex == 2
+              ? Text(AppLocalizations.of(context).translate("home_card_app_bar"))
+              : (_tabIndex == 3
+              ? Text(AppLocalizations.of(context).translate("home_akt"))
+              : Text(AppLocalizations.of(context).translate("profile_info"))))),
+          actions: [
+            Visibility(
+              visible: _tabIndex == 0 || _tabIndex == 1,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Badge(
+                  label: Text(
+                    DataService.notifs.where((v) => !v.has_read).length.toString(),
                   ),
-                )
+                  isLabelVisible: DataService.notifs.where((v) => !v.has_read).isNotEmpty,
+                  offset: const Offset(-4, 0),
+                  textStyle: const TextStyle(fontWeight: FontWeight.w500),
+                  largeSize: 20,
+                  smallSize: 18,
+                  backgroundColor: Colors.yellow,
+                  textColor: Colors.red,
+                  child: IconButton(
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FirebaseNotificationPage(),
+                        ),
+                      );
+                      setState(() {});
+                    },
+                    icon: const Icon(CupertinoIcons.bell),
+                  ),
+                ),
               ),
-
-              Visibility(
-                visible: _tabIndex == 4,
-                child: IconButton(onPressed: (){
+            ),
+            Visibility(
+              visible: _tabIndex == 4,
+              child: IconButton(
+                onPressed: () {
                   logout(settings);
-                }, icon: const Icon(Icons.logout_outlined)),
+                },
+                icon: const Icon(Icons.logout_outlined),
               ),
-            ]
+            ),
+          ],
         ),
         body: SafeArea(
           child: Stack(
+            alignment: Alignment.topCenter,
             children: [
-              getBody(settings),
+              Visibility(
+                visible: _tabIndex == 1 && _listTab == 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 60), // Ensure padding for bottom navigation
+                  child: getCategoryList(settings),
+                ),
+              ),
+              Visibility(
+                visible: _tabIndex == 1 && _listTab == 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 60), // Ensure padding for bottom navigation
+                  child: getVitrinaList(settings),
+                ),
+              ),
+               getBody(settings),
+               // _listTab == 1 ? getBody(settings) : getVitrinaList(settings),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Visibility(
+                  visible: _selectedGroupId == 0 && _tabIndex == 1,
+                  child: SizedBox(
+                    height: 50,
+                    child: AnimatedToggleSwitch.size(
+                      current: _listTab,
+                      values: const [1, 2],
+                      iconOpacity: 1,
+                      height: 60,
+                      indicatorSize: const Size.fromWidth(150),
+                      borderWidth: 2,
+                      customIconBuilder: (context, local, global) {
+                        switch (local.value) {
+                          case 1:
+                            return Text(AppLocalizations.of(context).translate("home_toggle_order"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
+                          case 2:
+                            return Text(AppLocalizations.of(context).translate("vitrina"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
+                          default:
+                            return const Text("");
+                        }
+                      },
+                      style: ToggleStyle(
+                        indicatorColor: Theme.of(context).primaryColor,
+                        borderColor: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(12),
+                        backgroundColor: Colors.transparent,
+                      ),
+                      selectedIconScale: 1.2,
+                      onChanged: (value) {
+                        setState(() {
+                          _listTab = value;
+                        });
+                      },
+                    ),
+                  ),
+                  // child: Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     const SizedBox(width: 20),
+                  //     Material(
+                  //       child: InkWell(
+                  //         onTap: (){
+                  //           Future.delayed(const Duration(milliseconds: 500));
+                  //           setState(() {
+                  //             _listTab = 0;
+                  //           });
+                  //         },
+                  //         child: Container(
+                  //           height: 40,
+                  //           width: 100,
+                  //           decoration: BoxDecoration(
+                  //             color: Theme.of(context).primaryColor,
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //           child: Padding(
+                  //             padding: const EdgeInsets.only(left: 8, right: 8),
+                  //             child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(color: Colors.white),)),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Material(
+                  //       child: InkWell(
+                  //         onTap: (){
+                  //           Future.delayed(const Duration(milliseconds: 500));
+                  //           setState(() {
+                  //             _listTab = 1;
+                  //           });
+                  //         },
+                  //         child: Container(
+                  //           height: 40,
+                  //           width: 100,
+                  //           decoration: BoxDecoration(
+                  //             color: Theme.of(context).primaryColor,
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //           child: Padding(
+                  //             padding: const EdgeInsets.only(left: 8, right: 8),
+                  //             child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(color: Colors.white),)),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 20),
+                  //   ],
+                  // ),
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -131,34 +254,54 @@ class _HomePageState extends State<HomePage> {
                     visible: _tabIndex == 0 && settings.itogSumm > 0,
                     child: Container(
                       height: 60,
-                      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(12)),
-                      color: Color.fromRGBO(94, 36, 66, 1),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        color: Color.fromRGBO(94, 36, 66, 1),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}", style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
+                            Text(
+                              "${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}",
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
                             ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                                onPressed: (){
-                                  setState(() {
-                                    _tabIndex = 1;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
-                                  child: Row(
-                                    children: [
-                                      Text(AppLocalizations.of(context).translate("home_card"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: const Color.fromRGBO(94, 36, 66, 1),)),
-                                      const SizedBox(width: 8),
-                                      const Icon(Icons.shopping_cart_outlined, color: Color.fromRGBO(94, 36, 66, 1)),
-                                    ],
-                                  ),
-                                )),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _tabIndex = 2;
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context).translate("home_card"),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color.fromRGBO(94, 36, 66, 1),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.shopping_cart_outlined,
+                                      color: Color.fromRGBO(94, 36, 66, 1),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -187,10 +330,10 @@ class _HomePageState extends State<HomePage> {
       onTap: (index) {
         if (_tabIndex == index) {
           if (index == 0) {
-            getCategoryList(settings);
             return;
           }
           if (index == 1) {
+            getCategoryList(settings);
             return;
           }
           if (index == 2) {
@@ -213,31 +356,34 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(0),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/home_icon.png", color: _tabIndex == 0 ? Colors.red : Colors.black, height: 24,),
+              Image.asset("assets/icons/akt_sverka.png", color: _tabIndex == 0 ? Colors.red : Colors.black, height: 24,),
+            ],
+          ),
+          label: AppLocalizations.of(context).translate("home_dash"),
+        ),
+
+        BottomNavigationBarItem(
+          icon: Column(
+            children: [
+              myNavbarContainer(1),
+              const SizedBox(height: 10,),
+              Image.asset("assets/icons/home_icon.png", color: _tabIndex == 1 ? Colors.red : Colors.black, height: 24,),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_catalog"),
         ),
+
         BottomNavigationBarItem(
             icon: Column(
               children: [
-                myNavbarContainer(1),
+                myNavbarContainer(2),
                 const SizedBox(height: 10,),
-                Image.asset("assets/icons/shopping_bag.png", color: _tabIndex == 1 ? Colors.red : Colors.black, height: 24),
+                Image.asset("assets/icons/shopping_bag.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24),
               ],
             ),
             label: AppLocalizations.of(context).translate("home_card")
         ),
-        BottomNavigationBarItem(
-          icon: Column(
-            children: [
-              myNavbarContainer(2),
-              const SizedBox(height: 10,),
-              Image.asset("assets/icons/store.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24)
-            ],
-          ),
-          label: AppLocalizations.of(context).translate("vitrina"),
-        ),
+
         BottomNavigationBarItem(
           icon: Column(
             children: [
@@ -281,7 +427,7 @@ class _HomePageState extends State<HomePage> {
         color: Colors.grey.shade200,
         child: Column(
           children: [
-            const SizedBox(height: 2),
+            const SizedBox(height: 60),
             Expanded(
               child: _isLoading
                   ? Center(
@@ -596,10 +742,12 @@ class _HomePageState extends State<HomePage> {
       ));
     }
 
-    if (_tabIndex == 0) return _selectedGroupId == 0 && searchQueryController.text == "" ? getCategoryList(settings) : getProdsList(settings);
-    if (_tabIndex == 1) return CartPage(refreshCart);
-    //if (_tabIndex == 2) return const PayPage();
-    if (_tabIndex == 2) return getVitrinaList(settings);
+    if (_tabIndex == 0) return const DashboardPage();
+
+    if (_tabIndex == 1) {
+      return _selectedGroupId == 0 && searchQueryController.text == "" ? (_listTab == 1 ? getCategoryList(settings) : getVitrinaList(settings)) : getProdsList(settings);
+    }
+    if (_tabIndex == 2) return CartPage(refreshCart);
     if (_tabIndex == 3) return const MyChatPage();
     if (_tabIndex == 4) return ProfilePage(settings: settings,);
     return const Text("");
@@ -874,7 +1022,7 @@ class _HomePageState extends State<HomePage> {
     }
     return Container(
       color: Colors.grey.shade200,
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 58, right: 8, left: 8, bottom: 8),
       child: ListView.builder(
         itemCount: filteredProds.length + 1,
         itemBuilder: (context, index) {

@@ -32,6 +32,8 @@
   "home_category": "Categories",
   "home_pay": "Payment",
   "home_vitrina": "Remains of showcase",
+  "home_dash": "Dash",
+  "home_toggle_order": "Orders",
   "vitrina": "Showcase",
 
   "gl_cannot_empty": "Cannot be empty",

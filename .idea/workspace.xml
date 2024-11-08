@@ -5,20 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="752edd38-cb0f-4bce-904e-1ef1959da589" name="Changes" comment="Витрина бўйича қўшимчалар qo'shildi improve qilish kerak!">
-      <change afterPath="$PROJECT_DIR$/assets/icons/shopping_bag.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/stock.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/store.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/no_image.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/no_image_red.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/dashboard_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner/Base.lproj/Main.storyboard" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Base.lproj/Main.storyboard" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/ru.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/ru.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lang/uz.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/uz.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/mysettings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/mysettings.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/common/photo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/common/photo.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/home/cart_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home/cart_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/home/detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home/detail_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/home/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home/home.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,8 +128,27 @@
       <option name="project" value="LOCAL" />
       <updated>1729856035248</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Витрина бўйича қўшимчалар qo'shildi improve qilish kerak!">
+      <option name="closed" value="true" />
+      <created>1730282035072</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1730282035072</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Birinchi commit Android deyarli tayyor bir qator go'rishtiribarish garak" />
