@@ -4,6 +4,7 @@ import 'package:flutter_djolis/models/dic_card.dart';
 import 'package:flutter_djolis/models/dic_cat.dart';
 import 'package:flutter_djolis/models/dic_groups.dart';
 import 'package:flutter_djolis/models/dic_prod.dart';
+import 'package:flutter_djolis/models/malumot_model.dart';
 import 'package:flutter_djolis/models/notif.dart';
 import 'package:http/http.dart';
 
@@ -14,6 +15,7 @@ class DataService {
   static List<DicGroups> grp = [];
   static List<DicProd> prods = [];
   static List<NotifModel> notifs = [];
+  static List<MalumotModel> malumot = [];
   static List<DicCardModel> cards = [];
   static double cashBack = 0.0;
   static double creditLimit = 0.0;
@@ -29,6 +31,10 @@ class DataService {
 
   static getProds(List<dynamic> list) {
     prods = list.map((i) => DicProd.fromMapObject(i)).toList();
+  }
+
+  static getMalumot(List<dynamic> list) {
+    malumot = list.map((i) => MalumotModel.fromMapObject(i)).toList();
   }
 
 }

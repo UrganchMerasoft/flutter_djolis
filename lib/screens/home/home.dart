@@ -12,7 +12,6 @@ import 'package:flutter_djolis/models/dic_prod.dart';
 import 'package:flutter_djolis/models/notif.dart';
 import 'package:flutter_djolis/screens/firebase_notifications/firebase_notification_page.dart';
 import 'package:flutter_djolis/screens/home/cart_page.dart';
-import 'package:flutter_djolis/screens/home/dashboard_page.dart';
 import 'package:flutter_djolis/screens/home/detail_page.dart';
 import 'package:flutter_djolis/screens/home/profile_page.dart';
 import 'package:flutter_djolis/services/data_service.dart';
@@ -24,6 +23,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
 import '../common/photo.dart';
+import 'dashboard_page.dart';
 import 'my_chat_page.dart';
 
 class HomePage extends StatefulWidget {

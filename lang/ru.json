@@ -32,9 +32,13 @@
   "home_category": "Категории",
   "home_pay": "Оплата",
   "home_vitrina": "Остатки витрины",
-  "home_dash": "Доска",
+  "home_dash": "Главный",
   "home_toggle_order": "Заказы",
   "vitrina": "Витрина",
+
+  "dash_ord":"Заказ",
+  "dash_pay":"Оплата",
+  "dash_info":"Информации",
 
   "gl_cannot_empty": "Не должен быть пустым",
   "gl_prev": "Пред",

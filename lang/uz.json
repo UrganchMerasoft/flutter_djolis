@@ -32,8 +32,12 @@
   "home_category": "Kategoriyalar",
   "home_pay": "To'lov",
   "home_vitrina": "Vitrina qoldiqlari",
-  "home_dash": "Dash",
+  "home_dash": "Asosiy",
   "home_toggle_order": "Buyurtmalar",
+
+  "dash_ord":"Buyurtma",
+  "dash_pay":"To'lov",
+  "dash_info":"Ma'lumotlar",
 
   "vitrina": "Vitrina",
 

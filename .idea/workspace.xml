@@ -4,15 +4,19 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="752edd38-cb0f-4bce-904e-1ef1959da589" name="Changes" comment="Витрина бўйича қўшимчалар qo'shildi improve qilish kerak!">
-      <change afterPath="$PROJECT_DIR$/lib/screens/home/dashboard_page.dart" afterDir="false" />
+    <list default="true" id="752edd38-cb0f-4bce-904e-1ef1959da589" name="Changes" comment="publishdan keyingi o'zgarishlar dashboard_page.dart qo'shildi">
+      <change afterPath="$PROJECT_DIR$/assets/images/salary.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/malumot_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/dashboard/dashboard_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/home/dashboard/dashboard_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lang/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/en.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lang/ru.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/ru.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lang/uz.json" beforeDir="false" afterPath="$PROJECT_DIR$/lang/uz.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/home/cart_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home/cart_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/home/dashboard_page.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/home/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home/home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/data_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/data_service.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +84,7 @@
       <recent name="$PROJECT_DIR$/android/app/src/main/res" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/screens/home/dashboard" />
       <recent name="$PROJECT_DIR$/ios/Runner/Assets.xcassets" />
     </key>
   </component>
@@ -136,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730282035072</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="publishdan keyingi o'zgarishlar dashboard_page.dart qo'shildi">
+      <option name="closed" value="true" />
+      <created>1731071359264</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1731071359265</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -155,6 +168,7 @@
     <MESSAGE value="Languagedagi Textga o'zgartirish kiritildi va Login pageda Uzbekistan va Dubai tel nomerlarini tekshiradigan RegExp modifikatsiya qilindi" />
     <MESSAGE value="O'zbekiston va Dubay serverUrl lari bilan alohida ishlash funksiyasi qo'shildi" />
     <MESSAGE value="Витрина бўйича қўшимчалар qo'shildi improve qilish kerak!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Витрина бўйича қўшимчалар qo'shildi improve qilish kerak!" />
+    <MESSAGE value="publishdan keyingi o'zgarishlar dashboard_page.dart qo'shildi" />
+    <option name="LAST_COMMIT_MESSAGE" value="publishdan keyingi o'zgarishlar dashboard_page.dart qo'shildi" />
   </component>
 </project>
