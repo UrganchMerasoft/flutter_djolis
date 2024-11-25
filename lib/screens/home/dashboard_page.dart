@@ -51,19 +51,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InfoContainer(
-                          // color: Colors.green.shade300,
                           text1: "${AppLocalizations.of(context).translate("cashback")}:",
                           text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.cashBack.toDouble())
                       ),
                       const SizedBox(width: 10),
                       InfoContainer(
-                          // color: Colors.red.shade200,
                           text1: "${AppLocalizations.of(context).translate("debt")}:",
                           text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble())
                       ),
                       const SizedBox(width: 10),
                       InfoContainer(
-                          // color: Colors.orange.shade300,
                           text1: "${AppLocalizations.of(context).translate("credit_limit")}:",
                           text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.creditLimit.toDouble())
                       ),
