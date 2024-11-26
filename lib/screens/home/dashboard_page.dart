@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_djolis/models/new_click_model.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app_localizations.dart';
 import '../../../core/mysettings.dart';
@@ -22,6 +25,9 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   bool _shimmer = true;
   bool _isLoading = false;
+  List<NewClickModel>? clickList;
+  String clickUrl = "";
+  TextEditingController clickController = TextEditingController();
 
   @override
   void initState() {
@@ -29,6 +35,7 @@ class _DashboardPageState extends State<DashboardPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<MySettings>(context, listen: false);
       getAll(settings);
+      newClick(settings);
     });
   }
 
@@ -100,7 +107,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Container(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           height: 70,
-                          width: 125,
+                          width: 110,
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -111,13 +118,69 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       InkWell(
                         onTap: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => PayQRPage("PAYME", "DataService.cards[index].payme_url", DataService.cards[index])));
-                          //launchUrl(Uri.parse(DataService.cards[index].payme_url));
+                          showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+                            actions: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Center(child: Image(image: AssetImage("assets/images/click.png"), width: 180,)),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Form(
+                                        child: TextFormField(
+                                          controller: clickController,
+                                          validator: (v) => v!.isEmpty ? AppLocalizations.of(context).translate("enter_summ"): null,
+                                          keyboardType: const TextInputType.numberWithOptions(),
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            fillColor: Colors.grey.shade200,
+                                            labelText: AppLocalizations.of(context).translate("enter_summ"),
+                                            focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                                            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                                            border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                                            enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(
+                                        children: [
+                                          ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                fixedSize: const Size(120, 45),
+                                                backgroundColor: Colors.red.shade400,
+                                              ),
+                                              onPressed: (){
+                                                Navigator.pop(context);
+                                              }, child: Text(AppLocalizations.of(context).translate("gl_cancel"))),
+                                          const SizedBox(width: 20),
+                                          ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  fixedSize: const Size(120, 45),
+                                                  backgroundColor: Colors.blue.shade600
+                                              ),
+                                              onPressed: (){
+                                                launchUrl(Uri.parse(clickUrl));
+                                              }, child: Text(AppLocalizations.of(context).translate("dash_do_pay")))
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ));
+                          // launchUrl(Uri.parse(clickUrl));
                         },
                         child:  Container(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           height: 70,
-                          width: 125,
+                          width: 110,
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -126,13 +189,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         )
                       ),
                       InkWell(
-                        onTap: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => PayQRPage("PAYME", "DataService.cards[index].payme_url", DataService.cards[index])));
-                          //launchUrl(Uri.parse(DataService.cards[index].payme_url));
-                        },
+                        onTap: () {},
                         child:  Container(
                           height: 70,
-                          width: 125,
+                          width: 110,
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -293,6 +353,63 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     }
   }
+
+  Future<void> newClick(MySettings settings) async {
+
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-click");
+    Response? res;
+    try {
+      res = await post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "Authorization": "Bearer ${settings.token}",
+        },
+        body: jsonEncode({
+          "client_id": 871,
+          "summ": 2000,
+        })
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("Error data null or data['ok] != 1 !");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      if (kDebugMode) {
+        debugPrint("Error data null or data['ok] != 1 !!");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+      DataService.newClick = [NewClickModel.fromJson(data['d'])];
+      debugPrint("\x1B[34mnew-click: ${DataService.newClick}");
+      /// \x1B[34mn  <- printni ichida shu kod yozilsa print ichidagi ma'lumot rangli bo'lib chiqadi!
+      for (var clickModel in DataService.newClick) {
+        clickUrl = clickModel.url;
+      }
+    }
+  }
+
+
 
   Widget shimmerList(MySettings settings) {
     return Column(

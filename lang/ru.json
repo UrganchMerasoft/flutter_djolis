@@ -39,6 +39,9 @@
   "dash_ord":"Заказ",
   "dash_pay":"Оплата",
   "dash_info":"Информации",
+  "dash_do_pay": "Оплатить",
+
+  "enter_summ": "Введите сумму",
 
   "gl_cannot_empty": "Не должен быть пустым",
   "gl_prev": "Пред",

@@ -4,14 +4,6 @@ import 'package:sqflite/sqflite.dart';
 
 import 'my_table.dart';
 
- var json = {
-"id": 141971,
-"doc_type": "order",
-"curdate_str": "30.04.2024",
-"curtime_str": "03:39:40",
-"notes": "ertaga oborib berila",
-"summ": 20
-};
 
 class MalumotModel extends MyTable {
   late int id;
@@ -78,12 +70,12 @@ class MalumotModel extends MyTable {
     return 0;
   }
 
-  MalumotModel.saveFromJsonToDB(Batch bb, String json) {
-    List list = jsonDecode(json);
-    if (list.isNotEmpty) {
-      bb.rawDelete("DELETE FROM dic_cat");
-    }
-  }
+  // MalumotModel.saveFromJsonToDB(Batch bb, String json) {
+  //   List list = jsonDecode(json);
+  //   if (list.isNotEmpty) {
+  //     bb.rawDelete("DELETE FROM dic_cat");
+  //   }
+  // }
   //
   //   final List<NotifModel> localItems = list.map((i) => NotifModel.fromJson(i)).toList();
   //   for (var item in localItems) {

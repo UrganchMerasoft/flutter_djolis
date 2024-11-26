@@ -38,8 +38,11 @@
 
   "dash_ord":"Order",
   "dash_pay":"Payment",
+  "dash_do_pay": "Pay",
 
   "dash_info":"Informations",
+
+  "enter_summ": "Enter amount",
 
   "gl_cannot_empty": "Cannot be empty",
   "gl_prev": "Prev",

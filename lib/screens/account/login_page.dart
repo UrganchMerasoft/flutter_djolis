@@ -90,7 +90,14 @@ class _LoginPageState extends State<LoginPage> {
                 // phoneController.selection = TextSelection(baseOffset: 4, extentOffset: phoneController.text.length);
               },
               controller: phoneController,
-              validator: (v) => v!.isEmpty ? AppLocalizations.of(context).translate("gl_cannot_empty"): null,
+              validator: (v) {
+                if(v!.isEmpty || v == null){
+                  return AppLocalizations.of(context).translate("enter_summ");
+                }else{
+                  return null;
+                }
+
+              },
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
