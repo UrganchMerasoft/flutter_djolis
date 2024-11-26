@@ -21,6 +21,12 @@ class VitrinaModel extends MyTable {
     required this.summ,
   });
 
+
+  @override
+  String toString() {
+    return 'VitrinaModel{prodId: $prodId, prod: $prod, prevOst: $prevOst, ost: $ost, qty: $qty, price: $price, summ: $summ}';
+  }
+
   factory VitrinaModel.fromJson(Map<String, dynamic> json) {
     return VitrinaModel(
       prodId: json['prodId'],

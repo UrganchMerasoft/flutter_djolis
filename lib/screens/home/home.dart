@@ -790,8 +790,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getAll(MySettings settings) async {
     if (_isLoading) return;
-    String fcmToken = await Utils.getToken();
-    String device_name = (await Utils.getDeviceName())??"";
+      String fcmToken = await Utils.getToken();
+      String device_name = (await Utils.getDeviceName())??"";
 
     _isLoading = true;
     Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/getall");

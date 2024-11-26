@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/new_click_model.dart';
+import 'package:flutter_djolis/models/new_payme_model.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -25,9 +26,13 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   bool _shimmer = true;
   bool _isLoading = false;
-  List<NewClickModel>? clickList;
   String clickUrl = "";
+  String paymeUrl = "";
+  List<NewPaymeModel> paymeList = [];
+
   TextEditingController clickController = TextEditingController();
+  TextEditingController paymeController = TextEditingController();
+
 
   @override
   void initState() {
@@ -35,7 +40,6 @@ class _DashboardPageState extends State<DashboardPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<MySettings>(context, listen: false);
       getAll(settings);
-      newClick(settings);
     });
   }
 
@@ -92,7 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(6),
                       color: Colors.grey.shade300,
                     ),
-                      child:  Center(child: Text(AppLocalizations.of(context).translate("dash_pay"),style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16,),))),
+                      child:  Center(child: Text(AppLocalizations.of(context).translate("dash_pay"),style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16,),))),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -101,8 +105,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     children: [
                       InkWell(
                         onTap: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => PayQRPage("PAYME", "DataService.cards[index].payme_url", DataService.cards[index])));
-                          //launchUrl(Uri.parse(DataService.cards[index].payme_url));
+                          paymeDialog(context, settings);
                         },
                         child: Container(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -118,64 +121,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       InkWell(
                         onTap: () {
-                          showDialog(context: context, builder: (BuildContext context) => AlertDialog(
-                            actions: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Center(child: Image(image: AssetImage("assets/images/click.png"), width: 180,)),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                      child: Form(
-                                        child: TextFormField(
-                                          controller: clickController,
-                                          validator: (v) => v!.isEmpty ? AppLocalizations.of(context).translate("enter_summ"): null,
-                                          keyboardType: const TextInputType.numberWithOptions(),
-                                          decoration: InputDecoration(
-                                            isDense: true,
-                                            fillColor: Colors.grey.shade200,
-                                            labelText: AppLocalizations.of(context).translate("enter_summ"),
-                                            focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                                            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                                            border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                                            enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Row(
-                                        children: [
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                fixedSize: const Size(120, 45),
-                                                backgroundColor: Colors.red.shade400,
-                                              ),
-                                              onPressed: (){
-                                                Navigator.pop(context);
-                                              }, child: Text(AppLocalizations.of(context).translate("gl_cancel"))),
-                                          const SizedBox(width: 20),
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  fixedSize: const Size(120, 45),
-                                                  backgroundColor: Colors.blue.shade600
-                                              ),
-                                              onPressed: (){
-                                                launchUrl(Uri.parse(clickUrl));
-                                              }, child: Text(AppLocalizations.of(context).translate("dash_do_pay")))
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ));
-                          // launchUrl(Uri.parse(clickUrl));
+                          clickDialog(context, settings);
                         },
                         child:  Container(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -225,7 +171,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
 
           SliverList(
-              key: PageStorageKey<String>('controllerA'),
+              key: const PageStorageKey<String>('controllerA'),
               delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                     if (index == DataService.malumot.length) {
@@ -284,6 +230,135 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
+
+  void clickDialog(BuildContext context, MySettings settings) => showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+    actions: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Center(child: Image(image: AssetImage("assets/images/click.png"), width: 180,)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: TextFormField(
+                controller: clickController,
+                keyboardType: const TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  isDense: true,
+                  fillColor: Colors.grey.shade200,
+                  errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                  labelText: AppLocalizations.of(context).translate("enter_summ"),
+                  focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                  enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(120, 45),
+                        backgroundColor: Colors.red.shade400,
+                      ),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      }, child: Text(AppLocalizations.of(context).translate("gl_cancel"))),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(120, 45),
+                          backgroundColor: Colors.blue.shade600
+                      ),
+                      onPressed: ()async{
+                        if(clickController.text.isEmpty){
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(AppLocalizations.of(context).translate("enter_summ")),
+                            backgroundColor: Colors.red.shade700,
+                          ));
+                        }else{
+                          await newClick(settings);
+                          launchUrl(Uri.parse(clickUrl));
+                        }
+                      }, child: Text(AppLocalizations.of(context).translate("dash_do_pay")))
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ));
+
+  void paymeDialog(BuildContext context, MySettings settings) => showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+    actions: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Center(child: Image(image: AssetImage("assets/images/img.png"), width: 180,)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: TextFormField(
+                controller: paymeController,
+                keyboardType: const TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  isDense: true,
+                  fillColor: Colors.grey.shade200,
+                  errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                  labelText: AppLocalizations.of(context).translate("enter_summ"),
+                  focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                  enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(120, 45),
+                        backgroundColor: Colors.red.shade400,
+                      ),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      }, child: Text(AppLocalizations.of(context).translate("gl_cancel"))),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(120, 45),
+                          backgroundColor: Colors.blue.shade600
+                      ),
+                      onPressed: ()async{
+                        if(paymeController.text.isEmpty){
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(AppLocalizations.of(context).translate("enter_summ")),
+                            backgroundColor: Colors.red.shade700,
+                          ));
+                        }else{
+                          await newPayme(settings);
+                          launchUrl(Uri.parse(paymeUrl));
+                        }
+                      }, child: Text(AppLocalizations.of(context).translate("dash_do_pay")))
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ));
+
   Future<void> getAll(MySettings settings) async {
     if (_isLoading) return;
     String fcmToken = await Utils.getToken();
@@ -307,7 +382,7 @@ class _DashboardPageState extends State<DashboardPage> {
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
-        debugPrint("Error data null or data['ok] != 1");
+        debugPrint("getAll Error 1 data null or data['ok] != 1");
       }
       return;
     }
@@ -331,7 +406,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (data == null || data["ok"] != 1) {
       _isLoading = false;
       if (kDebugMode) {
-        print("Error data null or data['ok] != 1");
+        debugPrint("getAll 2 Error data null or data['ok] != 1");
       }
       return;
     }
@@ -344,6 +419,8 @@ class _DashboardPageState extends State<DashboardPage> {
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
 
+      settings.clientId = Utils.checkDouble(data['d']["settings"]["clientId"]).toInt();
+
       if(mounted){
         setState(() {
           _isLoading = false;
@@ -355,24 +432,30 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> newClick(MySettings settings) async {
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName())??"";
 
     Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-click");
     Response? res;
-    try {
+        try {
       res = await post(
         uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "Authorization": "Bearer ${settings.token}",
-        },
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            "lang": settings.locale.languageCode,
+            "fcm_token": fcmToken,
+            "phone": settings.clientPhone,
+            "device_name": device_name,
+            "Authorization": "Bearer ${settings.token}",
+          },
         body: jsonEncode({
-          "client_id": 871,
-          "summ": 2000,
+          "client_id": settings.clientId,
+          "summ": double.parse(clickController.text),
         })
       );
     } catch (e) {
       if (kDebugMode) {
-        debugPrint("Error data null or data['ok] != 1 !");
+        debugPrint("newClick Error 1 data null or data['ok] != 1 !");
       }
       return;
     }
@@ -394,22 +477,79 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (data == null || data["ok"] != 1) {
       if (kDebugMode) {
-        debugPrint("Error data null or data['ok] != 1 !!");
+        debugPrint("newClick Error 2 data null or data['ok] != 1 ");
       }
       return;
     }
 
     if (data["ok"] == 1) {
       DataService.newClick = [NewClickModel.fromJson(data['d'])];
-      debugPrint("\x1B[34mnew-click: ${DataService.newClick}");
-      /// \x1B[34mn  <- printni ichida shu kod yozilsa print ichidagi ma'lumot rangli bo'lib chiqadi!
+      debugPrint("new-click: ${DataService.newClick}");
       for (var clickModel in DataService.newClick) {
         clickUrl = clickModel.url;
       }
     }
   }
 
+  Future<void> newPayme(MySettings settings) async {
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName())??"";
 
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-payme");
+    Response? res;
+    try {
+      res = await post(
+          uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            "lang": settings.locale.languageCode,
+            "fcm_token": fcmToken,
+            "phone": settings.clientPhone,
+            "device_name": device_name,
+            "Authorization": "Bearer ${settings.token}",
+          },
+          body: jsonEncode({
+            "client_id": settings.clientId,
+            "summ": double.parse(paymeController.text),
+          })
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("newClick Error 1 data null or data['ok] != 1 !");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      if (kDebugMode) {
+        debugPrint("newClick Error 2 data null or data['ok] != 1 ");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+      paymeList = [NewPaymeModel.fromJson(data['d'])];
+      debugPrint("new-click: $paymeList");
+      for (var paymeModel in paymeList) {
+        paymeUrl = paymeModel.url;
+      }
+    }
+  }
 
   Widget shimmerList(MySettings settings) {
     return Column(
@@ -473,8 +613,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
-
-
 
 class InfoContainer extends StatelessWidget {
   final String text1;
