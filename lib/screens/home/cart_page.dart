@@ -45,9 +45,7 @@ class _CartPageState extends State<CartPage> {
                   height: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: Theme
-                        .of(context)
-                        .primaryColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),))),
             ),
@@ -483,6 +481,7 @@ class _CartPageState extends State<CartPage> {
     // );
     // showCupertinoModalPopup(context: context, builder: (context) => action);
   }
+
   void deleteVitrinaList(MySettings settings, VitrinaModel vitrinaList, int index) {
     textEditingController.text = "";
     settings.vitrinaList.removeAt(index);

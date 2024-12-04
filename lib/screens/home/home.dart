@@ -75,9 +75,7 @@ class _HomePageState extends State<HomePage> {
         if (_selectedGroupId != 0) {
           _selectedGroupId = 0;
           _selectedGroupName = "";
-          setState(() {
-
-          });
+          setState(() {});
           return;
         }
       },
@@ -143,14 +141,14 @@ class _HomePageState extends State<HomePage> {
               Visibility(
                 visible: _tabIndex == 1 && _listTab == 1,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 60), // Ensure padding for bottom navigation
+                  padding: const EdgeInsets.only(bottom: 60),
                   child: getCategoryList(settings),
                 ),
               ),
               Visibility(
                 visible: _tabIndex == 1 && _listTab == 2,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 60), // Ensure padding for bottom navigation
+                  padding: const EdgeInsets.only(bottom: 60),
                   child: getVitrinaList(settings),
                 ),
               ),
@@ -464,9 +462,10 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           decoration: BoxDecoration(
                               //color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey.shade300),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(8),
+
                           ),
                           height: 115,
                           child: Material(
