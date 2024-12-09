@@ -277,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                                     .of(context)
                                     .textTheme
                                     .bodyMedium
-                                    ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                                      ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
                                 const SizedBox(height: 2),
                                 Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
                                     .of(context)

@@ -399,49 +399,57 @@ class _CartPageState extends State<CartPage> {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 2, top: 4),
-        child: SizedBox(
-          height: 78,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 2),
-                  Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.green, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 2),
-                  Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w600)),
-                ],
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 8),
+        child: Container(
+          height: 68,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            border: Border.all(color: Colors.grey.shade300, width: 2),
+            color: Colors.grey.shade200,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                    const SizedBox(height: 2),
+                    Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
+                    const SizedBox(height: 2),
+                    Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                  ],
                 ),
-                onPressed: settings.cartList.isEmpty ? null : () {
-                  sendOrder(settings);
-                },
-                child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
-              ),
-            ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: settings.cartList.isEmpty ? null : () {
+                    sendOrder(settings);
+                  },
+                  child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -481,10 +489,13 @@ class _CartPageState extends State<CartPage> {
                     "Authorization": "Bearer ${settings.token}",
                   },
                   body: jsonEncode({
-                    //"notes": textEditingController.text,
+                    "notes": "", //textEditingController.text,
                     "clientId": settings.clientId,
                     "itogSumm": settings.itogSumm,
-                    "list": settings.cartList})
+                    "itogVitrinaSumm": settings.itogVitrinaSumm,
+                    "cashbackSumm": settings.itogCashbackSumm,
+                    "list": settings.cartList,
+                    "vitrina": settings.vitrinaList})
               );
 
               Map? data;
@@ -504,6 +515,7 @@ class _CartPageState extends State<CartPage> {
               if (data["ok"] == 1) {
                 //textEditingController.text = "";
                 settings.cartList.clear();
+                settings.vitrinaList.clear();
                 settings.saveAndNotify();
                 showSuccessInfo(settings);
               } else {
