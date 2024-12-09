@@ -251,6 +251,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                   ),
                 ),
               ),
+
+              Visibility(visible: widget.isVitrina == false&&widget.prod.cashbackProcent > 0, child: Text("${AppLocalizations.of(context).translate("cashback")}: ${Utils.myNumFormat2(widget.prod.cashbackProcent)}%", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.green),)),
               Visibility(visible: widget.isVitrina, child: Text("${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(prevOst - qty)} ", style: Theme.of(context).textTheme.titleLarge,)),
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 22),
@@ -310,7 +312,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
 
     if (found == false) {
       price = widget.prod.price;
-      cart = CartModel(prodId: widget.prod.id, qty: 0, price: widget.prod.price, summ: 0);
+      cart = CartModel(prodId: widget.prod.id, qty: 0, price: widget.prod.price, summ: 0, cashbackProcent: widget.prod.cashbackProcent, cashbackSumm: 0);
       cart.prod = widget.prod;
     }
     amountController.text = Utils.myNumFormat0(qty);
@@ -338,6 +340,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     cart.qty = qty;
     cart.price = price;
     cart.summ = summ;
+    cart.cashbackSumm = ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
     bool added = false;
     for (int i = 0; i < settings.cartList.length; i++) {
       if (settings.cartList[i].prodId == cart.prodId) {

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_djolis/app_localizations.dart';
+import 'package:flutter_djolis/services/utils.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'my_table.dart';
@@ -11,7 +14,9 @@ class MalumotModel extends MyTable {
   late String curdate_str;
   late String curtime_str;
   late String notes;
-  late int summ;
+  late double summ;
+  late double summ_uzs;
+  late String cur_name;
 
   MalumotModel({
     required this.id,
@@ -20,6 +25,8 @@ class MalumotModel extends MyTable {
     required this.curtime_str,
     required this.notes,
     required this.summ,
+    required this.summ_uzs,
+    required this.cur_name,
   });
 
   factory MalumotModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +37,8 @@ class MalumotModel extends MyTable {
       curtime_str: json['curtime_str'],
       notes: json['notes'],
       summ: json['summ'],
+      summ_uzs: json['summ_uzs'],
+      cur_name: json['cur_name'],
     );
   }
 
@@ -42,6 +51,8 @@ class MalumotModel extends MyTable {
     map['curtime_str'] = curtime_str;
     map['notes'] = notes;
     map['summ'] = summ;
+    map['summ_uzs'] = summ_uzs;
+    map['cur_name'] = cur_name;
     return map;
   }
 
@@ -52,6 +63,9 @@ class MalumotModel extends MyTable {
       "curdate_str": curdate_str,
       "curtime_str": curtime_str,
       "notes": notes,
+      "summ": summ,
+      "summ_uzs": summ_uzs,
+      "cur_name": cur_name,
     };
   }
 
@@ -62,7 +76,18 @@ class MalumotModel extends MyTable {
     curdate_str = map['curdate_str']??"";
     curtime_str = map['curtime_str']??"";
     notes = map['notes']??"";
-    summ = map['summ']?? 0;
+    summ = Utils.checkDouble(map['summ']);
+    summ_uzs = Utils.checkDouble(map['summ_uzs']);
+    cur_name = map['cur_name']??"";
+  }
+
+  String getDocType(BuildContext context) {
+    if (doc_type == "order") return AppLocalizations.of(context).translate("dash_ord");
+    if (doc_type == "pay") return AppLocalizations.of(context).translate("dash_pay");
+
+    if (doc_type == "payme") return "Payme";
+    if (doc_type == "click") return "Click";
+    return "__";
   }
 
   @override

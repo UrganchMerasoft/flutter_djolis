@@ -12,6 +12,7 @@ class DicProd {
   late int coeff;
   late String brand;
   late double price;
+  late double cashbackProcent;
   late int rating;
   late int ratingOrders;
   late int isFamous;
@@ -29,6 +30,7 @@ class DicProd {
 
   late double orderQty;
   late double orderSumm;
+  late double cashbackSumm;
 
   String get getOrderQty {
     if (coeff == 1000) {
@@ -48,6 +50,7 @@ class DicProd {
     required this.coeff,
     required this.brand,
     required this.price,
+    required this.cashbackProcent,
     required this.rating,
     required this.ratingOrders,
     required this.isFamous,
@@ -78,6 +81,7 @@ class DicProd {
       coeff: json['coeff'] ?? 0,
       brand: json['brand'] ?? "?",
       price: json['price'] ?? 0.0,
+      cashbackProcent: json['cashbackProcent'] ?? 0.0,
       rating: json['rating'] ?? 0,
       ratingOrders: json['ratingOrders'] ?? 0,
       isFamous: json['isFamous'] ?? 0,
@@ -110,6 +114,7 @@ class DicProd {
     'coeff':coeff,
     'brand':brand,
     'price':price,
+    'cashbackProcent':cashbackProcent,
     'rating':rating,
     'ratingOrders':ratingOrders,
     'isFamous':isFamous,
@@ -140,6 +145,7 @@ class DicProd {
       "coeff":coeff,
       "brand":brand,
       "price":price,
+      "cashbackProcent":cashbackProcent,
       "rating":rating,
       "ratingOrders":ratingOrders,
       "isFamous":isFamous,
@@ -170,6 +176,7 @@ class DicProd {
     coeff = map['coeff'] ?? 0;
     brand = map['brand'] ?? "?";
     price = Utils.checkDouble(map['price']);
+    cashbackProcent = Utils.checkDouble(map['cashbackProcent']);
     rating = map['rating'] ?? 0;
     ratingOrders = map['ratingOrders'] ?? 0;
     isFamous = map['isFamous'] ?? 0;

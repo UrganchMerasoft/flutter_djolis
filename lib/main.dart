@@ -45,8 +45,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
     setInitialData(settings);
-    ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(94, 36, 66, 1)), fontFamily: "Inter");
-    ThemeData themeDataDark = FlexThemeData.dark(scheme: FlexScheme.custom, colorScheme: const ColorScheme.dark(brightness: Brightness.dark, primary: Color.fromRGBO(94, 36, 66, 1)), fontFamily: "Inter");
+    ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(120, 46, 76, 1)), fontFamily: "Inter");
+    ThemeData themeDataDark = FlexThemeData.dark(scheme: FlexScheme.custom, colorScheme: const ColorScheme.dark(brightness: Brightness.dark, primary: Color.fromRGBO(124, 46, 76, 1)), fontFamily: "Inter");
 
     ThemeData themeLight = themeDataLight.copyWith(textTheme: themeDataLight.textTheme.copyWith(
       displayLarge: themeDataLight.textTheme.displayLarge!.copyWith(letterSpacing: -0.2, fontFamily: "Inter"),

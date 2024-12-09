@@ -46,6 +46,7 @@ class _DashboardPageState extends State<DashboardPage> {
       final settings = Provider.of<MySettings>(context, listen: false);
       getAll(settings);
       refreshCart(settings);
+
       Timer.periodic(const Duration(seconds: 5), (timer) {
         if (_shimmer) {
           getAll(settings);
@@ -81,25 +82,30 @@ class _DashboardPageState extends State<DashboardPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         InfoContainer(
-                            text1: "${AppLocalizations.of(context).translate("cashback")}:",
-                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.cashBack.toDouble())
+                            text1: AppLocalizations.of(context).translate("cashback"),
+                            text2: Utils.myNumFormat(Utils.numFormat0, DataService.cashBack.toDouble()),
+                            text3: "сум",
+                            color: Colors.green
                         ),
                         const SizedBox(width: 10),
                         InfoContainer(
-                            text1: "${AppLocalizations.of(context).translate("debt")}:",
-                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble())
+                            text1: AppLocalizations.of(context).translate("debt"),
+                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble()),
+                            text3: "у.е",
+                            color: Colors.red
                         ),
                         const SizedBox(width: 10),
                         InfoContainer(
-                            text1: "${AppLocalizations.of(context).translate("credit_limit")}:",
-                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.creditLimit.toDouble())
+                            text1: AppLocalizations.of(context).translate("credit_limit"),
+                            text2: Utils.myNumFormat(Utils.numFormat0, DataService.creditLimit.toDouble()),
+                            text3: "у.е"
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              expandedHeight: 90,  // Adjust height as needed
+              expandedHeight: 102,  // Adjust height as needed
             ),
 
             SliverToBoxAdapter(
@@ -107,15 +113,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                    padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
                     child: Container(
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.grey.shade300,
-                      ),
-                        child:  Center(child: Text(AppLocalizations.of(context).translate("dash_pay"),style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16,),))),
+                      height: 20,
+                      child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17,),)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8),
@@ -163,7 +164,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               borderRadius: BorderRadius.all(Radius.circular(10)),
                             ),
                             child: const Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(16),
                               child: Image(image: AssetImage("assets/images/salary.png")),
                             ),
                           )
@@ -175,18 +176,19 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
 
+
+
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-                child: Container(
-                    height: 30,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.grey.shade300,
-                    ),
-                    child:  Center(child: Text(AppLocalizations.of(context).translate("dash_info"),style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16,)))),
+              child: Visibility(
+                visible: DataService.malumot.isNotEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
+                  child: Container(
+                      height: 20,
+                      child:  Text(AppLocalizations.of(context).translate("dash_info"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17,),)),
+                ),
               ),
+
             ),
 
             SliverList(
@@ -198,7 +200,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       }
                   return DataService.malumot.isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("list_empty")),) :Container(
                     margin: const EdgeInsets.all(8),
-                    height: 110,
+
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -206,35 +208,35 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Material(
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10, ),
+                        padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 10 ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 6),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(DataService.malumot[index].doc_type == "order" ? AppLocalizations.of(context).translate("dash_ord") : AppLocalizations.of(context).translate("dash_pay"), style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
-                                Text("${DataService.malumot[index].summ}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                Text(DataService.malumot[index].getDocType(context), style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text("${DataService.malumot[index].summ}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
+                                    SizedBox(height: 2),
+                                    Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey)),
+                                  ],
+                                )
                               ],
                             ),
-                             const SizedBox(height: 10),
-                             Visibility(
-                                visible: DataService.malumot[index].notes.isEmpty,
-                                child: const SizedBox(height: 25)),
-                            Visibility(
+                           const SizedBox(height: 4),
+                           Visibility(
                               visible: DataService.malumot[index].notes.isNotEmpty,
-                              child: SizedBox(
-                                height: 40,
-                                child: Text(DataService.malumot[index].notes, maxLines: 2),
-                              ),
+                              child: Text(DataService.malumot[index].notes, maxLines: 2),
                             ),
-                            const SizedBox(height: 5),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const SizedBox(width: 10,),
-                                Text(DataService.malumot[index].curtime_str, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+                                Expanded(child: Text("")),
+                                Text(DataService.malumot[index].curtime_str, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500)),
                               ],
                             ),
                           ],
@@ -271,6 +273,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: TextFormField(
               controller: clickController,
               keyboardType: const TextInputType.numberWithOptions(),
+              autofocus: true,
               decoration: InputDecoration(
                 isDense: true,
                 fillColor: Colors.grey.shade200,
@@ -338,6 +341,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: TextFormField(
               controller: paymeController,
               keyboardType: const TextInputType.numberWithOptions(),
+              autofocus: true,
               decoration: InputDecoration(
                 isDense: true,
                 fillColor: Colors.grey.shade200,
@@ -359,14 +363,14 @@ class _DashboardPageState extends State<DashboardPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: ()async{
-                    if(clickController.text.isEmpty){
+                    if (paymeController.text.isEmpty){
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(AppLocalizations.of(context).translate("enter_summ")),
                         backgroundColor: Colors.red.shade700,
                       ));
-                    }else{
+                    } else {
                       await newPayme(settings);
-                      launchUrl(Uri.parse(clickUrl));
+                      launchUrl(Uri.parse(paymeUrl));
                       paymeController.clear();
                       Navigator.pop(context);
                     }
@@ -390,7 +394,7 @@ class _DashboardPageState extends State<DashboardPage> {
     String device_name = (await Utils.getDeviceName())??"";
 
     _isLoading = true;
-    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/getall");
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/get-dash");
     Response? res;
     try {
       res = await post(
@@ -436,17 +440,17 @@ class _DashboardPageState extends State<DashboardPage> {
       return;
     }
 
+    print(data);
     if (data["ok"] == 1) {
-
-      grp = (data['d']["groups"] as List?)?.map((item) => DicGroups.fromMapObject(item)).toList() ?? [];
-      prods = (data['d']["prods"] as List?)?.map((item) => DicProd.fromMapObject(item)).toList() ?? [];
       DataService.malumot = (data['d']["malumot"] as List?)?.map((item) => MalumotModel.fromMapObject(item)).toList() ?? [];
 
       DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
 
-      settings.clientId = Utils.checkDouble(data['d']["settings"]["clientId"]).toInt();
+      setState(() {
+
+      });
 
       if(mounted){
         setState(() {
@@ -687,27 +691,32 @@ class _DashboardPageState extends State<DashboardPage> {
 class InfoContainer extends StatelessWidget {
   final String text1;
   final String text2;
+  final String text3;
+  final Color? color;
   const InfoContainer({
-    super.key,required this.text1, required this.text2,
+    super.key,required this.text1, required this.text2, required this.text3, this.color
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        height: 70,
+        height: 96,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 4, right: 4),
-              child: Text(maxLines: 1,text1, style: const TextStyle(fontWeight: FontWeight.w500)),
+              child: Text(text1, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 13)),
             ),
-            Text(text2, style: const TextStyle(fontWeight: FontWeight.w500)),
+            SizedBox(height: 4),
+            Text(text2, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: color)),
+            Text(text3, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
           ],
         ),
       ),

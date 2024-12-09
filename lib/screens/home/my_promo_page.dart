@@ -45,12 +45,11 @@ class _MyPromoState extends State<MyPromo> {
         centerTitle: true,
         title: Text(AppLocalizations.of(context).translate("my_discounts")),
       ),
-      body: Column(
-
+      body: promo.isEmpty ? Align(
+          alignment: Alignment.center,
+          child: Text(AppLocalizations.of(context).translate("no_promo"), style: const TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w400))) : Column(
         children: [
-          promo.isEmpty ? Align(
-              alignment: Alignment.center,
-              child: Text(AppLocalizations.of(context).translate("no_promo"), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400))) : Expanded(
+          Expanded(
             child: _isLoading ? Center(child: Container(
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.grey.shade300)),
               height: 105,

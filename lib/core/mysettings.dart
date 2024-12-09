@@ -25,6 +25,7 @@ class MySettings with ChangeNotifier {
   int mainDbId = 0;
   String login = "";
   String token = "";
+  double curRate = 1;
   int clientId = 0;
   String clientPhone = "";
   String clientName = "";
@@ -50,6 +51,14 @@ class MySettings with ChangeNotifier {
     double d = 0.0;
     for (var c in cartList) {
       d += c.summ;
+    }
+    return d;
+  }
+
+  double get itogCashbackSumm {
+    double d = 0.0;
+    for (var c in cartList) {
+      d += c.cashbackSumm;
     }
     return d;
   }
@@ -82,6 +91,7 @@ class MySettings with ChangeNotifier {
     language = prefs.getInt("language")??0;
     token = prefs.getString("token")??"";
     clientPhone = prefs.getString("clientPhone")??"";
+    curRate = prefs.getDouble("curRate")??1.0;
     clientId = prefs.getInt("clientId")??0;
     clientName = prefs.getString("clientName")??"";
     clientFio = prefs.getString("clientFio")??"";
@@ -116,6 +126,7 @@ class MySettings with ChangeNotifier {
     await prefs.setInt("language", language);
     await prefs.setString("token", token);
     await prefs.setString("clientPhone", clientPhone);
+    await prefs.setDouble("curRate", curRate);
     await prefs.setInt("clientId", clientId);
     await prefs.setString("clientName", clientName);
     await prefs.setString("clientFio", clientFio);

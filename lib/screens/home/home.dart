@@ -70,12 +70,19 @@ class _HomePageState extends State<HomePage> {
     refreshCart(settings);
 
     return PopScope(
-      canPop: _selectedGroupId == 0,
+      canPop: _selectedGroupId == 0&&_tabIndex == 0,
       onPopInvoked: (v) async {
         if (_selectedGroupId != 0) {
           _selectedGroupId = 0;
           _selectedGroupName = "";
           setState(() {});
+          return;
+        }
+        if (_tabIndex != 0) {
+          _tabIndex = 0;
+          setState(() {
+
+          });
           return;
         }
       },
@@ -152,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                   child: getVitrinaList(settings),
                 ),
               ),
-               getBody(settings),
+              getBody(settings),
                // _listTab == 1 ? getBody(settings) : getVitrinaList(settings),
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -251,23 +258,47 @@ class _HomePageState extends State<HomePage> {
                   child: Visibility(
                     visible: _tabIndex == 0 && settings.itogSumm > 0,
                     child: Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
+                      height: 68,
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
-                        color: Color.fromRGBO(94, 36, 66, 1),
+                        border: Border.all(color: Colors.grey.shade300, width: 2),
+                        color: Colors.grey.shade200,
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}",
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                                const SizedBox(height: 2),
+                                Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
+                                const SizedBox(height: 2),
+                                Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                              ],
                             ),
+                            // Text(
+                            //   "${AppLocalizations.of(context).translate("gl_summa")}: ${Utils.myNumFormat0(settings.itogSumm)}",
+                            //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            //     fontWeight: FontWeight.w600,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -462,8 +493,8 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           decoration: BoxDecoration(
                               //color: index % 2 == 0 ? (const Color(0xFFFFE9E8)) : null,
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey.shade300),
+                            color: grp[index].orderSumm > 0 ? Colors.orange.shade50 : Colors.white,
+                            border: Border.all(color: grp[index].orderSumm > 0 ? Colors.orange : Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
 
                           ),
@@ -582,7 +613,8 @@ class _HomePageState extends State<HomePage> {
                   visible: filteredProds[index].ostQty > 0,
                   child: Container(
                     margin: const EdgeInsets.only(top: 8),
-                    height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
+                    padding: EdgeInsets.fromLTRB(2, 2, 2, 12),
+                    //height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade300),
@@ -672,7 +704,7 @@ class _HomePageState extends State<HomePage> {
                                     ],
                                   ),
                                   Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
-                                  const SizedBox(height: 7),
+                                  Visibility(visible: filteredProds[index].orderQty != 0, child: const SizedBox(height: 7)),
                                   Visibility(
                                     visible: filteredProds[index].orderQty != 0,
                                     child: Row(
@@ -687,6 +719,8 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             const Icon(CupertinoIcons.tags, size: 15),
                                             const SizedBox(width: 5),
+                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: Text("( ${Utils.myNumFormat0(filteredProds[index].cashbackSumm)} )", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
+                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: SizedBox(width: 5)),
                                             Text("${Utils.myNumFormat0(filteredProds[index].orderSumm)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                                           ],
                                         ),
@@ -864,6 +898,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
 
+      settings.curRate = Utils.checkDouble(data['d']["settings"]["curRate"]);
       settings.clientId = Utils.checkDouble(data['d']["settings"]["clientId"]).toInt();
       settings.clientName = data['d']["settings"]["clientName"]??"";
       settings.clientFio = data['d']["settings"]["clientFio"]??"";
@@ -886,6 +921,7 @@ class _HomePageState extends State<HomePage> {
     for (var p in prods) {
       p.orderQty = 0;
       p.orderSumm = 0;
+      p.cashbackSumm = 0;
       p.ostVitrina = 0;
       p.savdoVitrina = 0;
       p.savdoVitrinaSumm = 0;
@@ -900,6 +936,7 @@ class _HomePageState extends State<HomePage> {
           c.prod = p;
           p.orderQty += c.qty;
           p.orderSumm += c.summ;
+          p.cashbackSumm += c.cashbackSumm;
         }
       }
     }
@@ -1067,7 +1104,8 @@ class _HomePageState extends State<HomePage> {
           }
           return Container(
             margin: const EdgeInsets.only(top: 8),
-            height: 120,
+            padding: EdgeInsets.fromLTRB(2, 2, 2, 12),
+            //height: 120,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: filteredProds[index].savdoVitrina != 0 ? Colors.orange : Colors.grey.shade300),
@@ -1148,7 +1186,7 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                           Visibility(visible: filteredProds[index].info.isNotEmpty, child: Text(filteredProds[index].info, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red))),
-                          const SizedBox(height: 7),
+                          Visibility(visible: filteredProds[index].savdoVitrina != 0||filteredProds[index].ostVitrina != 0, child: const SizedBox(height: 7)),
                           Visibility(
                             visible: filteredProds[index].savdoVitrina != 0||filteredProds[index].ostVitrina != 0,
                             child: Row(

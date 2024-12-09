@@ -29,7 +29,7 @@ class _CartPageState extends State<CartPage> {
   List<DicProd> filteredProds = DataService.prods.where((prod) => prod.hasVitrina == 1 || prod.prevOstVitrina != 0 || prod.ostVitrina != 0 || prod.savdoVitrina != 0).toList();
 
 
-  TextEditingController textEditingController = TextEditingController();
+  //TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,14 @@ class _CartPageState extends State<CartPage> {
                     borderRadius: BorderRadius.circular(6),
                     color: Theme.of(context).primaryColor,
                   ),
-                  child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),))),
+                  child: Center(child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),),
+                      SizedBox(width: 16),
+                      Text("( ${AppLocalizations.of(context).translate("cashback")} )", style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: Colors.green),)
+                    ],
+                  ))),
             ),
           ),
 
@@ -66,7 +73,7 @@ class _CartPageState extends State<CartPage> {
                   child: Center(
                     child: Text(
                       AppLocalizations.of(context).translate("list_empty"),
-                      style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -147,11 +154,7 @@ class _CartPageState extends State<CartPage> {
                                         child: Text(
                                             maxLines: 2,
                                             settings.cartList[index].prod!.name,
-                                            style: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .titleLarge!
-                                                .copyWith(fontSize: 16)
+                                            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)
                                         ),
                                       ),
                                     ],
@@ -166,25 +169,15 @@ class _CartPageState extends State<CartPage> {
                                   const SizedBox(height: 10),
                                   Row(
                                     children: [
-                                      Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.cartList[index].qty)}", style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(fontWeight: FontWeight.w700)),
-                                      Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.cartList[index].price)}", style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
+                                      Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.cartList[index].qty)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                      Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.cartList[index].price)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
                                       Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          const Icon(CupertinoIcons.tags, size: 15),
                                           const SizedBox(width: 5),
-                                          Text(Utils.myNumFormat0(settings.cartList[index].summ), style: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(fontWeight: FontWeight.w700)),
+                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: Text("( ${Utils.myNumFormat0(settings.cartList[index].cashbackSumm)} )", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
+                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: SizedBox(width: 5)),
+                                          Text(Utils.myNumFormat0(settings.cartList[index].summ), style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800)),
                                         ],
                                       ),
                                     ],
@@ -233,7 +226,7 @@ class _CartPageState extends State<CartPage> {
                   child: Center(
                     child: Text(
                       AppLocalizations.of(context).translate("list_empty"),
-                      style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -371,31 +364,31 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
 
-          SliverToBoxAdapter(
-            child: Visibility(
-              visible: settings.cartList.isNotEmpty,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
-                child: SizedBox(
-                  height: 56,
-                  child: TextField(
-                    controller: textEditingController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Color(0xFFB29696)),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      fillColor: Theme
-                          .of(context)
-                          .brightness == Brightness.dark ? null : Colors.white,
-                      isDense: true,
-                      labelText: AppLocalizations.of(context).translate("press_for_notes"),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // SliverToBoxAdapter(
+          //   child: Visibility(
+          //     visible: settings.cartList.isNotEmpty,
+          //     child: Padding(
+          //       padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
+          //       child: SizedBox(
+          //         height: 56,
+          //         child: TextField(
+          //           controller: textEditingController,
+          //           decoration: InputDecoration(
+          //             border: OutlineInputBorder(
+          //               borderSide: const BorderSide(color: Color(0xFFB29696)),
+          //               borderRadius: BorderRadius.circular(10),
+          //             ),
+          //             fillColor: Theme
+          //                 .of(context)
+          //                 .brightness == Brightness.dark ? null : Colors.white,
+          //             isDense: true,
+          //             labelText: AppLocalizations.of(context).translate("press_for_notes"),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(settings),
@@ -408,7 +401,7 @@ class _CartPageState extends State<CartPage> {
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 2, top: 4),
         child: SizedBox(
-          height: 70,
+          height: 78,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -416,17 +409,23 @@ class _CartPageState extends State<CartPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)}", style: Theme
+                  Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme
                       .of(context)
                       .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 4),
-                  Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)}", style: Theme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
                       .of(context)
                       .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.w600)),
+                      .bodyMedium
+                      ?.copyWith(color: Colors.green, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w600)),
                 ],
               ),
               ElevatedButton(
@@ -450,40 +449,14 @@ class _CartPageState extends State<CartPage> {
   }
 
   void deleteCart(MySettings settings, CartModel cartList, int index) {
-    textEditingController.text = "";
+    //textEditingController.text = "";
     settings.cartList.removeAt(index);
     settings.saveAndNotify();
     widget.refreshCart(settings);
-
-    //Dialog шартмас
-    // final action = CupertinoActionSheet(
-    //   message:  Text("${AppLocalizations.of(context).translate("gl_delete")}?", style: const TextStyle(fontSize: 15.0)),
-    //   actions: <Widget>[
-    //     CupertinoActionSheetAction(
-    //       isDefaultAction: true,
-    //       isDestructiveAction: true,
-    //       onPressed: () async {
-    //         textEditingController.text = "";
-    //         Navigator.pop(context);
-    //         settings.cartList.removeAt(index);
-    //         settings.saveAndNotify();
-    //         widget.refreshCart(settings);
-    //       },
-    //       child: Text(AppLocalizations.of(context).translate("gl_delete")),
-    //     ),
-    //   ],
-    //   cancelButton: CupertinoActionSheetAction(
-    //     child: Text(AppLocalizations.of(context).translate("gl_cancel")),
-    //     onPressed: () {
-    //       Navigator.pop(context);
-    //     },
-    //   ),
-    // );
-    // showCupertinoModalPopup(context: context, builder: (context) => action);
   }
 
   void deleteVitrinaList(MySettings settings, VitrinaModel vitrinaList, int index) {
-    textEditingController.text = "";
+    //textEditingController.text = "";
     settings.vitrinaList.removeAt(index);
     settings.saveAndNotify();
     widget.refreshCart(settings);
@@ -508,7 +481,7 @@ class _CartPageState extends State<CartPage> {
                     "Authorization": "Bearer ${settings.token}",
                   },
                   body: jsonEncode({
-                    "notes": textEditingController.text,
+                    //"notes": textEditingController.text,
                     "clientId": settings.clientId,
                     "itogSumm": settings.itogSumm,
                     "list": settings.cartList})
@@ -529,7 +502,7 @@ class _CartPageState extends State<CartPage> {
               }
 
               if (data["ok"] == 1) {
-                textEditingController.text = "";
+                //textEditingController.text = "";
                 settings.cartList.clear();
                 settings.saveAndNotify();
                 showSuccessInfo(settings);

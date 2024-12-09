@@ -9,12 +9,16 @@ class CartModel extends MyTable {
   late double qty;
   late double price;
   late double summ;
+  late double cashbackProcent;
+  late double cashbackSumm;
 
   CartModel({
     required this.prodId,
     required this.qty,
     required this.price,
     required this.summ,
+    required this.cashbackProcent,
+    required this.cashbackSumm,
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class CartModel extends MyTable {
       qty: json['qty'],
       price: json['price'],
       summ: json['summ'],
+      cashbackProcent: json.containsKey("cashbackProcent") ? json['cashbackProcent'] : 0,
+      cashbackSumm: json.containsKey("cashbackSumm") ? json['cashbackSumm'] : 0
     );
   }
 
@@ -33,6 +39,8 @@ class CartModel extends MyTable {
     map['qty'] = qty;
     map['price'] = price;
     map['summ'] = summ;
+    map['cashbackProcent'] = cashbackProcent;
+    map['cashbackSumm'] = cashbackSumm;
     return map;
   }
 
@@ -42,6 +50,8 @@ class CartModel extends MyTable {
       "qty": qty,
       "price": price,
       "summ": summ,
+      "cashbackProcent": cashbackProcent,
+      "cashbackSumm": cashbackSumm,
     };
   }
 
@@ -51,6 +61,8 @@ class CartModel extends MyTable {
     qty = map['qty']??0.0;
     price = map['price']??0.0;
     summ = map['summ']??0.0;
+    cashbackProcent = map['cashbackProcent']??0.0;
+    cashbackSumm = map['cashbackSumm']??0.0;
   }
 
   @override

@@ -41,9 +41,9 @@ class _ProfilePageState extends State<ProfilePage> {
                        mainAxisAlignment: MainAxisAlignment.start,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(AppLocalizations.of(context).translate("profile_shop_name"),style: TextStyle(color: Colors.grey.shade600)),
-                         const SizedBox(height: 8),
-                         Text(widget.settings.clientId.toString() + " - " + widget.settings.clientName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                         Text(AppLocalizations.of(context).translate("profile_shop_name"), style: Theme.of(context).textTheme.bodySmall),
+                         const SizedBox(height: 4),
+                         Text(widget.settings.clientId.toString() + " - " + widget.settings.clientName, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
                    ),),
@@ -54,9 +54,9 @@ class _ProfilePageState extends State<ProfilePage> {
                        mainAxisAlignment: MainAxisAlignment.start,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(AppLocalizations.of(context).translate("profile_address"),style: TextStyle(color: Colors.grey.shade600)),
-                         const SizedBox(height: 8),
-                         Text(widget.settings.clientAddress, style: const  TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                         Text(AppLocalizations.of(context).translate("profile_address"),style: Theme.of(context).textTheme.bodySmall),
+                         const SizedBox(height: 4),
+                         Text(widget.settings.clientAddress, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
                    ),),
@@ -67,9 +67,9 @@ class _ProfilePageState extends State<ProfilePage> {
                        mainAxisAlignment: MainAxisAlignment.start,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(AppLocalizations.of(context).translate("profile_phone"),style: TextStyle(color: Colors.grey.shade600)),
-                         const SizedBox(height: 8),
-                         Text(widget.settings.clientPhone, style: const  TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                         Text(AppLocalizations.of(context).translate("profile_phone"),style: Theme.of(context).textTheme.bodySmall),
+                         const SizedBox(height: 4),
+                         Text(widget.settings.clientPhone, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
                    ),),
@@ -80,9 +80,9 @@ class _ProfilePageState extends State<ProfilePage> {
                        mainAxisAlignment: MainAxisAlignment.start,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(AppLocalizations.of(context).translate("profile_fio"),style: TextStyle(color: Colors.grey.shade600)),
-                         const SizedBox(height: 8),
-                         Text(widget.settings.clientFio, style: const  TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                         Text(AppLocalizations.of(context).translate("profile_fio"),style: Theme.of(context).textTheme.bodySmall),
+                         const SizedBox(height: 4),
+                         Text(widget.settings.clientFio, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
                    ),),
@@ -93,9 +93,9 @@ class _ProfilePageState extends State<ProfilePage> {
                        mainAxisAlignment: MainAxisAlignment.start,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(AppLocalizations.of(context).translate("profile_base_name"),style: TextStyle(color: Colors.grey.shade600)),
-                         const SizedBox(height: 8),
-                         Text(settings.baseName + " " + settings.basePhone, style: const  TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                         Text(AppLocalizations.of(context).translate("profile_base_name"),style: Theme.of(context).textTheme.bodySmall),
+                         const SizedBox(height: 4),
+                         Text(settings.baseName + " " + settings.basePhone, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
                    ),),
@@ -129,6 +129,8 @@ class _ProfilePageState extends State<ProfilePage> {
                          mainAxisAlignment: MainAxisAlignment.start,
                          crossAxisAlignment: CrossAxisAlignment.center,
                          children: [
+                           const Icon(Icons.card_giftcard),
+                           const SizedBox(width: 5),
                            Expanded(child: Text(AppLocalizations.of(context).translate("my_discounts"), style: Theme.of(context).textTheme.titleSmall)),
                            const Icon(Icons.chevron_right)
                          ],
@@ -146,6 +148,8 @@ class _ProfilePageState extends State<ProfilePage> {
                          mainAxisAlignment: MainAxisAlignment.start,
                          crossAxisAlignment: CrossAxisAlignment.center,
                          children: [
+                           const Icon(Icons.reorder_sharp),
+                           const SizedBox(width: 5),
                            Expanded(child: Text(AppLocalizations.of(context).translate("profile_open_orders"), style: Theme.of(context).textTheme.titleSmall)),
                            const Icon(Icons.chevron_right)
                          ],
