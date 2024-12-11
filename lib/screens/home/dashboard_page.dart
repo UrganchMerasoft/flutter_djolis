@@ -8,6 +8,7 @@ import 'package:flutter_djolis/models/new_click_model.dart';
 import 'package:flutter_djolis/models/new_payme_model.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,7 +38,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
   TextEditingController clickController = TextEditingController();
   TextEditingController paymeController = TextEditingController();
-
+  TextEditingController dateController = TextEditingController();
+  TextEditingController cashController = TextEditingController();
+  TextEditingController notesController = TextEditingController();
+  late DateTime date1;
 
   @override
   void initState() {
@@ -46,7 +50,6 @@ class _DashboardPageState extends State<DashboardPage> {
       final settings = Provider.of<MySettings>(context, listen: false);
       getAll(settings);
       refreshCart(settings);
-
       Timer.periodic(const Duration(seconds: 5), (timer) {
         if (_shimmer) {
           getAll(settings);
@@ -116,7 +119,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
                     child: Container(
                       height: 20,
-                      child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17,),)),
+                      child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8),
@@ -155,7 +158,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           )
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            cashDialog(context, settings);
+                          },
                           child:  Container(
                             height: 70,
                             width: 110,
@@ -270,20 +275,52 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: TextFormField(
-              controller: clickController,
-              keyboardType: const TextInputType.numberWithOptions(),
-              autofocus: true,
-              decoration: InputDecoration(
-                isDense: true,
-                fillColor: Colors.grey.shade200,
-                errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
-                labelText: AppLocalizations.of(context).translate("enter_summ"),
-                focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: TextFormField(
+                    controller: clickController,
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      fillColor: Colors.grey.shade200,
+                      errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                      labelText: AppLocalizations.of(context).translate("enter_summ"),
+                      focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                      border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                      enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  flex: 2,
+                  child: InkWell(
+                    onTap: ()async{
+                      if(clickController.text.isEmpty){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                      }else if(double.parse(clickController.text) <= 1999){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_more_summ"));
+                      } else{
+                        await newClick(settings);
+                        await Share.share("Click link: $clickUrl");
+                      }
+                    },
+                    child: Container(
+                      height: 52,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade500),
+                        color: Colors.grey.shade200,
+                      ),
+                      child: const Icon(Icons.share_outlined),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -296,10 +333,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 onPressed: ()async{
                   if(clickController.text.isEmpty){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(AppLocalizations.of(context).translate("enter_summ")),
-                      backgroundColor: Colors.red.shade700,
-                    ));
+                    showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
                   }else{
                     await newClick(settings);
                     launchUrl(Uri.parse(clickUrl));
@@ -338,20 +372,52 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: TextFormField(
-              controller: paymeController,
-              keyboardType: const TextInputType.numberWithOptions(),
-              autofocus: true,
-              decoration: InputDecoration(
-                isDense: true,
-                fillColor: Colors.grey.shade200,
-                errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
-                labelText: AppLocalizations.of(context).translate("enter_summ"),
-                focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: TextFormField(
+                    controller: paymeController,
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      fillColor: Colors.grey.shade200,
+                      errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                      labelText: AppLocalizations.of(context).translate("enter_summ"),
+                      focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                      border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                      enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  flex: 2,
+                  child: InkWell(
+                    onTap: ()async{
+                      if(paymeController.text.isEmpty){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                      }else if(double.parse(paymeController.text) <= 1999){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_more_summ"));
+                      } else{
+                        await newPayme(settings);
+                        await Share.share("Payme link: $paymeUrl");
+                      }
+                    },
+                    child: Container(
+                      height: 52,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade500),
+                        color: Colors.grey.shade200,
+                      ),
+                      child: const Icon(Icons.share_outlined),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -364,10 +430,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   onPressed: ()async{
                     if (paymeController.text.isEmpty){
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(AppLocalizations.of(context).translate("enter_summ")),
-                        backgroundColor: Colors.red.shade700,
-                      ));
+                      showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
                     } else {
                       await newPayme(settings);
                       launchUrl(Uri.parse(paymeUrl));
@@ -382,6 +445,105 @@ class _DashboardPageState extends State<DashboardPage> {
                   Icon(Icons.chevron_right),
                 ],
               ))
+          ),
+        ],
+      ),
+    ],
+  ));
+
+  void cashDialog(BuildContext context, MySettings settings) => showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+    titlePadding: const EdgeInsets.only(top: 15, right: 5),
+    title: Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        Center(child: Text(AppLocalizations.of(context).translate("cash_payment"))),
+        IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: const Icon(Icons.cancel)),
+        const SizedBox(width: 10),
+      ],
+    ),
+    actions: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: TextFormField(
+              controller: dateController,
+              readOnly: true,
+              onTap: () async{
+                await _selectDate(context, settings);
+              },
+              decoration: InputDecoration(
+                suffixIcon: const Icon(Icons.calendar_month),
+                isDense: true,
+                fillColor: Colors.grey.shade200,
+                errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                labelText: AppLocalizations.of(context).translate("enter_date"),
+                focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: TextFormField(
+              controller: cashController,
+              keyboardType: const TextInputType.numberWithOptions(),
+              decoration: InputDecoration(
+                suffixIcon: const Icon(Icons.money),
+                isDense: true, 
+                fillColor: Colors.grey.shade200,
+                errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                labelText: AppLocalizations.of(context).translate("enter_summ"),
+                focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: TextFormField(
+              controller: notesController,
+              decoration: InputDecoration(
+                suffixIcon: const Icon(Icons.note_alt_sharp),
+                isDense: true,
+                fillColor: Colors.grey.shade200,
+                errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                labelText: AppLocalizations.of(context).translate("akt_sverka_notes"),
+                focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(MediaQuery.of(context).size.width, 50),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: ()async{
+                    if (cashController.text.isEmpty){
+                      showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                    } else if(dateController.text.isEmpty){
+                      showRedSnackBar(AppLocalizations.of(context).translate("enter_date"));
+                    } else {
+                      await newCashPay(settings);
+                      dateController.clear();
+                      cashController.clear();
+                      notesController.clear();
+                      Navigator.pop(context);
+                    }
+                  }, child: Text(AppLocalizations.of(context).translate("dash_do_pay")))
           ),
         ],
       ),
@@ -568,17 +730,76 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (data == null || data["ok"] != 1) {
       if (kDebugMode) {
-        debugPrint("newClick Error 2 data null or data['ok] != 1 ");
+        debugPrint("newPayme Error 2 data null or data['ok] != 1 ");
       }
       return;
     }
 
     if (data["ok"] == 1) {
       paymeList = [NewPaymeModel.fromJson(data['d'])];
-      debugPrint("new-click: $paymeList");
+      debugPrint("new-payme: $paymeList");
       for (var paymeModel in paymeList) {
         paymeUrl = paymeModel.url;
       }
+    }
+  }
+
+  Future<void> newCashPay(MySettings settings) async {
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName())??"";
+
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-pay");
+    Response? res;
+    try {
+      res = await post(
+          uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            "lang": settings.locale.languageCode,
+            "fcm_token": fcmToken,
+            "phone": settings.clientPhone,
+            "device_name": device_name,
+            "Authorization": "Bearer ${settings.token}",
+          },
+          body: jsonEncode({
+            "curdate_mysql": Utils.myDateFormat(Utils.formatYYYYMMdd, date1),
+            "client_id": settings.clientId,
+            "summ": Utils.checkDouble(cashController.text),
+            "notes": notesController.text
+          })
+      );
+      print("Res\n\n\n${res.body}\n\n\n");
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("\n\n\nnewCashPay Error 1 data null or data['ok'] != 1 !\n\n\n");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      if (kDebugMode) {
+        debugPrint("\n\n\nnewCashPay Error 2 data null or data['ok'] != 1\n\n\n");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+     debugPrint("\n\n\nnew-pay ok = 1 success!\n\n\n");
     }
   }
 
@@ -684,6 +905,25 @@ class _DashboardPageState extends State<DashboardPage> {
         }
       }
     }
+  }
+
+  Future<void> _selectDate(BuildContext context, MySettings settings) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        date1 = pickedDate;
+        dateController.text = Utils.myDateFormat(Utils.formatDDMMYYY, date1);
+      });
+    }
+  }
+
+  void showRedSnackBar(String msg){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700));
   }
 
 }

@@ -45,10 +45,12 @@ dependencies:
   sms_autodetect: ^1.1.0
   qr_flutter: ^4.1.0
   easy_image_viewer: ^1.5.1
+  share_plus: ^10.1.2
 
 
   flutter_localizations:
     sdk: flutter
+
 
 
 

@@ -43,6 +43,7 @@
   "dash_info":"Informations",
 
   "enter_summ": "Enter amount",
+  "enter_more_summ": "Enter more than 2,000 soums!",
 
   "gl_cannot_empty": "Cannot be empty",
   "gl_prev": "Prev",
@@ -167,6 +168,8 @@
   "debt": "Debt",
   "cashback": "Cashback",
   "credit_limit": "Credit limit",
-  "add_product": "Please add a product"
+  "add_product": "Please add a product",
+  "cash_payment":"Cash payment",
+  "enter_date":"Select date"
 
 }

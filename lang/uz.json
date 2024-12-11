@@ -41,6 +41,7 @@
   "dash_do_pay": "To'lash",
 
   "enter_summ": "Summani kiriting",
+  "enter_more_summ": "2 000 so'mdan katta mablag' kiriting!",
 
 
   "vitrina": "Vitrina",
@@ -165,6 +166,8 @@
   "debt": "Qarz",
   "cashback": "Keshbek",
   "credit_limit": "Kredit limiti",
-  "add_product": "Iltimos, mahsulot qo'shing"
+  "add_product": "Iltimos, mahsulot qo'shing",
+  "cash_payment": "Naxt to'lov",
+  "enter_date":"Sanani tanlang"
 
 }
