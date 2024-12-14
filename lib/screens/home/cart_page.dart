@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/vitrina.dart';
+import 'package:flutter_djolis/screens/home/send_ord_page.dart';
 import 'package:flutter_djolis/services/data_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_djolis/app_localizations.dart';
@@ -440,7 +441,8 @@ class _CartPageState extends State<CartPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: settings.cartList.isEmpty ? null : () {
-                    sendOrder(settings);
+                    // sendOrder(settings);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SendOrdPage()));
                   },
                   child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme
                       .of(context)
@@ -470,77 +472,6 @@ class _CartPageState extends State<CartPage> {
     widget.refreshCart(settings);
 }
 
-  void sendOrder(MySettings settings) {
-    final action = CupertinoActionSheet(
-      message: Text("${AppLocalizations.of(context).translate("sent_order")}?\n${AppLocalizations.of(context).translate("summ_for_payment")} " + Utils.myNumFormat0(settings.itogSumm), style: TextStyle(fontSize: 15.0)),
-      actions: <Widget>[
-        CupertinoActionSheetAction(
-          isDefaultAction: true,
-          isDestructiveAction: true,
-          onPressed: () async {
-            try {
-              Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/send-order");
-              Response res = await post(
-                  uri,
-                  headers: <String, String>{
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    "lang": settings.locale.languageCode,
-                    "phone": settings.clientPhone,
-                    "Authorization": "Bearer ${settings.token}",
-                  },
-                  body: jsonEncode({
-                    "notes": "", //textEditingController.text,
-                    "clientId": settings.clientId,
-                    "itogSumm": settings.itogSumm,
-                    "itogVitrinaSumm": settings.itogVitrinaSumm,
-                    "cashbackSumm": settings.itogCashbackSumm,
-                    "list": settings.cartList,
-                    "vitrina": settings.vitrinaList})
-              );
-
-              Map? data;
-              try {
-                data = jsonDecode(res.body);
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
-                }
-                return;
-              }
-
-              if (data == null || data["ok"] != 1) {
-                return;
-              }
-
-              if (data["ok"] == 1) {
-                //textEditingController.text = "";
-                settings.cartList.clear();
-                settings.vitrinaList.clear();
-                settings.saveAndNotify();
-                showSuccessInfo(settings);
-              } else {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("error"))));
-                }
-              }
-            } catch(e) {
-            } finally {
-              Navigator.pop(context);
-            }
-
-          },
-          child:  Text(AppLocalizations.of(context).translate("gl_send")),
-        ),
-      ],
-      cancelButton: CupertinoActionSheetAction(
-        child: Text(AppLocalizations.of(context).translate("gl_cancel")),
-        onPressed: () async {
-          Navigator.pop(context);
-        },
-      ),
-    );
-    showCupertinoModalPopup(context: context, builder: (context) => action);
-  }
 
   void showSuccessInfo(MySettings settings) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))));

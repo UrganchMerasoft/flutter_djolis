@@ -157,6 +157,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: const Image(image: AssetImage("assets/images/click.png")),
                           )
                         ),
+
                         InkWell(
                           onTap: () {
                             cashDialog(context, settings);
@@ -910,8 +911,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _selectDate(BuildContext context, MySettings settings) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      initialDate: DateTime.now().add(Duration(days: 1)),
+      firstDate: DateTime.now().add(Duration(days: 1)),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -954,7 +955,7 @@ class InfoContainer extends StatelessWidget {
               padding: const EdgeInsets.only(left: 4, right: 4),
               child: Text(text1, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 13)),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(text2, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: color)),
             Text(text3, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
           ],

@@ -120,7 +120,7 @@
   "akt_sverka_pay_bank": "Bank payment",
   "akt_sverka_pay_plas": "Card payment",
   "akt_sverka_none": "Other",
-  "akt_sverka_notes": "Note",
+  "akt_sverka_notes": "Write a comment about the order",
   "akt_sverka_watch": "View",
   "akt_sverka_from": "Date from",
   "akt_sverka_to": "Date to",
@@ -166,10 +166,17 @@
   "more_info": "More info",
 
   "debt": "Debt",
+  "in_debt": "In debt",
   "cashback": "Cashback",
   "credit_limit": "Credit limit",
   "add_product": "Please add a product",
   "cash_payment":"Cash payment",
-  "enter_date":"Select date"
-
+  "enter_date":"Select date",
+  "inv_type": "Select payment method!",
+  "pay_on_delivery": "Pay on delivery",
+  "pay_by_cashback": "Pay with cashback",
+  "cashback_warning": "Cashback is calculated in case of 100% payment",
+  "verify_ord": "Ordering",
+  "comment": "Comment",
+  "debt_notes": "Note..."
 }

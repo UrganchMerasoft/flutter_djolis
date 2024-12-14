@@ -121,7 +121,7 @@
   "akt_sverka_pay_bank": "Оплата банк",
   "akt_sverka_pay_plas": "Оплата пластик",
   "akt_sverka_none": "Прочие",
-  "akt_sverka_notes": "Примечание",
+  "akt_sverka_notes": "Напишите комментарий к заказу",
   "akt_sverka_watch": "Просмотр",
   "akt_sverka_from": "Дата с",
   "akt_sverka_to": "Дата по",
@@ -169,12 +169,17 @@
   "more_info": "Подробнее",
 
   "debt": "Долг",
+  "in_debt": "В долги",
   "cashback": "Кэшбэк",
   "credit_limit": "Кредит лимит",
   "add_product": "Пожалуйста, добавьте продукт",
   "cash_payment": "Оплата наличным",
-  "enter_date":"Выберите дату"
-
-
-
+  "enter_date":"Выберите дату",
+  "inv_type": "Выберите способ оплаты!",
+  "pay_on_delivery": "Оплатить при доставке",
+  "pay_by_cashback": "Оплатить с кешбэком",
+  "cashback_warning": "Кешбэк начисляется при 100% оплате",
+  "verify_ord": "Оформить заказ",
+  "comment": "Комментария",
+  "debt_notes": "Примечание..."
 }

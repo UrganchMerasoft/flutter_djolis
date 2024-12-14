@@ -118,7 +118,7 @@
   "akt_sverka_cashback": "Cashback",
   "akt_sverka_pay": "To'lov",
   "akt_sverka_none": "Boshqa",
-  "akt_sverka_notes": "Izoh",
+  "akt_sverka_notes": "Buyurtma haqida izoh yozing",
   "akt_sverka_watch": "Yangilash",
   "akt_sverka_from": "Sana ..dan",
   "akt_sverka_to": "Sana ..gacha",
@@ -164,10 +164,17 @@
   "more_info": "Batafsil",
 
   "debt": "Qarz",
+  "in_debt": "Qarzga",
   "cashback": "Keshbek",
   "credit_limit": "Kredit limiti",
   "add_product": "Iltimos, mahsulot qo'shing",
   "cash_payment": "Naxt to'lov",
-  "enter_date":"Sanani tanlang"
-
+  "enter_date":"Sanani tanlang",
+  "inv_type": "To'lov usulini tanlang!",
+  "pay_on_delivery": "Yetkazib berishda to‘lash",
+  "pay_by_cashback": "Keshbek orqali to'lash",
+  "cashback_warning": "100% to'lov bo'lgan holatda keshbek hisoblanadi",
+  "verify_ord": "Buyurtmani tasdiqlash",
+  "comment": "Kommentariya",
+  "debt_notes": "Izoh..."
 }
