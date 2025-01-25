@@ -22,16 +22,16 @@ class _PayQRPageState extends State<PayQRPage> {
       body: SafeArea(child: Padding(padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            SizedBox(height: 32,),
+            const SizedBox(height: 32,),
             Text(widget.card.card_num, style: Theme.of(context).textTheme.titleLarge,),
-            SizedBox(height: 16,),
+            const SizedBox(height: 16,),
             Center(
               child: QrImageView(
                 data: widget.qr,
                 version: QrVersions.auto,
                 size: 200.0,
               ),),
-            SizedBox(height: 16,),
+            const SizedBox(height: 16,),
             Text(widget.card.name, style: Theme.of(context).textTheme.titleLarge,),
           ],
         ),),),

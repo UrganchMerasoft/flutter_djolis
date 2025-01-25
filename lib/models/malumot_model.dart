@@ -87,7 +87,7 @@ class MalumotModel extends MyTable {
 
     if (doc_type == "payme") return "Payme";
     if (doc_type == "click") return "Click";
-    return "__";
+    return AppLocalizations.of(context).translate("vitrina");
   }
 
   @override

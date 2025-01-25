@@ -32,12 +32,14 @@ class _DashboardPageState extends State<DashboardPage> {
   bool _isLoading = false;
   String clickUrl = "";
   String paymeUrl = "";
+  String networkUrl = "";
   List<NewPaymeModel> paymeList = [];
   List<DicGroups> grp = [];
   List<DicProd> prods = [];
 
   TextEditingController clickController = TextEditingController();
   TextEditingController paymeController = TextEditingController();
+  TextEditingController networkController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController cashController = TextEditingController();
   TextEditingController notesController = TextEditingController();
@@ -112,73 +114,115 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
 
             SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
-                    child: Container(
-                      height: 20,
-                      child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            paymeDialog(context, settings);
-                          },
-                          child: Container(
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            height: 70,
-                            width: 110,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: const Image(image: AssetImage("assets/images/img.png")),
-                          )
-                        ),
-
-                        InkWell(
-                          onTap: () {
-                            clickDialog(context, settings);
-                          },
-                          child:  Container(
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            height: 70,
-                            width: 110,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: const Image(image: AssetImage("assets/images/click.png")),
-                          )
-                        ),
-
-                        InkWell(
-                          onTap: () {
-                            cashDialog(context, settings);
-                          },
-                          child:  Container(
-                            height: 70,
-                            width: 110,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Image(image: AssetImage("assets/images/salary.png")),
-                            ),
-                          )
-                        ),
-                      ],
+              child: Visibility(
+                visible: settings.clientPhone != "+998977406675",
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
+                      child: Container(
+                        height: 20,
+                        child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: settings.clientPhone.startsWith("+971")
+                          ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              networkPayDialog(context, settings);
+                            },
+                            child: Container(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              height: 70,
+                              width: 170,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                              ),
+                              child: const Image(image: AssetImage("assets/images/logo-network.png")),
+                            )
+                          ),
+
+                          InkWell(
+                            onTap: () {
+                              cashDialog(context, settings);
+                            },
+                            child:  Container(
+                              height: 70,
+                              width: 170,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Image(image: AssetImage("assets/images/salary.png")),
+                              ),
+                            )
+                          ),
+                        ],
+                      )
+                          :Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                paymeDialog(context, settings);
+                              },
+                              child: Container(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Image(image: AssetImage("assets/images/img.png")),
+                              )
+                          ),
+
+                          InkWell(
+                              onTap: () {
+                                clickDialog(context, settings);
+                              },
+                              child:  Container(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Image(image: AssetImage("assets/images/click.png")),
+                              )
+                          ),
+
+                          InkWell(
+                              onTap: () {
+                                cashDialog(context, settings);
+                              },
+                              child:  Container(
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Image(image: AssetImage("assets/images/salary.png")),
+                                ),
+                              )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -186,7 +230,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             SliverToBoxAdapter(
               child: Visibility(
-                visible: DataService.malumot.isNotEmpty,
+                visible: DataService.malumot.isEmpty,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
                   child: Container(
@@ -197,7 +241,29 @@ class _DashboardPageState extends State<DashboardPage> {
 
             ),
 
-            SliverList(
+            DataService.malumot.isEmpty
+                ? SliverToBoxAdapter(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        AppLocalizations.of(context).translate("list_empty"),
+                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+                : SliverList(
                 key: const PageStorageKey<String>('controllerA'),
                 delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
@@ -337,7 +403,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
                   }else{
                     await newClick(settings);
-                    launchUrl(Uri.parse(clickUrl));
+                    launchUrl(Uri.parse(clickUrl), mode: LaunchMode.externalApplication);
                     clickController.clear();
                     Navigator.pop(context);
                   }
@@ -434,7 +500,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
                     } else {
                       await newPayme(settings);
-                      launchUrl(Uri.parse(paymeUrl));
+                      launchUrl(Uri.parse(paymeUrl), mode: LaunchMode.externalApplication);
                       paymeController.clear();
                       Navigator.pop(context);
                     }
@@ -443,7 +509,104 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   const SizedBox(width: 10),
                   Text(AppLocalizations.of(context).translate("dash_do_pay")),
-                  Icon(Icons.chevron_right),
+                  const Icon(Icons.chevron_right),
+                ],
+              ))
+          ),
+        ],
+      ),
+    ],
+  ));
+
+  void networkPayDialog(BuildContext context, MySettings settings) => showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+    titlePadding: EdgeInsets.zero,
+    title: Stack(
+      alignment: Alignment.topRight,
+      children: [
+        const Center(child: Image(image: AssetImage("assets/images/logo-network.png"), width: 250)),
+        IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: const Icon(Icons.cancel)),
+        const SizedBox(width: 20),
+      ],
+    ),
+    actions: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: TextFormField(
+                    controller: networkController,
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      fillColor: Colors.grey.shade200,
+                      errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                      labelText: AppLocalizations.of(context).translate("enter_summ"),
+                      focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                      border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                      enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  flex: 2,
+                  child: InkWell(
+                    onTap: ()async{
+                      if(networkController.text.isEmpty){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                      }else if(double.parse(networkController.text) <= 50){
+                        showRedSnackBar(AppLocalizations.of(context).translate("enter_more_summ"));
+                      } else{
+                        await networkPayment(settings);
+                        await Share.share("network link: $networkUrl");
+                      }
+                    },
+                    child: Container(
+                      height: 52,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade500),
+                        color: Colors.grey.shade200,
+                      ),
+                      child: const Icon(Icons.share_outlined),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(MediaQuery.of(context).size.width, 50),
+                    backgroundColor: const Color.fromRGBO(40, 105, 172, 1),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: ()async{
+                    if (networkController.text.isEmpty){
+                      showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                    } else {
+                      await networkPayment(settings);
+                      launchUrl(Uri.parse(networkUrl), mode: LaunchMode.externalApplication);
+                      networkController.clear();
+                      Navigator.pop(context);
+                    }
+                  }, child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 10),
+                  Text(AppLocalizations.of(context).translate("dash_do_pay")),
+                  const Icon(Icons.chevron_right),
                 ],
               ))
           ),
@@ -611,10 +774,6 @@ class _DashboardPageState extends State<DashboardPage> {
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
 
-      setState(() {
-
-      });
-
       if(mounted){
         setState(() {
           _isLoading = false;
@@ -743,6 +902,63 @@ class _DashboardPageState extends State<DashboardPage> {
         paymeUrl = paymeModel.url;
       }
     }
+  }
+
+  Future<void> networkPayment(MySettings settings) async {
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName()) ?? "";
+
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-ngenius");
+    Response? res;
+    try {
+      res = await post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "lang": settings.locale.languageCode,
+          "fcm_token": fcmToken,
+          "phone": settings.clientPhone,
+          "device_name": device_name,
+          "Authorization": "Bearer ${settings.token}",
+        },
+        body: jsonEncode({
+          "client_id": settings.clientId,
+          "summ": double.parse(networkController.text),
+        }),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("Network error: $e");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: $e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      if (kDebugMode) {
+        debugPrint("Response error: data null or data['ok'] != 1");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+      networkUrl = data['d']['_links']['payment']['href'];
+      debugPrint("networkUrl $networkUrl");
+        }
   }
 
   Future<void> newCashPay(MySettings settings) async {

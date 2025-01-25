@@ -23,6 +23,7 @@ class DicProd {
   late String picUrl;
   late String infoPicUrl;
   late int hasVitrina;
+  late int forVitrina;
   late double prevOstVitrina;
   late double ostVitrina;
   late double savdoVitrina;
@@ -63,6 +64,7 @@ class DicProd {
     required this.picUrl,
     required this.infoPicUrl,
     required this.hasVitrina,
+    required this.forVitrina,
     required this.prevOstVitrina,
     required this.ostVitrina,
     required this.savdoVitrina,
@@ -94,6 +96,7 @@ class DicProd {
       picUrl: json['picUrl'],
       infoPicUrl: json['infoPicUrl'],
       hasVitrina: json['hasVitrina'],
+      forVitrina: json['forVitrina'],
       prevOstVitrina: json['prevOstVitrina'],
       ostVitrina: json['ostVitrina'],
       savdoVitrina: json['savdoVitrina'],
@@ -127,6 +130,7 @@ class DicProd {
     'picUrl': picUrl,
     'infoPicUrl':infoPicUrl,
     'hasVitrina':hasVitrina,
+    'forVitrina':forVitrina,
     'prevOstVitrina':prevOstVitrina,
     'ostVitrina':ostVitrina,
     'savdoVitrina':savdoVitrina,
@@ -158,6 +162,7 @@ class DicProd {
       "picUrl":picUrl,
       "infoPicUrl":infoPicUrl,
       "hasVitrina":hasVitrina,
+      "forVitrina":forVitrina,
       "prevOstVitrina":prevOstVitrina,
       "ostVitrina":ostVitrina,
       "savdoVitrina":savdoVitrina,
@@ -189,6 +194,7 @@ class DicProd {
     picUrl = map['picUrl'] ?? "";
     infoPicUrl = map['infoPicUrl'] ?? "";
     hasVitrina = Utils.checkDouble(map['hasVitrina']).toInt();
+    forVitrina = Utils.checkDouble(map['forVitrina']).toInt();
     prevOstVitrina = Utils.checkDouble(map['prevOstVitrina']);
     ostVitrina = Utils.checkDouble(map['ostVitrina']);
     savdoVitrina = Utils.checkDouble(map['savdoVitrina']);

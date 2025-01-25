@@ -40,6 +40,9 @@ class MySettings with ChangeNotifier {
   String firmMfo = "";
   String contractNum = "";
   String contractDate = "";
+  String today = "";
+  String ordUuid = "";
+  String ttClass = "";
 
   String baseName = "";
   String basePhone = "";
@@ -77,7 +80,7 @@ class MySettings with ChangeNotifier {
 
   static int timeOut = 0;   //MyHTTP да хар сафар MySettings settings параметр бормаслиги учун
   String themeName = "LightTheme";
-  late Locale locale = const Locale("uz", "UZ");
+  late Locale locale = const Locale("en", "US");
   // late DocumentSnapshot document;
 
 
@@ -97,6 +100,7 @@ class MySettings with ChangeNotifier {
     clientFio = prefs.getString("clientFio")??"";
     clientAddress = prefs.getString("clientAddress")??"";
     baseName = prefs.getString("baseName")??"";
+    ordUuid = prefs.getString("ordUuid")??"";
     basePhone = prefs.getString("basePhone")??"";
     serverUrl = prefs.getString("serverUrl")??"";
     if (prefs.getString("cartList") != null) {
@@ -111,7 +115,7 @@ class MySettings with ChangeNotifier {
     timeOut = prefs.getInt("timeOut")??0;
     mainDbId = prefs.getInt("mainDbId")??0;
     themeName = prefs.getString("themeName")??"LightTheme";
-    locale = Locale(prefs.getString("locale_en")??"ru", prefs.getString("locale_US")??"RU");
+    locale = Locale(prefs.getString("locale_en")??"en", prefs.getString("locale_US")??"US");
   }
 
 
@@ -132,43 +136,34 @@ class MySettings with ChangeNotifier {
     await prefs.setString("clientFio", clientFio);
     await prefs.setString("clientAddress", clientAddress);
     await prefs.setString("baseName", baseName);
+    await prefs.setString("ordUuid", ordUuid);
     await prefs.setString("basePhone", basePhone);
     await prefs.setString("serverUrl", serverUrl);
     await prefs.setString("cartList", jsonEncode(cartList));
     await prefs.setString("vitrinaList", jsonEncode(vitrinaList));
 
 
-    ///
-
     await prefs.setInt("timeOut", timeOut);
     await prefs.setInt("mainDbId", mainDbId);
     await prefs.setString("themeName", themeName);
     await prefs.setString("locale_en", locale.languageCode);
-    await prefs.setString("locale_US", locale.countryCode??"RU");
+    await prefs.setString("locale_US", locale.countryCode??"US");
   }
-
 
   logout() {
     mainDbId = 0;
-    //fireUser = "";
     clientPhone = "";
     token = "";
 
     saveAndNotify();
   }
-  // String getThemeText(BuildContext context) {
-  //   if (theme == THEME_AUTO) return AppLocalizations.of(context).translate("auto");
-  //   if (theme == THEME_DARK) return AppLocalizations.of(context).translate("dark");
-  //   if (theme == THEME_LIGHT) return AppLocalizations.of(context).translate("light");
-  //   return "";
-  // }
-  //
-  // String getLangText(BuildContext context) {
-  //   if (language == THEME_AUTO) return AppLocalizations.of(context).translate("uzbek");
-  //   if (language == THEME_DARK) return AppLocalizations.of(context).translate("russian");
-  //   if (language == THEME_LIGHT) return AppLocalizations.of(context).translate("english");
-  //   return "";
-  // }
+
+  String getLangText(BuildContext context) {
+    if (language == THEME_AUTO) return "UZ";
+    if (language == THEME_DARK) return "RU";
+    if (language == THEME_LIGHT) return "EN";
+    return "";
+  }
 
   Map<String, String> httpHeaderDateNow() {
     return Utils.httpSimpleJsonHeader("Bearer ${token}", DateTime.now(), "");

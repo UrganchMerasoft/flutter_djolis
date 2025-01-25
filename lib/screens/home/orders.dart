@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/app_localizations.dart';
@@ -83,7 +81,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 return v["status_id"] != 0;
               }) .isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("gl_no_data")))
                :  ListView.builder(
-                itemCount: orders.length,
+                itemCount: orders.length >  2 && currentValue == 2 ? 2 : orders.length ,
                 itemBuilder: (context, index) {
                   return Visibility(
                     visible: currentValue == 1 ? (Utils.checkDouble(orders[index]["status_id"]).toInt() == 0) : (Utils.checkDouble(orders[index]["status_id"]).toInt() != 0 ),
@@ -109,7 +107,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                     Text(Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])), style: Theme.of(context).textTheme.titleSmall),
                                   ],
                                 ),
-                                SizedBox(height: 12,),
+                                const SizedBox(height: 12,),
                                 Row(
                                   children: [
                                     Expanded(child: Text(orders[index]["notes"], style: Theme.of(context).textTheme.bodyMedium,)),
@@ -193,9 +191,9 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   void openOrder(MySettings settings, order) async {
-    print(ordList);
+    debugPrint("$ordList");
     List<dynamic> list = ordList.where((v) => v["doc_id"] == order["id"]).toList();
-    print(list);
+    debugPrint("$list");
 
     showDialog(context: context, builder: (BuildContext context) {
       return Dialog(child: Container(
@@ -244,21 +242,21 @@ class _OrdersPageState extends State<OrdersPage> {
 
   getStatusText(MySettings settings, int status_id) {
     if (status_id == 1) {
-      return Text(AppLocalizations.of(context).translate("accepted"), style: TextStyle(color: Colors.green, fontSize: 12),);
+      return Text(AppLocalizations.of(context).translate("accepted"), style: const TextStyle(color: Colors.green, fontSize: 12),);
     }
     if (status_id == 9) {
-      return Text(AppLocalizations.of(context).translate("denied"), style: TextStyle(color: Colors.red, fontSize: 12),);
+      return Text(AppLocalizations.of(context).translate("denied"), style: const TextStyle(color: Colors.red, fontSize: 12),);
     }
-    return Text(AppLocalizations.of(context).translate("new"), style: TextStyle(color: Colors.blue, fontSize: 12),);
+    return Text(AppLocalizations.of(context).translate("new"), style: const TextStyle(color: Colors.blue, fontSize: 12),);
   }
 
   getStatusIcon(MySettings settings, int status_id) {
     if (status_id == 1) {
-      return Icon(Icons.check_box, color: Colors.green, size: 16);
+      return const Icon(Icons.check_box, color: Colors.green, size: 16);
     }
     if (status_id == 1) {
-      return Icon(Icons.close, color: Colors.red, size: 16);
+      return const Icon(Icons.close, color: Colors.red, size: 16);
     }
-    return Icon(Icons.check, color: Colors.blue, size: 16);
+    return const Icon(Icons.check, color: Colors.blue, size: 16);
   }
 }

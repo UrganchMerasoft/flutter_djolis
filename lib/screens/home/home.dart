@@ -160,95 +160,97 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               getBody(settings),
-               // _listTab == 1 ? getBody(settings) : getVitrinaList(settings),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Visibility(
-                  visible: _selectedGroupId == 0 && _tabIndex == 1,
-                  child: SizedBox(
-                    height: 50,
-                    child: AnimatedToggleSwitch.size(
-                      current: _listTab,
-                      values: const [1, 2],
-                      iconOpacity: 1,
-                      height: 60,
-                      indicatorSize: const Size.fromWidth(150),
-                      borderWidth: 2,
-                      customIconBuilder: (context, local, global) {
-                        switch (local.value) {
-                          case 1:
-                            return Text(AppLocalizations.of(context).translate("home_toggle_order"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
-                          case 2:
-                            return Text(AppLocalizations.of(context).translate("vitrina"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
-                          default:
-                            return const Text("");
-                        }
-                      },
-                      style: ToggleStyle(
-                        indicatorColor: Theme.of(context).primaryColor,
-                        borderColor: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(12),
-                        backgroundColor: Colors.transparent,
+              Visibility(
+                visible: settings.ttClass == "D",
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Visibility(
+                    visible: _selectedGroupId == 0 && _tabIndex == 1,
+                    child: SizedBox(
+                      height: 50,
+                      child: AnimatedToggleSwitch.size(
+                        current: _listTab,
+                        values: const [1, 2],
+                        iconOpacity: 1,
+                        height: 60,
+                        indicatorSize: const Size.fromWidth(150),
+                        borderWidth: 2,
+                        customIconBuilder: (context, local, global) {
+                          switch (local.value) {
+                            case 1:
+                              return Text(AppLocalizations.of(context).translate("home_toggle_order"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
+                            case 2:
+                              return Text(AppLocalizations.of(context).translate("vitrina"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
+                            default:
+                              return const Text("");
+                          }
+                        },
+                        style: ToggleStyle(
+                          indicatorColor: Theme.of(context).primaryColor,
+                          borderColor: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(12),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        selectedIconScale: 1.2,
+                        onChanged: (value) {
+                          setState(() {
+                            _listTab = value;
+                          });
+                        },
                       ),
-                      selectedIconScale: 1.2,
-                      onChanged: (value) {
-                        setState(() {
-                          _listTab = value;
-                        });
-                      },
                     ),
+                    // child: Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    //   children: [
+                    //     const SizedBox(width: 20),
+                    //     Material(
+                    //       child: InkWell(
+                    //         onTap: (){
+                    //           Future.delayed(const Duration(milliseconds: 500));
+                    //           setState(() {
+                    //             _listTab = 0;
+                    //           });
+                    //         },
+                    //         child: Container(
+                    //           height: 40,
+                    //           width: 100,
+                    //           decoration: BoxDecoration(
+                    //             color: Theme.of(context).primaryColor,
+                    //             borderRadius: BorderRadius.circular(8),
+                    //           ),
+                    //           child: Padding(
+                    //             padding: const EdgeInsets.only(left: 8, right: 8),
+                    //             child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(color: Colors.white),)),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Material(
+                    //       child: InkWell(
+                    //         onTap: (){
+                    //           Future.delayed(const Duration(milliseconds: 500));
+                    //           setState(() {
+                    //             _listTab = 1;
+                    //           });
+                    //         },
+                    //         child: Container(
+                    //           height: 40,
+                    //           width: 100,
+                    //           decoration: BoxDecoration(
+                    //             color: Theme.of(context).primaryColor,
+                    //             borderRadius: BorderRadius.circular(8),
+                    //           ),
+                    //           child: Padding(
+                    //             padding: const EdgeInsets.only(left: 8, right: 8),
+                    //             child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(color: Colors.white),)),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 20),
+                    //   ],
+                    // ),
                   ),
-                  // child: Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //   children: [
-                  //     const SizedBox(width: 20),
-                  //     Material(
-                  //       child: InkWell(
-                  //         onTap: (){
-                  //           Future.delayed(const Duration(milliseconds: 500));
-                  //           setState(() {
-                  //             _listTab = 0;
-                  //           });
-                  //         },
-                  //         child: Container(
-                  //           height: 40,
-                  //           width: 100,
-                  //           decoration: BoxDecoration(
-                  //             color: Theme.of(context).primaryColor,
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(left: 8, right: 8),
-                  //             child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(color: Colors.white),)),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Material(
-                  //       child: InkWell(
-                  //         onTap: (){
-                  //           Future.delayed(const Duration(milliseconds: 500));
-                  //           setState(() {
-                  //             _listTab = 1;
-                  //           });
-                  //         },
-                  //         child: Container(
-                  //           height: 40,
-                  //           width: 100,
-                  //           decoration: BoxDecoration(
-                  //             color: Theme.of(context).primaryColor,
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(left: 8, right: 8),
-                  //             child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(color: Colors.white),)),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     const SizedBox(width: 20),
-                  //   ],
-                  // ),
                 ),
               ),
               Align(
@@ -260,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                     child: Container(
                       height: 68,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
                         border: Border.all(color: Colors.grey.shade300, width: 2),
                         color: Colors.grey.shade200,
                       ),
@@ -456,31 +458,10 @@ class _HomePageState extends State<HomePage> {
         color: Colors.grey.shade200,
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            settings.ttClass == "D" ? const SizedBox(height: 60) : const SizedBox(height: 10) ,
             Expanded(
-              child: _isLoading
-                  ? Center(
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.grey.shade300)),
-                  height: 105,
-                  // width: 110,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: 10),
-                        Text(
-                          AppLocalizations.of(context).translate("gl_loading"),
-                          style: TextStyle(fontSize: 18, color: Colors.grey.shade800),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ) : ListView.builder(
-                key:  PageStorageKey<String>('controllerA'),
+              child: ListView.builder(
+                key:  const PageStorageKey<String>('controllerA'),
                 itemCount: grp.length + 1,
                 itemBuilder: (context, index) {
                   if (index == grp.length) {
@@ -503,7 +484,7 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
-                                Future.delayed(Duration(milliseconds: 200), () {
+                                Future.delayed(const Duration(milliseconds: 200), () {
                                   setState(() {
                                     _selectedGroupId = grp[index].id;
                                     _selectedGroupName = grp[index].name;
@@ -613,8 +594,7 @@ class _HomePageState extends State<HomePage> {
                   visible: filteredProds[index].ostQty > 0,
                   child: Container(
                     margin: const EdgeInsets.only(top: 8),
-                    padding: EdgeInsets.fromLTRB(2, 2, 2, 12),
-                    //height: (filteredProds[index].orderQty != 0 ? 140 : 110) + (filteredProds[index].info.isNotEmpty ? 18 : 0),
+                    padding: const EdgeInsets.fromLTRB(2, 2, 2, 12),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade300),
@@ -625,7 +605,7 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () async {
-                          Future.delayed(Duration(milliseconds: 200), () async {
+                          Future.delayed(const Duration(milliseconds: 200), () async {
                             if (filteredProds[index].ostQty == 0) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(AppLocalizations.of(context).translate("lack_of_prods")),
@@ -719,8 +699,8 @@ class _HomePageState extends State<HomePage> {
                                           children: [
                                             const Icon(CupertinoIcons.tags, size: 15),
                                             const SizedBox(width: 5),
-                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: Text("( ${Utils.myNumFormat0(filteredProds[index].cashbackSumm)} )", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
-                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: SizedBox(width: 5)),
+                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: Text(Utils.myNumFormat0(filteredProds[index].cashbackSumm), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
+                                            Visibility(visible: filteredProds[index].cashbackSumm > 0, child: const SizedBox(width: 5)),
                                             Text("${Utils.myNumFormat0(filteredProds[index].orderSumm)}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                                           ],
                                         ),
@@ -889,7 +869,7 @@ class _HomePageState extends State<HomePage> {
         }
       }
       DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
-      DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
+      DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]);
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
       if(mounted){
         setState(() {
@@ -914,6 +894,8 @@ class _HomePageState extends State<HomePage> {
       settings.firmMfo = data['d']["settings"]["firmMfo"]??"";
       settings.contractNum = data['d']["settings"]["contractNum"]??"";
       settings.contractDate = data['d']["settings"]["contractDate"]??"";
+      settings.today = data['d']["settings"]["today"]??"";
+      settings.ttClass = data['d']["settings"]["ttClass"]??"";
     }
   }
 
@@ -1052,7 +1034,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getVitrinaList(MySettings settings) {
-    List<DicProd> filteredProds = prods.where((prod) => prod.hasVitrina == 1||prod.prevOstVitrina != 0||prod.ostVitrina != 0||prod.savdoVitrina != 0).toList();
+    List<DicProd> filteredProds = prods.where((prod) => prod.forVitrina == 1 && (prod.hasVitrina == 1||prod.prevOstVitrina != 0||prod.ostVitrina != 0||prod.savdoVitrina != 0)).toList();
+    // List<DicProd> filteredProds = prods.where((prod) => prod.forVitrina == 1).toList();
     if (searchQueryController.text != "") {
       filteredProds = prods.where((prod) => prod.name.toLowerCase().contains(searchQueryController.text.toLowerCase())).toList();
     }
@@ -1104,8 +1087,7 @@ class _HomePageState extends State<HomePage> {
           }
           return Container(
             margin: const EdgeInsets.only(top: 8),
-            padding: EdgeInsets.fromLTRB(2, 2, 2, 12),
-            //height: 120,
+            padding: const EdgeInsets.fromLTRB(2, 2, 2, 12),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: filteredProds[index].savdoVitrina != 0 ? Colors.orange : Colors.grey.shade300),
@@ -1116,7 +1098,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () async {
-                  Future.delayed(Duration(milliseconds: 200), () async {
+                  Future.delayed(const Duration(milliseconds: 200), () async {
                     await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(filteredProds[index], true)));
                     refreshCart(settings);
                   });

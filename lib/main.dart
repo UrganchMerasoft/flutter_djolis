@@ -79,7 +79,6 @@ class MyApp extends StatelessWidget {
     ));
 
     return MaterialApp(
-
       theme: themeLight,
       darkTheme: themeDark,
       themeMode: ThemeMode.light,
@@ -88,9 +87,9 @@ class MyApp extends StatelessWidget {
       locale: settings.locale,
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
+        Locale("en", "US"),
         Locale("uz", "UZ"),
         Locale("ru", "RU"),
-        Locale("en", "US"),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,

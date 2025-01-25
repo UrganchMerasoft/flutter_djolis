@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -73,6 +74,21 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+             Padding(
+               padding: const EdgeInsets.only(left: 290),
+               child: InkWell(
+                 onTap: (){
+                   selectLang(context, settings);
+                 },
+                 child: Row(
+                   children: [
+                    const Icon(Icons.language, color: Colors.white,),
+                     const SizedBox(width: 5),
+                     Text(settings.getLangText(context), style: const TextStyle(color: Colors.white),),
+                   ],
+                 ),
+               ),
+             ),
             const SizedBox(
               height: 8,
             ),
@@ -87,7 +103,6 @@ class _LoginPageState extends State<LoginPage> {
               cursorColor: Colors.white,
               style: const TextStyle(color: Colors.white),
               onTap: (){
-                // phoneController.selection = TextSelection(baseOffset: 4, extentOffset: phoneController.text.length);
               },
               controller: phoneController,
               validator: (v) {
@@ -96,7 +111,6 @@ class _LoginPageState extends State<LoginPage> {
                 }else{
                   return null;
                 }
-
               },
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
@@ -150,7 +164,9 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 _isLoading = true;
                 await verifyPassword(settings);
-                setState(() {});
+                if(mounted){
+                  setState(() {});
+                }
                 debugPrint("ServerUrl: ${settings.serverUrl}");
               },
               child: _isLoading ? const SpinKitCircle(color: Colors.white, size: 25.0) : Row(
@@ -255,5 +271,123 @@ class _LoginPageState extends State<LoginPage> {
       content: Text(message),
       backgroundColor: Colors.red.shade700,
     ));
+  }
+
+  void selectLang(BuildContext context, MySettings settings) {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      final action = CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+              isDefaultAction: true,
+              onPressed: () {
+                settings.language = 0;
+                settings.locale = const Locale("uz", "UZ");
+                settings.saveAndNotify();
+                Navigator.pop(context);
+              },
+              child: Text(
+                AppLocalizations.of(context).translate("uzbek"),
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.green.shade800),
+              )),
+          CupertinoActionSheetAction(
+            isDefaultAction: true,
+            onPressed: () {
+              settings.language = 1;
+              settings.locale = const Locale("ru", "RU");
+              settings.saveAndNotify();
+              Navigator.pop(context);
+            },
+            child: Text(AppLocalizations.of(context).translate("russian"),
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.green.shade800)),
+          ),
+          CupertinoActionSheetAction(
+            isDefaultAction: true,
+            onPressed: () {
+              settings.language = 2;
+              settings.locale = const Locale("en", "US");
+              settings.saveAndNotify();
+              Navigator.pop(context);
+            },
+            child: Text(AppLocalizations.of(context).translate("english"),
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.green.shade800)),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(AppLocalizations.of(context).translate("gl_cancel"),
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.green.shade800)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+      showCupertinoModalPopup(context: context, builder: (context) => action);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  leading: Text(
+                    "🇺🇿",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  title: Text(AppLocalizations.of(context).translate("uzbek")),
+                  onTap: () {
+                    settings.language = 0;
+                    settings.locale = const Locale("uz", "UZ");
+                    settings.saveAndNotify();
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: Text(
+                    "🇷🇺",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  title:
+                  Text(AppLocalizations.of(context).translate("russian")),
+                  onTap: () {
+                    settings.language = 1;
+                    settings.locale = const Locale("ru", "RU");
+                    settings.saveAndNotify();
+                    Navigator.pop(context);
+                  },
+                ),
+
+                ListTile(
+                  leading: Text(
+                    "🇺🇸",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  title:
+                  Text(AppLocalizations.of(context).translate("english")),
+                  onTap: () {
+                    settings.language = 2;
+                    settings.locale = const Locale("en", "US");
+                    settings.saveAndNotify();
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
   }
 }

@@ -172,11 +172,18 @@
   "add_product": "Please add a product",
   "cash_payment":"Cash payment",
   "enter_date":"Select date",
+  "enter_dolg_date":"Select due date",
   "inv_type": "Select payment method!",
   "pay_on_delivery": "Pay on delivery",
   "pay_by_cashback": "Pay with cashback",
   "cashback_warning": "Cashback is calculated in case of 100% payment",
+  "notes_warning": "Write your feedback and complaints about staff service.",
+  "limit_warning": "You've exceeded the limit!",
+  "enter_delivery_date": "Select the delivery date",
   "verify_ord": "Ordering",
   "comment": "Comment",
-  "debt_notes": "Note..."
+  "debt_notes": "Note...",
+  "clients": "Clients",
+  "paid": "Paid",
+  "share_app": "Share app"
 }

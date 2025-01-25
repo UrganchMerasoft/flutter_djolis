@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/app_localizations.dart';
 import 'package:flutter_djolis/core/mysettings.dart';
@@ -10,6 +8,7 @@ import 'package:flutter_djolis/models/vitrina.dart';
 import 'package:flutter_djolis/screens/common/photo.dart';
 import 'package:flutter_djolis/services/utils.dart';
 import 'package:provider/provider.dart';
+
 class DetailPage extends StatefulWidget {
   final DicProd prod;
   final bool isVitrina;
@@ -83,7 +82,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
           actions: [
             Visibility(visible: widget.isVitrina, child: IconButton(onPressed: () {
               deleteVitrina(settings);
-            }, icon: Icon(Icons.delete)))
+            }, icon: const Icon(Icons.delete)))
           ],
         ),
         body: SafeArea(
@@ -206,6 +205,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                           qty = Utils.checkDouble(amountController.text.trim());
                                           summ = qty * price;
                                           if (widget.isVitrina) summ = (prevOst - qty) * price;
+
+                                          if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                          }
                                         },
                                         keyboardType: TextInputType.number,
                                         maxLines: 1,
@@ -213,9 +216,9 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         textInputAction: TextInputAction.done,
                                         decoration: InputDecoration(
                                             contentPadding: const EdgeInsets.only(bottom: 4, left: 8),
-                                            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey,), borderRadius: BorderRadius.circular(10)),
-                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: BorderSide(color: Colors.grey)),
-                                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: BorderSide(color: Colors.grey))
+                                            enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey,), borderRadius: BorderRadius.circular(10)),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: const BorderSide(color: Colors.grey)),
+                                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10),borderSide: const BorderSide(color: Colors.grey))
                                         ),
 
                                       ),
@@ -226,6 +229,9 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         if (qty < 0) qty = 0;
                                         summ = qty * price;
                                         if (widget.isVitrina) summ = (prevOst - qty) * price;
+                                        if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                        }
                                       });
                                       amountController.text = Utils.myNumFormat0(qty);
                                     }, icon: const Icon(Icons.remove), color: Colors.black,),
@@ -235,6 +241,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         qty++;
                                         summ = qty * price;
                                         if (widget.isVitrina) summ = (prevOst - qty) * price;
+
+                                        if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                        }
                                       });
                                       amountController.text = Utils.myNumFormat0(qty);
                                     }, icon: const Icon(Icons.add), color: Colors.black),
@@ -252,7 +262,15 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
               ),
 
-              Visibility(visible: widget.isVitrina == false&&widget.prod.cashbackProcent > 0, child: Text("${AppLocalizations.of(context).translate("cashback")}: ${Utils.myNumFormat2(widget.prod.cashbackProcent)}%", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.green),)),
+              Visibility(
+                visible: widget.isVitrina == false && widget.prod.cashbackProcent > 0,
+                child: Text(
+                  qty != 0
+                      ? "${AppLocalizations.of(context).translate("cashback")}: ${Utils.myNumFormat2(widget.prod.cashbackSumm)}"
+                      : "",
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.green),
+                ),
+              ),
               Visibility(visible: widget.isVitrina, child: Text("${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(prevOst - qty)} ", style: Theme.of(context).textTheme.titleLarge,)),
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 22),
@@ -294,7 +312,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
             ],
           ),
         ),
-      // bottomNavigationBar: ,
+
     );
   }
 
@@ -321,7 +339,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   void saveToCart(MySettings settings) {
     if (qty > widget.prod.ostQty / (widget.prod.coeff == 1000 ? 1000 : 1)) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("Остаток не хватает"),
+        content: Text(AppLocalizations.of(context).translate("lack_of_prods")),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red.shade700,
       ));

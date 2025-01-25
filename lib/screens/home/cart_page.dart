@@ -1,5 +1,5 @@
-import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,6 @@ import 'package:flutter_djolis/app_localizations.dart';
 import 'package:flutter_djolis/models/cart.dart';
 import 'package:flutter_djolis/screens/home/detail_page.dart';
 import 'package:flutter_djolis/services/utils.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/mysettings.dart';
@@ -28,9 +27,6 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   List<DicProd> filteredProds = DataService.prods.where((prod) => prod.hasVitrina == 1 || prod.prevOstVitrina != 0 || prod.ostVitrina != 0 || prod.savdoVitrina != 0).toList();
-
-
-  //TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -176,8 +172,8 @@ class _CartPageState extends State<CartPage> {
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           const SizedBox(width: 5),
-                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: Text("( ${Utils.myNumFormat0(settings.cartList[index].cashbackSumm)} )", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
-                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: SizedBox(width: 5)),
+                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: Text(Utils.myNumFormat0(settings.cartList[index].cashbackSumm), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.green))),
+                                          Visibility(visible: settings.cartList[index].cashbackSumm > 0, child: const SizedBox(width: 5)),
                                           Text(Utils.myNumFormat0(settings.cartList[index].summ), style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800)),
                                         ],
                                       ),
@@ -364,32 +360,6 @@ class _CartPageState extends State<CartPage> {
               childCount: settings.vitrinaList.length,
             ),
           ),
-
-          // SliverToBoxAdapter(
-          //   child: Visibility(
-          //     visible: settings.cartList.isNotEmpty,
-          //     child: Padding(
-          //       padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
-          //       child: SizedBox(
-          //         height: 56,
-          //         child: TextField(
-          //           controller: textEditingController,
-          //           decoration: InputDecoration(
-          //             border: OutlineInputBorder(
-          //               borderSide: const BorderSide(color: Color(0xFFB29696)),
-          //               borderRadius: BorderRadius.circular(10),
-          //             ),
-          //             fillColor: Theme
-          //                 .of(context)
-          //                 .brightness == Brightness.dark ? null : Colors.white,
-          //             isDense: true,
-          //             labelText: AppLocalizations.of(context).translate("press_for_notes"),
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(settings),
@@ -404,7 +374,7 @@ class _CartPageState extends State<CartPage> {
         child: Container(
           height: 68,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
             border: Border.all(color: Colors.grey.shade300, width: 2),
             color: Colors.grey.shade200,
           ),
@@ -440,15 +410,23 @@ class _CartPageState extends State<CartPage> {
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: settings.cartList.isEmpty ? null : () {
-                    // sendOrder(settings);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SendOrdPage()));
+                  onPressed: settings.cartList.isEmpty ? null : () async{
+                    if( settings.itogSumm + DataService.debt >= DataService.creditLimit){
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.warning,
+                        animType: AnimType.rightSlide,
+                        title: AppLocalizations.of(context).translate("limit_warning"),
+                        desc: "${AppLocalizations.of(context).translate("credit_limit")}: ${DataService.creditLimit}\n${AppLocalizations.of(context).translate("debt")}: ${DataService.debt}",
+                        descTextStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                        btnOkOnPress: () {},
+                      ).show();
+                      return;
+                    } else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SendOrdPage()));
+                    }
                   },
-                  child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
+                  child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
                 ),
               ],
             ),
@@ -477,7 +455,5 @@ class _CartPageState extends State<CartPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))));
   }
 
+
 }
-
-
-

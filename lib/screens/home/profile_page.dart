@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/app_localizations.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_djolis/screens/home/orders.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/mysettings.dart';
+import 'clients_page.dart';
 import 'my_promo_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,7 +18,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +99,31 @@ class _ProfilePageState extends State<ProfilePage> {
                          Text(settings.baseName + " " + settings.basePhone, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800)),
                        ],
                      ),
-                   ),),
+                   )),
+
+                   Visibility(
+                     visible: false,
+                     child: Card(
+                         child: InkWell(
+                           onTap: () {
+                             Navigator.push(context, MaterialPageRoute(builder: (context) => const ClientsPage()));
+                           },
+                           child: Padding(
+                             padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
+                             child: Row(
+                               mainAxisAlignment: MainAxisAlignment.start,
+                               crossAxisAlignment: CrossAxisAlignment.center,
+                               children: [
+                                 const Icon(Icons.people_alt_outlined),
+                                 const SizedBox(width: 5),
+                                 Expanded(child: Text(AppLocalizations.of(context).translate("clients"), style: Theme.of(context).textTheme.titleSmall)),
+                                 const Icon(Icons.chevron_right)
+                               ],
+                             ),
+                           ),
+                         )),
+                   ),
+
                    const SizedBox(height: 24),
                    Card(
                        child: InkWell(
@@ -157,7 +182,71 @@ class _ProfilePageState extends State<ProfilePage> {
                      ),
                    )),
 
-                   const SizedBox(height: 8),
+                   Card(
+                     child: ExpansionTile(
+                         title: Row(
+                           children: [
+                             const Icon(Icons.share, color: Colors.black,),
+                             const SizedBox(width: 5),
+                             Text(AppLocalizations.of(context).translate("share_app"), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+                           ],
+                         ),
+                       children: [
+                         InkWell(
+                           onTap: (){
+                             showDialog(context: context, builder: (context){
+                               return  AlertDialog(
+                                 actions: [
+                                   Center(
+                                     child: Padding(
+                                       padding: const EdgeInsets.only(top: 16),
+                                       child: Text("Google Play", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
+                                     ),
+                                   ),
+                                   const Image(image: AssetImage("assets/images/qr_google_djolis.jpg"))
+                                 ],
+                               );
+                             });
+                           },
+                           child: Container(
+                             height: 60,
+                             decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(10)
+                             ),
+                             child: const Image(image: AssetImage("assets/images/google_play.png"), fit: BoxFit.cover,),
+                           ),
+                         ),
+                         const SizedBox(height: 15),
+
+                         /// App Store
+                         InkWell(
+                           onTap: (){
+                             showDialog(context: context, builder: (context){
+                               return  AlertDialog(
+                                 actions: [
+                                   Center(
+                                     child: Padding(
+                                       padding: const EdgeInsets.only(top: 16),
+                                       child: Text("App Store", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
+                                     ),
+                                   ),
+                                   const Image(image: AssetImage("assets/images/qr_djolis_appstore.jpg"))
+                                 ],
+                               );
+                             });
+                           },
+                           child: Container(
+                             height: 60,
+                             decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(6),
+                             ),
+                             child: const Image(image: AssetImage("assets/images/appStore.png"), fit: BoxFit.cover),
+                           ),
+                         ),
+                         const SizedBox(height: 25),
+                       ],
+                     ),
+                   ),
 
                    OutlinedButton(onPressed: () {
                      showDeleteAccountInfo(settings);
@@ -208,26 +297,12 @@ class _ProfilePageState extends State<ProfilePage> {
           CupertinoActionSheetAction(
             isDefaultAction: true,
             onPressed: () {
-              settings.language = 1;
-              settings.locale = const Locale("en", "EN");
+              settings.language = 2;
+              settings.locale = const Locale("en", "US");
               settings.saveAndNotify();
               Navigator.pop(context);
             },
             child: Text(AppLocalizations.of(context).translate("english"),
-                style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.green.shade800)),
-          ),
-          CupertinoActionSheetAction(
-            isDefaultAction: true,
-            onPressed: () {
-              settings.language = 1;
-              settings.locale = const Locale("ar", "AR");
-              settings.saveAndNotify();
-              Navigator.pop(context);
-            },
-            child: Text(AppLocalizations.of(context).translate("arabic"),
                 style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
@@ -296,20 +371,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     Navigator.pop(context);
                   },
                 ),
-                // ListTile(
-                //   leading: Text(
-                //     "🇦🇪",
-                //     style: Theme.of(context).textTheme.titleLarge,
-                //   ),
-                //   title:
-                //   Text(AppLocalizations.of(context).translate("arabic")),
-                //   onTap: () {
-                //     settings.language = 3;
-                //     settings.locale = const Locale("ar", "AR");
-                //     settings.saveAndNotify();
-                //     Navigator.pop(context);
-                //   },
-                // ),
               ],
             ),
           );
@@ -322,7 +383,7 @@ class _ProfilePageState extends State<ProfilePage> {
     Dialog errorDialog = Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
       child: Container(
-        height: 260.0,
+        height: 270.0,
         width: 26.0,
         color: Colors.grey.shade100,
         child: Padding(
@@ -333,9 +394,9 @@ class _ProfilePageState extends State<ProfilePage> {
             children: <Widget>[
               Text(AppLocalizations.of(context).translate("delete_account_info"), style: Theme.of(context).textTheme.titleMedium,),
               const SizedBox(height: 12),
-              Text("+998 97 515 57 57", style: Theme.of(context).textTheme.titleSmall,),
+              Text("+971 55 262 0505", style: Theme.of(context).textTheme.titleSmall,),
              const  SizedBox(height: 8),
-              Text("ravshan.babajanov@mail.ru", style: Theme.of(context).textTheme.titleSmall,),
+              Text("djolis@djolis.com", style: Theme.of(context).textTheme.titleSmall,),
              const SizedBox(height: 24),
               TextButton(
                 onPressed: () {

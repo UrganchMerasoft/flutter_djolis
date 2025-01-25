@@ -170,11 +170,18 @@
   "add_product": "Iltimos, mahsulot qo'shing",
   "cash_payment": "Naxt to'lov",
   "enter_date":"Sanani tanlang",
+  "enter_dolg_date":"To'lov qilish sanasini tanlang!",
   "inv_type": "To'lov usulini tanlang!",
   "pay_on_delivery": "Yetkazib berishda to‘lash",
   "pay_by_cashback": "Keshbek orqali to'lash",
   "cashback_warning": "100% to'lov bo'lgan holatda keshbek hisoblanadi",
+  "notes_warning": "Xodimlar xizmati bo‘yicha fikr va shikoyatlaringizni yozing.",
+  "limit_warning": "Limitdan oshib ketdingiz!",
+  "enter_delivery_date": "Yetkazib berish sanasini tanlang",
   "verify_ord": "Buyurtmani tasdiqlash",
   "comment": "Kommentariya",
-  "debt_notes": "Izoh..."
+  "debt_notes": "Izoh...",
+  "clients": "Mijozlar",
+  "paid": "To'landi",
+  "share_app": "Ilovani ulashish"
 }
