@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_djolis/screens/account/login_page.dart';
 import 'package:flutter_djolis/screens/firebase_notifications/firebase_notification_page.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_djolis/services/firebase_api.dart';
 import 'package:flutter_djolis/services/local_notification_service.dart';
 import 'package:flutter_djolis/services/utils.dart';
 import 'package:flutter_djolis/wrapper.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +28,7 @@ Future<void> main() async {
   LocalNotificationService.initialize();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseApi().initNotifications();
+  await setInitialData();
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
   runApp(
@@ -39,12 +42,12 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  static String appName = "D";
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
-    setInitialData(settings);
     ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(120, 46, 76, 1)), fontFamily: "Inter");
     ThemeData themeDataDark = FlexThemeData.dark(scheme: FlexScheme.custom, colorScheme: const ColorScheme.dark(brightness: Brightness.dark, primary: Color.fromRGBO(124, 46, 76, 1)), fontFamily: "Inter");
 
@@ -90,6 +93,7 @@ class MyApp extends StatelessWidget {
         Locale("en", "US"),
         Locale("uz", "UZ"),
         Locale("ru", "RU"),
+        Locale("ar", "AR"),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -114,13 +118,19 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  void setInitialData(MySettings settings) async {
-    Utils.numFormatCurrent = Utils.numFormat0;
+}
 
-    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    // MySettings.syncVersion = Utils.checkDouble("0${packageInfo.buildNumber}").toInt();
-    // MySettings.version = "${packageInfo.version}.${packageInfo.buildNumber}";
+Future<void> setInitialData() async {
+  Utils.numFormatCurrent = Utils.numFormat0;
 
-    Permission.storage.shouldShowRequestRationale;
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  String version = packageInfo.version;
+  List<String> parts = version.split('.');
+  if (parts.length > 2) {
+    MySettings.intVersion = int.tryParse(parts[2].split('+')[0]) ?? 0;
   }
+  MySettings.version = "${packageInfo.version}.${packageInfo.buildNumber}";
+  debugPrint("Int Version: ${MySettings.intVersion}");
+
+  Permission.storage.shouldShowRequestRationale;
 }

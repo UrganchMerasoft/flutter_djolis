@@ -372,7 +372,7 @@ class _CartPageState extends State<CartPage> {
       child: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 8),
         child: Container(
-          height: 68,
+          height: 78,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(12)),
             border: Border.all(color: Colors.grey.shade300, width: 2),
@@ -387,23 +387,11 @@ class _CartPageState extends State<CartPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                    Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 2),
-                    Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
+                    Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 2),
-                    Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                    Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
                   ],
                 ),
                 ElevatedButton(
@@ -417,7 +405,7 @@ class _CartPageState extends State<CartPage> {
                         dialogType: DialogType.warning,
                         animType: AnimType.rightSlide,
                         title: AppLocalizations.of(context).translate("limit_warning"),
-                        desc: "${AppLocalizations.of(context).translate("credit_limit")}: ${DataService.creditLimit}\n${AppLocalizations.of(context).translate("debt")}: ${DataService.debt}",
+                        desc: "${AppLocalizations.of(context).translate("credit_limit")}: ${DataService.creditLimit}\n${getDebtText(DataService.debt)}: ${DataService.debt.toDouble().abs()}",
                         descTextStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                         btnOkOnPress: () {},
                       ).show();
@@ -455,5 +443,14 @@ class _CartPageState extends State<CartPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))));
   }
 
+  String getDebtText(double checker){
+    if(checker < 0){
+      return AppLocalizations.of(context).translate("pre_paid");
+    }else if(checker > 0){
+      return AppLocalizations.of(context).translate("debt");
+    } else{
+      return AppLocalizations.of(context).translate("balance");
+    }
+  }
 
 }

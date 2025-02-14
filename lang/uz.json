@@ -22,7 +22,7 @@
   "fail_login2": "Kirish amalga oshmadi. Qayta urining (2)",
   "fail_login3": "Kirish amalga oshmadi. Qayta urining (3)",
   "error_verify_psw":"Parolni tasdiqlashda xato:",
-  "client_not_assigned": "Mijoz mahkamlanmagan",
+  "client_not_assigned": "Mijoz biriktirilmagan",
 
   "home_catalog": "Katalog",
   "home_card_app_bar": "Buyurtmalar (Savat)",
@@ -163,7 +163,8 @@
   "soon": "Bu bo'lim tez orada ishga tushadi!:)",
   "more_info": "Batafsil",
 
-  "debt": "Qarz",
+  "debt": "Qarzdor",
+  "pre_paid": "Haqdor",
   "in_debt": "Qarzga",
   "cashback": "Keshbek",
   "credit_limit": "Kredit limiti",
@@ -183,5 +184,11 @@
   "debt_notes": "Izoh...",
   "clients": "Mijozlar",
   "paid": "To'landi",
-  "share_app": "Ilovani ulashish"
+  "share_app": "Ilovani ulashish",
+  "lack_of_cashback": "Cashback yetarli emas! To'lov usulini o'zgartiring",
+  "card_payment": "Karta b-n to‘lov",
+  "app_update_warning": "Ilovaning yangi imkoniyatlaridan to‘liq foydalanish uchun ilovani yangilashingiz zarur!",
+  "update_app": "Ilovani yangilash",
+  "your_version":"Sizning versiyangiz:",
+  "required_min_version": "Minimal talab qilinadigan versiya:"
 }

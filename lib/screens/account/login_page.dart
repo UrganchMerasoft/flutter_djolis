@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
 import '../../services/utils.dart';
-import '../home/home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -60,6 +59,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: getPhoneBody(settings),
                 ),
               ),
+              Text("Version: ${MySettings.intVersion}.0.0", style: TextStyle(color: Colors.grey.shade400, fontSize: 12),),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
              Padding(
-               padding: const EdgeInsets.only(left: 290),
+               padding: const EdgeInsets.only(left: 260),
                child: InkWell(
                  onTap: (){
                    selectLang(context, settings);
@@ -105,13 +106,13 @@ class _LoginPageState extends State<LoginPage> {
               onTap: (){
               },
               controller: phoneController,
-              validator: (v) {
-                if(v!.isEmpty || v == null){
-                  return AppLocalizations.of(context).translate("enter_summ");
-                }else{
-                  return null;
-                }
-              },
+              // validator: (v) {
+              //   if(v!.isEmpty){
+              //     return AppLocalizations.of(context).translate("enter_summ");
+              //   }else{
+              //     return null;
+              //   }
+              // },
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
@@ -167,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
                 if(mounted){
                   setState(() {});
                 }
-                debugPrint("ServerUrl: ${settings.serverUrl}");
               },
               child: _isLoading ? const SpinKitCircle(color: Colors.white, size: 25.0) : Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

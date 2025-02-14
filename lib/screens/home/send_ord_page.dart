@@ -59,7 +59,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
       paymeController.text = ((settings.itogSumm * settings.curRate / 500).round() * 500).toString();
       clickController.text = ((settings.itogSumm * settings.curRate / 500).round() * 500).toString();
       networkController.text = settings.itogSumm.toString();
-      print("Contract Date: ${settings.contractDate}");
+      debugPrint("Contract Date: ${settings.contractDate}");
       payedOrder(settings);
       Timer.periodic(const Duration(seconds: 5), (timer) {
         if (_shimmer) {
@@ -97,11 +97,9 @@ class _SendOrdPageState extends State<SendOrdPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Visibility(
+                        child: SizedBox(height: 20)),
                     Visibility(
-                        visible: isVisible,
-                        child: const SizedBox(height: 20)),
-                    Visibility(
-                      visible: isVisible,
                       child: ExpansionTile(
                         collapsedIconColor: Theme.of(context).primaryColor,
                         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
@@ -196,13 +194,21 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                   },
                                   child: Container(
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    height: 50,
+                                    height: 60,
                                     width: MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
                                         color: Colors.white,
                                         border: Border.all(color: Colors.grey.shade400),
                                         borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                        image: const DecorationImage(image: AssetImage("assets/images/logo-network.png"))),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Image(image: AssetImage("assets/icons/credit_card.png"),height: 60),
+                                        const SizedBox(width: 15),
+                                        Text(AppLocalizations.of(context).translate("card_payment")),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -291,8 +297,14 @@ class _SendOrdPageState extends State<SendOrdPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(AppLocalizations.of(context).translate("pay_by_cashback"),
-                                style: TextStyle(fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700)),
+                            Row(
+                              children: [
+                                Text(AppLocalizations.of(context).translate("pay_by_cashback"),
+                                    style: TextStyle(fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700)),
+                                Text("  ( ${Utils.numFormat0_00.format(DataService.cashBack / settings.curRate)})", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
+                              ],
+                            ),
+
                             Radio(
                               activeColor: Theme.of(context).primaryColor,
                               value: 3,
@@ -302,7 +314,11 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                   selectPay = value!;
                                   checker1 = false;
                                   checker2 = false;
-                                  debugPrint("Cashback: ${selectPay}");
+                                  debugPrint("selectPay Cashback: $selectPay");
+                                  debugPrint("Cashback: ${Utils.numFormat0_00.format(DataService.cashBack / settings.curRate)}");
+                                  if(DataService.cashBack / settings.curRate < settings.itogSumm){
+                                    showRedSnackBar(AppLocalizations.of(context).translate("lack_of_cashback"));
+                                  }
                                 });
                               },
                             )
@@ -475,7 +491,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                     ),
-                    Text(Utils.numFormat0.format(settings.itogCashbackSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                    Text(selectPay == 3 ? "0" : Utils.numFormat0.format(settings.itogCashbackSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
                   ],
                 ),
                 Row(
@@ -532,6 +548,12 @@ class _SendOrdPageState extends State<SendOrdPage> {
                               if(selectPay == 1 && deliveryDateController.text.isEmpty) {
                                 showRedSnackBar(AppLocalizations.of(context).translate("enter_delivery_date"));
                                 return;
+                              }
+                              debugPrint("Cashback: / settings.curRate ${DataService.cashBack / settings.curRate}");
+                              debugPrint("Cashback: ${DataService.cashBack}");
+                              if(selectPay == 3 && DataService.cashBack / settings.curRate < settings.itogSumm){
+                                showRedSnackBar(AppLocalizations.of(context).translate("lack_of_cashback"));
+                                return ;
                               }
                               if(selectPay == 4 && dateController.text.isEmpty) {
                                 showRedSnackBar(AppLocalizations.of(context).translate("enter_dolg_date"));
@@ -1034,8 +1056,8 @@ class _SendOrdPageState extends State<SendOrdPage> {
   Future<void> _selectDate(BuildContext context, MySettings settings) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -1049,8 +1071,8 @@ class _SendOrdPageState extends State<SendOrdPage> {
   Future<void> _selectDeliveryDate(BuildContext context, MySettings settings) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -1223,7 +1245,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
           "dolgDate": selectPay == 4 ? Utils.myDateFormat(Utils.formatYYYYMMdd, date1): "",
           "deliveryDate": selectPay == 1 ? Utils.myDateFormat(Utils.formatYYYYMMdd, deliveryDate): "",
           "dolgNotes": debtNotesController.text,
-          "cashbackSumm": settings.itogCashbackSumm,
+          "cashbackSumm": selectPay == 3 ? 0.0 : settings.itogCashbackSumm,
           "list": settings.cartList,
           "vitrina": settings.vitrinaList,
           "payedSumm": Utils.checkDouble(totalSumm / settings.curRate)

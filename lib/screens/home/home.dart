@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,8 +18,10 @@ import 'package:flutter_djolis/screens/home/profile_page.dart';
 import 'package:flutter_djolis/services/data_service.dart';
 import 'package:flutter_djolis/services/utils.dart';
 import 'package:http/http.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
@@ -34,6 +37,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final noScreenshot = NoScreenshot.instance;
   TextEditingController searchQueryController = TextEditingController();
 
   List<DicGroups> grp = [];
@@ -51,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<MySettings>(context, listen: false);
+      checkUserAndSetScreenshot(settings);
       getAll(settings);
       refreshCart(settings);
       Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -131,6 +136,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Visibility(
+              visible: settings.minVersion > MySettings.intVersion,
+              child: IconButton(onPressed: (){
+                getAll(settings);
+              }, icon: const Icon(Icons.sync)),
+            ),
+            Visibility(
               visible: _tabIndex == 4,
               child: IconButton(
                 onPressed: () {
@@ -142,7 +153,33 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         body: SafeArea(
-          child: Stack(
+          child: settings.minVersion > MySettings.intVersion ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(AppLocalizations.of(context).translate("app_update_warning"), textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text("${AppLocalizations.of(context).translate("your_version")} ${MySettings.intVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    Text("${AppLocalizations.of(context).translate("required_min_version")} ${settings.minVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(onPressed: (){
+                if(Platform.isIOS){
+                  launchUrl(Uri.parse("https://apps.apple.com/us/app/djolis/id6736938912"));
+                }else{
+                  launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=uz.merasoft.flutter_djolis&pcampaignid=web_share"));
+                }
+              }, child: Text(AppLocalizations.of(context).translate("update_app"))),
+            ],
+          ) :Stack(
             alignment: Alignment.topCenter,
             children: [
               Visibility(
@@ -199,57 +236,6 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
-                    // child: Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //   children: [
-                    //     const SizedBox(width: 20),
-                    //     Material(
-                    //       child: InkWell(
-                    //         onTap: (){
-                    //           Future.delayed(const Duration(milliseconds: 500));
-                    //           setState(() {
-                    //             _listTab = 0;
-                    //           });
-                    //         },
-                    //         child: Container(
-                    //           height: 40,
-                    //           width: 100,
-                    //           decoration: BoxDecoration(
-                    //             color: Theme.of(context).primaryColor,
-                    //             borderRadius: BorderRadius.circular(8),
-                    //           ),
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.only(left: 8, right: 8),
-                    //             child: Center(child: Text(AppLocalizations.of(context).translate("home_toggle_order"), style: const TextStyle(color: Colors.white),)),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     Material(
-                    //       child: InkWell(
-                    //         onTap: (){
-                    //           Future.delayed(const Duration(milliseconds: 500));
-                    //           setState(() {
-                    //             _listTab = 1;
-                    //           });
-                    //         },
-                    //         child: Container(
-                    //           height: 40,
-                    //           width: 100,
-                    //           decoration: BoxDecoration(
-                    //             color: Theme.of(context).primaryColor,
-                    //             borderRadius: BorderRadius.circular(8),
-                    //           ),
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.only(left: 8, right: 8),
-                    //             child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(color: Colors.white),)),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 20),
-                    //   ],
-                    // ),
                   ),
                 ),
               ),
@@ -258,9 +244,9 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Visibility(
-                    visible: _tabIndex == 0 && settings.itogSumm > 0,
+                    visible: _tabIndex == 0 || _tabIndex == 1 && settings.itogSumm > 0,
                     child: Container(
-                      height: 68,
+                      height: 88,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(12)),
                         border: Border.all(color: Colors.grey.shade300, width: 2),
@@ -351,10 +337,10 @@ class _HomePageState extends State<HomePage> {
   Widget getBottomNavigationBar(MySettings settings) {
     return BottomNavigationBar(
       elevation: 0,
-      selectedLabelStyle: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.w400),
+      selectedLabelStyle: TextStyle(color: Theme.of(context).primaryColor, fontSize: 10, fontWeight: FontWeight.w400),
       unselectedLabelStyle: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w400),
       unselectedItemColor: Colors.black,
-      selectedItemColor: Colors.red,
+      selectedItemColor: Theme.of(context).primaryColor,
       currentIndex: _tabIndex,
       type: BottomNavigationBarType.fixed,
 
@@ -364,7 +350,7 @@ class _HomePageState extends State<HomePage> {
             return;
           }
           if (index == 1) {
-            getCategoryList(settings);
+            // getCategoryList(settings);
             return;
           }
           if (index == 2) {
@@ -387,7 +373,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(0),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/akt_sverka.png", color: _tabIndex == 0 ? Colors.red : Colors.black, height: 24,),
+              Image.asset("assets/icons/akt_sverka.png", color: _tabIndex == 0 ? Theme.of(context).primaryColor : Colors.black, height: 24,),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_dash"),
@@ -398,7 +384,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(1),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/home_icon.png", color: _tabIndex == 1 ? Colors.red : Colors.black, height: 24,),
+              Image.asset("assets/icons/home_icon.png", color: _tabIndex == 1 ? Theme.of(context).primaryColor : Colors.black, height: 24,),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_catalog"),
@@ -409,7 +395,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 myNavbarContainer(2),
                 const SizedBox(height: 10,),
-                Image.asset("assets/icons/shopping_bag.png", color: _tabIndex == 2 ? Colors.red : Colors.black, height: 24),
+                Image.asset("assets/icons/shopping_bag.png", color: _tabIndex == 2 ? Theme.of(context).primaryColor : Colors.black, height: 24),
               ],
             ),
             label: AppLocalizations.of(context).translate("home_card")
@@ -420,7 +406,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(3),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/chat_icon.png", color: _tabIndex == 3 ? Colors.red : Colors.black, height: 24),
+              Image.asset("assets/icons/chat_icon.png", color: _tabIndex == 3 ? Theme.of(context).primaryColor : Colors.black, height: 24),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_akt"),
@@ -430,7 +416,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               myNavbarContainer(4),
               const SizedBox(height: 10,),
-              Image.asset("assets/icons/profile.png", color: _tabIndex == 4 ? Colors.red : Colors.black, height: 24),
+              Image.asset("assets/icons/profile.png", color: _tabIndex == 4 ? Theme.of(context).primaryColor : Colors.black, height: 24),
             ],
           ),
           label: AppLocalizations.of(context).translate("home_profile"),
@@ -441,9 +427,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget myNavbarContainer(int index) {
     return Container(
-      height: 2,
+      height: 4,
       width: 110,
-      color: _tabIndex == index ? Colors.red : Colors.grey.shade200,
+      decoration: BoxDecoration(
+        borderRadius:  BorderRadius.only(topLeft: Radius.circular(_tabIndex == index ? 8 : 0), topRight: Radius.circular(_tabIndex == index ? 8 : 0 )),
+        color: _tabIndex == index ? Theme.of(context).primaryColor : Colors.grey.shade200,
+      ),
     );
   }
 
@@ -754,9 +743,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ));
     }
-
     if (_tabIndex == 0) return const DashboardPage();
-
     if (_tabIndex == 1) {
       return _selectedGroupId == 0 && searchQueryController.text == "" ? (_listTab == 1 ? getCategoryList(settings) : getVitrinaList(settings)) : getProdsList(settings);
     }
@@ -765,6 +752,7 @@ class _HomePageState extends State<HomePage> {
     if (_tabIndex == 4) return ProfilePage(settings: settings,);
     return const Text("");
   }
+
 
   Widget getSearchBar(MySettings settings) {
     return Padding(
@@ -821,6 +809,7 @@ class _HomePageState extends State<HomePage> {
           "Authorization": "Bearer ${settings.token}",
         },
       );
+      debugPrint("$res");
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
@@ -896,6 +885,7 @@ class _HomePageState extends State<HomePage> {
       settings.contractDate = data['d']["settings"]["contractDate"]??"";
       settings.today = data['d']["settings"]["today"]??"";
       settings.ttClass = data['d']["settings"]["ttClass"]??"";
+      settings.minVersion = Utils.checkDouble(data['d']["settings"]["min_version"]).toInt();
     }
   }
 
@@ -1207,6 +1197,14 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+  Future<void> checkUserAndSetScreenshot(MySettings settings) async {
+    if (settings.clientPhone == "+998935550801") {
+      await noScreenshot.screenshotOn();
+    } else {
+      await noScreenshot.screenshotOff();
+    }
   }
 
 }

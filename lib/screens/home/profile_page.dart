@@ -308,6 +308,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? Colors.white
                         : Colors.green.shade800)),
           ),
+
+          CupertinoActionSheetAction(
+            isDefaultAction: true,
+            onPressed: () {
+              settings.language = 3;
+              settings.locale = const Locale("ar", "AR");
+              settings.saveAndNotify();
+              Navigator.pop(context);
+            },
+            child: Text(AppLocalizations.of(context).translate("arabic"),
+                style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.green.shade800)),
+          ),
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text(AppLocalizations.of(context).translate("gl_cancel"),
@@ -367,6 +382,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () {
                     settings.language = 2;
                     settings.locale = const Locale("en", "US");
+                    settings.saveAndNotify();
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: Text(
+                    "🇦🇪",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  title:
+                  Text(AppLocalizations.of(context).translate("arabic")),
+                  onTap: () {
+                    settings.language = 3;
+                    settings.locale = const Locale("ar", "AR");
                     settings.saveAndNotify();
                     Navigator.pop(context);
                   },

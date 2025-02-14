@@ -9,6 +9,8 @@ import 'package:flutter_djolis/screens/common/photo.dart';
 import 'package:flutter_djolis/services/utils.dart';
 import 'package:provider/provider.dart';
 
+import '../firebase_notifications/video_notifs_page.dart';
+
 class DetailPage extends StatefulWidget {
   final DicProd prod;
   final bool isVitrina;
@@ -132,12 +134,18 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8, left: 50, right: 50),
                               child: Visibility(
-                                visible: widget.prod.infoPicUrl.isNotEmpty,
+                                visible: widget.prod.infoPicUrl.isNotEmpty || widget.prod.videoUrl.isNotEmpty,
                                 child: Padding(
                                   padding: const EdgeInsets.only(),
                                   child: InkWell(
                                     onTap: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  PhotoPage(url: widget.prod.infoPicUrl, title: widget.prod.name)));
+                                      if(widget.prod.infoPicUrl.isNotEmpty){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) =>  PhotoPage(url: widget.prod.infoPicUrl, title: widget.prod.name)));
+                                        return;
+                                      } if(widget.prod.videoUrl.isNotEmpty){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) =>  ReelsView(widget.prod.videoUrl)));
+                                        return;
+                                      }
                                     },
                                     child: Container(
                                       height: 40,
@@ -230,7 +238,13 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         summ = qty * price;
                                         if (widget.isVitrina) summ = (prevOst - qty) * price;
                                         if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
-                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+
+                                          if (settings.clientPhone.startsWith("+971")) {
+                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                          } else {
+                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                          }
+
                                         }
                                       });
                                       amountController.text = Utils.myNumFormat0(qty);
@@ -238,11 +252,15 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                     const Text("|", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),),
                                     IconButton(onPressed: (){
                                       setState(() {
+                                        print("Procent: ${widget.prod.cashbackProcent}");
+                                        print("ID: ${widget.prod.id}");
                                         qty++;
                                         summ = qty * price;
                                         if (widget.isVitrina) summ = (prevOst - qty) * price;
 
-                                        if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                        if (settings.clientPhone.startsWith("+971")) {
+                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                        } else {
                                           widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
                                         }
                                       });
@@ -250,18 +268,15 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                     }, icon: const Icon(Icons.add), color: Colors.black),
                                   ],
                                 ),
-
                               ],
                             ),
                           ],
                         ),
                       ),
-          
                     ],
                   ),
                 ),
               ),
-
               Visibility(
                 visible: widget.isVitrina == false && widget.prod.cashbackProcent > 0,
                 child: Text(
@@ -358,7 +373,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     cart.qty = qty;
     cart.price = price;
     cart.summ = summ;
-    cart.cashbackSumm = ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+    cart.cashbackSumm = settings.clientPhone.startsWith("+971") ? ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1: ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
     bool added = false;
     for (int i = 0; i < settings.cartList.length; i++) {
       if (settings.cartList[i].prodId == cart.prodId) {

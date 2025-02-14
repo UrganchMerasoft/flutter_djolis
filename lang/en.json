@@ -156,7 +156,7 @@
   "english": "English",
   "arabic": "Arabic",
 
-  "warnings": "Warnings",
+  "warnings": "Notifications",
   "delete_account": "Delete account",
   "delete_account_info": "To delete your account, please call the following phone number or email.",
 
@@ -166,6 +166,7 @@
   "more_info": "More info",
 
   "debt": "Debt",
+  "pre_paid": "Pre-paid",
   "in_debt": "In debt",
   "cashback": "Cashback",
   "credit_limit": "Credit limit",
@@ -185,5 +186,11 @@
   "debt_notes": "Note...",
   "clients": "Clients",
   "paid": "Paid",
-  "share_app": "Share app"
+  "share_app": "Share app",
+  "lack_of_cashback": "Cashback is not enough! Change your payment method",
+  "card_payment": "Card Payment",
+  "app_update_warning": "You need to update the application to take full advantage of its new features!",
+  "update_app": "Update app!",
+  "your_version":"Your version:",
+  "required_min_version": "Minimum required version:"
 }

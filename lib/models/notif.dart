@@ -8,6 +8,7 @@ class NotifModel extends MyTable {
   late String msg;
   late String msg_title;
   late String pic_url;
+  late String video_url;
   late bool has_read;
   late int is_tezol;
 
@@ -17,6 +18,7 @@ class NotifModel extends MyTable {
     required this.msg,
     required this.msg_title,
     required this.pic_url,
+    required this.video_url,
     required this.has_read,
     required this.is_tezol,
   });
@@ -28,6 +30,7 @@ class NotifModel extends MyTable {
       msg: json['msg'],
       msg_title: json['msg_title'],
       pic_url: json['pic_url'],
+      video_url: json['video_url'],
       has_read: json['has_read'],
       is_tezol: json['is_tezol'],
     );
@@ -41,6 +44,7 @@ class NotifModel extends MyTable {
     map['msg'] = msg;
     map['msg_title'] = msg_title;
     map['pic_url'] = pic_url;
+    map['video_url'] = video_url;
     map['has_read'] = has_read;
     map['is_tezol'] = is_tezol;
     return map;
@@ -53,6 +57,7 @@ class NotifModel extends MyTable {
       "msg": msg,
       "msg_title": msg_title,
       "pic_url": pic_url,
+      "video_url": video_url,
       "is_tezol": is_tezol,
     };
   }
@@ -64,6 +69,7 @@ class NotifModel extends MyTable {
     msg = map['msg']??"";
     msg_title = map['msg_title']??"";
     pic_url = map['pic_url']??"";
+    video_url = map['video_url']??"";
     has_read = (map['has_read']??0) == 1;
     is_tezol = map['is_tezol']??0;
   }

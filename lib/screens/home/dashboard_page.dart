@@ -73,7 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.grey.shade200,
-        body: _shimmer ? shimmerList(settings) : CustomScrollView(
+        body: CustomScrollView(
           slivers: [
             SliverAppBar(
               floating: true,
@@ -94,10 +94,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         const SizedBox(width: 10),
                         InfoContainer(
-                            text1: AppLocalizations.of(context).translate("debt"),
-                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble()),
+                            text1: getDebtText(DataService.debt.toDouble()),
+                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble().abs()),
                             text3: "у.е",
-                            color: Colors.red
+                            color: getColor(DataService.debt.toDouble()),
                         ),
                         const SizedBox(width: 10),
                         InfoContainer(
@@ -137,13 +137,21 @@ class _DashboardPageState extends State<DashboardPage> {
                             },
                             child: Container(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              height: 70,
+                              height: 100,
                               width: 170,
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
-                              child: const Image(image: AssetImage("assets/images/logo-network.png")),
+                              child: Column(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+                                    child: Center(child: Image(image: AssetImage("assets/icons/credit_card.png"), height: 70,)),
+                                  ),
+                                  Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                ],
+                              ),
                             )
                           ),
 
@@ -151,16 +159,22 @@ class _DashboardPageState extends State<DashboardPage> {
                             onTap: () {
                               cashDialog(context, settings);
                             },
-                            child:  Container(
-                              height: 70,
+                            child: Container(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              height: 100,
                               width: 170,
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Image(image: AssetImage("assets/images/salary.png")),
+                              child: Column(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+                                    child: Center(child: Image(image: AssetImage("assets/icons/money.png"), height: 70,)),
+                                  ),
+                                  Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                ],
                               ),
                             )
                           ),
@@ -293,8 +307,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text("${DataService.malumot[index].summ}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
-                                    SizedBox(height: 2),
+                                    Text(Utils.numFormat0_00.format(DataService.malumot[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
+                                    const SizedBox(height: 2),
                                     Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey)),
                                   ],
                                 )
@@ -307,7 +321,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                             Row(
                               children: [
-                                Expanded(child: Text("")),
+                                const Expanded(child: Text("")),
                                 Text(DataService.malumot[index].curtime_str, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500)),
                               ],
                             ),
@@ -766,12 +780,13 @@ class _DashboardPageState extends State<DashboardPage> {
       return;
     }
 
-    print(data);
+    debugPrint("DATA: $data");
     if (data["ok"] == 1) {
       DataService.malumot = (data['d']["malumot"] as List?)?.map((item) => MalumotModel.fromMapObject(item)).toList() ?? [];
 
       DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
+      // DataService.debt = -150;
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
 
       if(mounted){
@@ -1127,8 +1142,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _selectDate(BuildContext context, MySettings settings) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(Duration(days: 1)),
-      firstDate: DateTime.now().add(Duration(days: 1)),
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now().add(const Duration(days: 1)),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -1141,6 +1156,26 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void showRedSnackBar(String msg){
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700));
+  }
+
+  Color getColor(double checker){
+    if(checker < 0){
+      return Colors.green;
+    }else if(checker > 0){
+      return Colors.red;
+    } else {
+      return Colors.black;
+    }
+  }
+
+  String getDebtText(double checker){
+    if(checker < 0){
+      return AppLocalizations.of(context).translate("pre_paid");
+    }else if(checker > 0){
+      return AppLocalizations.of(context).translate("debt");
+    } else{
+      return AppLocalizations.of(context).translate("balance");
+    }
   }
 
 }

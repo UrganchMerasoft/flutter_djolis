@@ -5,7 +5,6 @@ import 'package:flutter_djolis/models/cart.dart';
 import 'package:flutter_djolis/models/vitrina.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../app_localizations.dart';
 import '../services/utils.dart';
 
 
@@ -16,6 +15,7 @@ class MySettings with ChangeNotifier {
   static const THEME_LIGHT = 2;
 
 
+  static int intVersion = 0;
   static int syncVersion = 0;
   static String version = "";
 
@@ -27,6 +27,7 @@ class MySettings with ChangeNotifier {
   String token = "";
   double curRate = 1;
   int clientId = 0;
+  int minVersion = 0;
   String clientPhone = "";
   String clientName = "";
   String clientFio = "";
@@ -96,6 +97,7 @@ class MySettings with ChangeNotifier {
     clientPhone = prefs.getString("clientPhone")??"";
     curRate = prefs.getDouble("curRate")??1.0;
     clientId = prefs.getInt("clientId")??0;
+    minVersion = prefs.getInt("minVersion")??0;
     clientName = prefs.getString("clientName")??"";
     clientFio = prefs.getString("clientFio")??"";
     clientAddress = prefs.getString("clientAddress")??"";
@@ -132,6 +134,7 @@ class MySettings with ChangeNotifier {
     await prefs.setString("clientPhone", clientPhone);
     await prefs.setDouble("curRate", curRate);
     await prefs.setInt("clientId", clientId);
+    await prefs.setInt("minVersion", minVersion);
     await prefs.setString("clientName", clientName);
     await prefs.setString("clientFio", clientFio);
     await prefs.setString("clientAddress", clientAddress);
