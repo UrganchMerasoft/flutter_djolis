@@ -8,6 +8,8 @@ import 'package:flutter_djolis/models/malumot_model.dart';
 import 'package:flutter_djolis/models/new_click_model.dart';
 import 'package:flutter_djolis/models/notif.dart';
 
+import '../models/news.dart';
+
 class DataService {
   static List<DicCatModel> cats = [];
   static List<DicGroups> grp = [];
@@ -16,6 +18,8 @@ class DataService {
   static List<MalumotModel> malumot = [];
   static List<NewClickModel> newClick = [];
   static List<DicCardModel> cards = [];
+  static List<NewsModel> newsList = [];
+  static List<NotifModel> notifsList = [];
   static double cashBack = 0.0;
   static double creditLimit = 0.0;
   static double debt = 0.0;
@@ -38,6 +42,10 @@ class DataService {
 
   static getNewClick(List<dynamic> list) {
     newClick = list.map((i) => NewClickModel.fromMapObject(i)).toList();
+  }
+
+  static void saveNotifs(List<dynamic> list) {
+    notifsList = list.map((e) => NotifModel.fromMapObject(e)).toList();
   }
 
 }

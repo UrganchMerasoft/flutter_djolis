@@ -190,5 +190,6 @@
   "app_update_warning": "Ilovaning yangi imkoniyatlaridan to‘liq foydalanish uchun ilovani yangilashingiz zarur!",
   "update_app": "Ilovani yangilash",
   "your_version":"Sizning versiyangiz:",
-  "required_min_version": "Minimal talab qilinadigan versiya:"
+  "required_min_version": "Minimal talab qilinadigan versiya:",
+  "open": "Ochish"
 }

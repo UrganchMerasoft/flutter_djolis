@@ -192,5 +192,6 @@
   "app_update_warning": "You need to update the application to take full advantage of its new features!",
   "update_app": "Update app!",
   "your_version":"Your version:",
-  "required_min_version": "Minimum required version:"
+  "required_min_version": "Minimum required version:",
+  "open": "Open"
 }

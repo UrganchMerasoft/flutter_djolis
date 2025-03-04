@@ -205,8 +205,9 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       height: 35,
-                                      width: 80,
+                                      width: 70,
                                       child: TextField(
+                                        textAlign: TextAlign.center,
                                         focusNode: _focusNode,
                                         controller: amountController,
                                         onChanged: (v) {

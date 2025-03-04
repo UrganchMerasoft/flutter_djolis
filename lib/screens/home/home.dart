@@ -25,6 +25,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
+import '../../models/news.dart';
 import '../common/photo.dart';
 import 'dashboard_page.dart';
 import 'my_chat_page.dart';
@@ -846,6 +847,7 @@ class _HomePageState extends State<HomePage> {
       grp = (data['d']["groups"] as List?)?.map((item) => DicGroups.fromMapObject(item)).toList() ?? [];
       prods = (data['d']["prods"] as List?)?.map((item) => DicProd.fromMapObject(item)).toList() ?? [];
       DataService.notifs = (data['d']["notifs"] as List?)?.map((item) => NotifModel.fromMapObject(item)).toList() ?? [];
+      DataService.newsList = (data['d']["news"] as List?)?.map((item) => NewsModel.fromMapObject(item)).toList() ?? [];
       DataService.cards = (data['d']["cards"] as List?)?.map((item) => DicCardModel.fromMapObject(item)).toList() ?? [];
       DataService.grp = grp;
       DataService.prods = prods;

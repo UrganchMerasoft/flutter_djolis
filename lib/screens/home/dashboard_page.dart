@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/new_click_model.dart';
@@ -19,6 +20,8 @@ import '../../../services/data_service.dart';
 import '../../../services/utils.dart';
 import '../../models/dic_groups.dart';
 import '../../models/dic_prod.dart';
+import '../../models/news.dart';
+import '../../models/notif.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -50,11 +53,12 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<MySettings>(context, listen: false);
+      getDash(settings);
       getAll(settings);
       refreshCart(settings);
       Timer.periodic(const Duration(seconds: 5), (timer) {
         if (_shimmer) {
-          getAll(settings);
+          getDash(settings);
         } else {
           timer.cancel();
         }
@@ -67,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final settings = Provider.of<MySettings>(context);
     return RefreshIndicator(
       onRefresh: () async {
-        getAll(settings);
+        getDash(settings);
         refreshCart(settings);
         return;
       },
@@ -75,42 +79,75 @@ class _DashboardPageState extends State<DashboardPage> {
         backgroundColor: Colors.grey.shade200,
         body: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              floating: true,
-              snap: true,
-              backgroundColor: Colors.grey.shade200,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InfoContainer(
-                            text1: AppLocalizations.of(context).translate("cashback"),
-                            text2: Utils.myNumFormat(Utils.numFormat0, DataService.cashBack.toDouble()),
-                            text3: "сум",
-                            color: Colors.green
-                        ),
-                        const SizedBox(width: 10),
-                        InfoContainer(
-                            text1: getDebtText(DataService.debt.toDouble()),
-                            text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble().abs()),
-                            text3: "у.е",
-                            color: getColor(DataService.debt.toDouble()),
-                        ),
-                        const SizedBox(width: 10),
-                        InfoContainer(
-                            text1: AppLocalizations.of(context).translate("credit_limit"),
-                            text2: Utils.myNumFormat(Utils.numFormat0, DataService.creditLimit.toDouble()),
-                            text3: "у.е"
-                        ),
-                      ],
+            SliverToBoxAdapter(
+              child: Visibility(
+                visible: DataService.newsList.isNotEmpty,
+                child: SizedBox(
+                  height: (MediaQuery.of(context).size.width * 0.97) * 0.3 + 32,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 8, right: 8),
+                    child: ListView.builder(
+                      itemCount: DataService.newsList.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            // openNews(DataService.newsList[index]);
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.97,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  // width: 300,
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8), child: CachedNetworkImage(imageUrl: DataService.newsList[index].picUrl, fit: BoxFit.cover))),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
               ),
-              expandedHeight: 102,  // Adjust height as needed
+            ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+                child: Card(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InfoContainer(
+                          text1: AppLocalizations.of(context).translate("cashback"),
+                          text2: Utils.myNumFormat(Utils.numFormat0, DataService.cashBack.toDouble()),
+                          text3: "сум",
+                          color: Colors.green
+                      ),
+                      const SizedBox(width: 10),
+                      InfoContainer(
+                        text1: getDebtText(DataService.debt.toDouble()),
+                        text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble().abs()),
+                        text3: "у.е",
+                        color: getColor(DataService.debt.toDouble()),
+                      ),
+                      const SizedBox(width: 10),
+                      InfoContainer(
+                          text1: AppLocalizations.of(context).translate("credit_limit"),
+                          text2: Utils.myNumFormat(Utils.numFormat0, DataService.creditLimit.toDouble()),
+                          text3: "у.е"
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
 
             SliverToBoxAdapter(
@@ -728,7 +765,7 @@ class _DashboardPageState extends State<DashboardPage> {
     ],
   ));
 
-  Future<void> getAll(MySettings settings) async {
+  Future<void> getDash(MySettings settings) async {
     if (_isLoading) return;
     String fcmToken = await Utils.getToken();
     String device_name = (await Utils.getDeviceName())??"";
@@ -783,10 +820,8 @@ class _DashboardPageState extends State<DashboardPage> {
     debugPrint("DATA: $data");
     if (data["ok"] == 1) {
       DataService.malumot = (data['d']["malumot"] as List?)?.map((item) => MalumotModel.fromMapObject(item)).toList() ?? [];
-
       DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]) ;
-      // DataService.debt = -150;
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
 
       if(mounted){
@@ -795,6 +830,74 @@ class _DashboardPageState extends State<DashboardPage> {
           _shimmer = false;
         });
 
+      }
+    }
+  }
+
+  Future<void> getAll(MySettings settings) async {
+    if (_isLoading) return;
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName())??"";
+
+    _isLoading = true;
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/getall");
+    Response? res;
+    try {
+      res = await post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "lang": settings.locale.languageCode,
+          "fcm_token": fcmToken,
+          "phone": settings.clientPhone,
+          "device_name": device_name,
+          "Authorization": "Bearer ${settings.token}",
+        },
+      );
+      debugPrint("$res");
+    } catch (e) {
+      _isLoading = false;
+      if (kDebugMode) {
+        print("Error data null or data['ok] != 1");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      _isLoading = false;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      _isLoading = false;
+      if (kDebugMode) {
+        print("Error data null or data['ok] != 1");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+      DataService.notifs = (data['d']["notifs"] as List?)?.map((item) => NotifModel.fromMapObject(item)).toList() ?? [];
+      DataService.newsList = (data['d']["news"] as List?)?.map((item) => NewsModel.fromMapObject(item)).toList() ?? [];
+      DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
+      DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]);
+      DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
+      if(mounted){
+        setState(() {
+          _isLoading = false;
+          _shimmer = false;
+        });
       }
     }
   }
@@ -1142,8 +1245,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _selectDate(BuildContext context, MySettings settings) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
