@@ -193,173 +193,173 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
 
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                  height: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: Theme
-                        .of(context)
-                        .primaryColor,
-                  ),
-                  child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),))),
-            ),
-          ),
-
-          settings.vitrinaList.isEmpty
-              ? SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
-                child: Container(
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context).translate("list_empty"),
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )
-              : SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(8),
-                  height: 120,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade400, width: 1),
-                  ),
-                  child: Slidable(
-                    endActionPane: ActionPane(
-                      extentRatio: 0.20,
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          backgroundColor: Colors.red,
-                          icon: Icons.restore_from_trash_outlined,
-                          onPressed: (BuildContext context1) async {
-                            Future.delayed(const Duration(milliseconds: 200), () async {
-                              deleteVitrinaList(settings, settings.vitrinaList[index], index);
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    child: Material(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      child: InkWell(
-                        onTap: () async {
-                          Future.delayed(const Duration(milliseconds: 300));
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(settings.vitrinaList[index].prod!, false)));
-                          widget.refreshCart(settings);
-                        },
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context, MaterialPageRoute(builder: (context) => PhotoPage(url: settings.vitrinaList[index].prod!.picUrl, title: settings.cartList[index].prod!.name)));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: CachedNetworkImage(
-                                      imageUrl: settings.vitrinaList[index].prod!.picUrl,
-                                      errorWidget: (context, v, d) {
-                                        return Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
-                                            image: const DecorationImage(image: AssetImage("assets/images/no_image_red.jpg"), fit: BoxFit.cover),
-                                          ),
-                                        );
-                                      },
-                                      height: 60,
-                                      width: 55,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 6),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 5),
-                                        child: Text(
-                                            maxLines: 2,
-                                            settings.vitrinaList[index].prod!.name,
-                                            style: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .titleLarge!
-                                                .copyWith(fontSize: 16)
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12, left: 8),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.vitrinaList[index].qty)}", style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(fontWeight: FontWeight.w700)),
-                                      Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.vitrinaList[index].price)}", style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
-                                      Row(
-                                        children: [
-                                          const Icon(CupertinoIcons.tags, size: 15),
-                                          const SizedBox(width: 5),
-                                          Text(Utils.myNumFormat0(settings.vitrinaList[index].summ), style: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(fontWeight: FontWeight.w700)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              childCount: settings.vitrinaList.length,
-            ),
-          ),
+          // SliverToBoxAdapter(
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(8),
+          //     child: Container(
+          //         height: 30,
+          //         decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(6),
+          //           color: Theme
+          //               .of(context)
+          //               .primaryColor,
+          //         ),
+          //         child: Center(child: Text(AppLocalizations.of(context).translate("vitrina"), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),))),
+          //   ),
+          // ),
+          //
+          // settings.vitrinaList.isEmpty
+          //     ? SliverToBoxAdapter(
+          //   child: Center(
+          //     child: Padding(
+          //       padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+          //       child: Container(
+          //         height: 80,
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //           border: Border.all(color: Colors.grey.shade300),
+          //           borderRadius: BorderRadius.circular(8),
+          //         ),
+          //         child: Center(
+          //           child: Text(
+          //             AppLocalizations.of(context).translate("list_empty"),
+          //             style: const TextStyle(fontSize: 16, color: Colors.grey),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // )
+          //     : SliverList(
+          //   delegate: SliverChildBuilderDelegate(
+          //         (context, index) {
+          //       return Container(
+          //         margin: const EdgeInsets.all(8),
+          //         height: 120,
+          //         clipBehavior: Clip.antiAlias,
+          //         decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(12),
+          //           border: Border.all(color: Colors.grey.shade400, width: 1),
+          //         ),
+          //         child: Slidable(
+          //           endActionPane: ActionPane(
+          //             extentRatio: 0.20,
+          //             motion: const ScrollMotion(),
+          //             children: [
+          //               SlidableAction(
+          //                 backgroundColor: Colors.red,
+          //                 icon: Icons.restore_from_trash_outlined,
+          //                 onPressed: (BuildContext context1) async {
+          //                   Future.delayed(const Duration(milliseconds: 200), () async {
+          //                     deleteVitrinaList(settings, settings.vitrinaList[index], index);
+          //                   });
+          //                 },
+          //               ),
+          //             ],
+          //           ),
+          //           child: Material(
+          //             borderRadius: const BorderRadius.all(Radius.circular(12)),
+          //             child: InkWell(
+          //               onTap: () async {
+          //                 Future.delayed(const Duration(milliseconds: 300));
+          //                 await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(settings.vitrinaList[index].prod!, false)));
+          //                 widget.refreshCart(settings);
+          //               },
+          //               child: Column(
+          //                 children: [
+          //                   Row(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     mainAxisAlignment: MainAxisAlignment.start,
+          //                     children: [
+          //                       InkWell(
+          //                         onTap: () {
+          //                           Navigator.push(
+          //                               context, MaterialPageRoute(builder: (context) => PhotoPage(url: settings.vitrinaList[index].prod!.picUrl, title: settings.cartList[index].prod!.name)));
+          //                         },
+          //                         child: Padding(
+          //                           padding: const EdgeInsets.all(4.0),
+          //                           child: CachedNetworkImage(
+          //                             imageUrl: settings.vitrinaList[index].prod!.picUrl,
+          //                             errorWidget: (context, v, d) {
+          //                               return Container(
+          //                                 decoration: BoxDecoration(
+          //                                   borderRadius: BorderRadius.circular(12),
+          //                                   image: const DecorationImage(image: AssetImage("assets/images/no_image_red.jpg"), fit: BoxFit.cover),
+          //                                 ),
+          //                               );
+          //                             },
+          //                             height: 60,
+          //                             width: 55,
+          //                             fit: BoxFit.contain,
+          //                           ),
+          //                         ),
+          //                       ),
+          //                       Expanded(
+          //                         child: Column(
+          //                           mainAxisAlignment: MainAxisAlignment.start,
+          //                           crossAxisAlignment: CrossAxisAlignment.start,
+          //                           children: [
+          //                             const SizedBox(height: 6),
+          //                             Padding(
+          //                               padding: const EdgeInsets.only(left: 5),
+          //                               child: Text(
+          //                                   maxLines: 2,
+          //                                   settings.vitrinaList[index].prod!.name,
+          //                                   style: Theme
+          //                                       .of(context)
+          //                                       .textTheme
+          //                                       .titleLarge!
+          //                                       .copyWith(fontSize: 16)
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                   Padding(
+          //                     padding: const EdgeInsets.only(right: 12, left: 8),
+          //                     child: Column(
+          //                       children: [
+          //                         const SizedBox(height: 10),
+          //                         Row(
+          //                           children: [
+          //                             Text("${AppLocalizations.of(context).translate("order")}: ${Utils.myNumFormat0(settings.vitrinaList[index].qty)}", style: Theme
+          //                                 .of(context)
+          //                                 .textTheme
+          //                                 .bodyMedium
+          //                                 ?.copyWith(fontWeight: FontWeight.w700)),
+          //                             Expanded(child: Text("  x  ${Utils.myNumFormat0(settings.vitrinaList[index].price)}", style: Theme
+          //                                 .of(context)
+          //                                 .textTheme
+          //                                 .bodyMedium
+          //                                 ?.copyWith(color: const Color(0xFF667085), fontWeight: FontWeight.w500))),
+          //                             Row(
+          //                               children: [
+          //                                 const Icon(CupertinoIcons.tags, size: 15),
+          //                                 const SizedBox(width: 5),
+          //                                 Text(Utils.myNumFormat0(settings.vitrinaList[index].summ), style: Theme
+          //                                     .of(context)
+          //                                     .textTheme
+          //                                     .bodyMedium
+          //                                     ?.copyWith(fontWeight: FontWeight.w700)),
+          //                               ],
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     childCount: settings.vitrinaList.length,
+          //   ),
+          // ),
         ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(settings),
@@ -372,27 +372,33 @@ class _CartPageState extends State<CartPage> {
       child: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 8),
         child: Container(
-          height: 78,
+          height: 80,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(12)),
             border: Border.all(color: Colors.grey.shade300, width: 2),
-            color: Colors.grey.shade200,
+            color: Colors.white,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 2),
-                    Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} сум", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 2),
-                    Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
-                  ],
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 2),
+                      Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 2),
+                      Visibility(
+                          visible: DataService.jumaName.isNotEmpty || DataService.jumaSavdoSumm != 0,
+                          child: Text("${AppLocalizations.of(context).translate("cashback")} (${DataService.jumaName}) ${Utils.myNumFormat0(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm).toDouble())} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500))),
+                      // const SizedBox(height: 2),
+                      // Text("${AppLocalizations.of(context).translate("sales_vitrina")}:  ${Utils.myNumFormat0(settings.itogVitrinaSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -411,7 +417,7 @@ class _CartPageState extends State<CartPage> {
                       ).show();
                       return;
                     } else{
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SendOrdPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SendOrdPage( hasPromo: hasPromoProduct(settings.cartList))));
                     }
                   },
                   child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
@@ -431,12 +437,16 @@ class _CartPageState extends State<CartPage> {
     widget.refreshCart(settings);
   }
 
-  void deleteVitrinaList(MySettings settings, VitrinaModel vitrinaList, int index) {
-    //textEditingController.text = "";
-    settings.vitrinaList.removeAt(index);
-    settings.saveAndNotify();
-    widget.refreshCart(settings);
-}
+//   void deleteVitrinaList(MySettings settings, VitrinaModel vitrinaList, int index) {
+//     //textEditingController.text = "";
+//     settings.vitrinaList.removeAt(index);
+//     settings.saveAndNotify();
+//     widget.refreshCart(settings);
+// }
+
+  bool hasPromoProduct(List<CartModel> cartList) {
+    return cartList.any((element) => element.prod?.hasPromo == 1);
+  }
 
 
   void showSuccessInfo(MySettings settings) {

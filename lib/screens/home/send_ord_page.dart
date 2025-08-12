@@ -20,7 +20,9 @@ import '../../services/data_service.dart';
 import '../../services/utils.dart';
 
 class SendOrdPage extends StatefulWidget {
-  const SendOrdPage({super.key});
+  final bool hasPromo;
+  const SendOrdPage({super.key, required this.hasPromo});
+
 
   @override
   State<SendOrdPage> createState() => _SendOrdPageState();
@@ -46,9 +48,11 @@ class _SendOrdPageState extends State<SendOrdPage> {
   late DateTime deliveryDate;
   bool checker1 = false;
   bool checker2 = false;
+  bool _isAksiyaChecked = false;
   int selectPay = 0;
   bool _shimmer = true;
   double totalSumm = 0;
+  bool isSending = false;
 
 
   @override
@@ -59,7 +63,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
       paymeController.text = ((settings.itogSumm * settings.curRate / 500).round() * 500).toString();
       clickController.text = ((settings.itogSumm * settings.curRate / 500).round() * 500).toString();
       networkController.text = settings.itogSumm.toString();
-      debugPrint("Contract Date: ${settings.contractDate}");
       payedOrder(settings);
       Timer.periodic(const Duration(seconds: 5), (timer) {
         if (_shimmer) {
@@ -153,140 +156,146 @@ class _SendOrdPageState extends State<SendOrdPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ExpansionTile(
-                      collapsedIconColor: Theme.of(context).primaryColor,
-                      collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                    Visibility(
+                        visible: settings.clientPhone.startsWith("+971"),
+                        child: const SizedBox(height: 20)),
+                    Visibility(
+                        visible: settings.clientPhone.startsWith("+971"),
+                      child: ExpansionTile(
+                        collapsedIconColor: Theme.of(context).primaryColor,
+                        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(AppLocalizations.of(context).translate("dash_do_pay"),
+                                style: TextStyle(fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700)),
+                            Text("  (${AppLocalizations.of(context).translate("paid")}: ${Utils.numFormat0_00.format(totalSumm / settings.curRate)})", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
+
+                          ],
+                        ),
+                        trailing: Icon(selectPay == 2 ? Icons.check_circle : Icons.circle_outlined, size: 23),
+                        onExpansionChanged: (bool expanded) {
+                          setState(() {
+                            if (expanded) {
+                              selectPay = 2;
+                              checker1 = false;
+                            } else if (selectPay == 2) {
+                              selectPay = 0;
+                            }
+                            debugPrint("To'lash: ${selectPay}");
+                          });
+                        },
                         children: [
-                          Text(AppLocalizations.of(context).translate("dash_do_pay"),
-                              style: TextStyle(fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700)),
-                          Text("  (${AppLocalizations.of(context).translate("paid")}: ${Utils.numFormat0_00.format(totalSumm / settings.curRate)})", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
+                          Divider(color: Colors.grey.shade300, thickness: 1),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                            child: settings.clientPhone.startsWith("+971")
+                                ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (){
+                                      networkPayDialog(context, settings);
+                                    },
+                                    child: Container(
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      height: 60,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.grey.shade400),
+                                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/icons/credit_card.png"), height: 70)),
+                                          // const Image(image: AssetImage("assets/icons/credit_card.png"),height: 60),
+                                          const SizedBox(width: 15),
+                                          isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                                : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (){
+                                      paymeDialog(context, settings);
+                                    },
+                                    child: Container(
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      height: 50,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                          image: const DecorationImage(image: AssetImage("assets/images/img.png"))),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (){
+                                      clickDialog(context, settings);
+                                    },
+                                    child: Container(
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      height: 50,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                          image: const DecorationImage(image: AssetImage("assets/images/click.png"))),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                              ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                  key: PageStorageKey<String>('controllerA'),
+                                  itemCount: payedOrders.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(payedOrders[index].name, style: Theme.of(context).textTheme.titleMedium),
+                                              Text(" (${payedOrders[index].curtime})", style: Theme.of(context).textTheme.bodySmall),
+                                            ],
+                                          ),
+                                          Text(Utils.numFormat0.format(payedOrders[index].summ), style: Theme.of(context).textTheme.bodyLarge),
+
+                                        ],
+                                      ),
+
+                                    );
+
+                                  }
+                          ),
+                          const SizedBox(height: 10),
+
 
                         ],
                       ),
-                      trailing: Icon(selectPay == 2 ? Icons.check_circle : Icons.circle_outlined, size: 23),
-                      onExpansionChanged: (bool expanded) {
-                        setState(() {
-                          if (expanded) {
-                            selectPay = 2;
-                            checker1 = false;
-                          } else if (selectPay == 2) {
-                            selectPay = 0;
-                          }
-                          debugPrint("To'lash: ${selectPay}");
-                        });
-                      },
-                      children: [
-                        Divider(color: Colors.grey.shade300, thickness: 1),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                          child: settings.clientPhone.startsWith("+971")
-                              ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: (){
-                                    networkPayDialog(context, settings);
-                                  },
-                                  child: Container(
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    height: 60,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.grey.shade400),
-                                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        const Image(image: AssetImage("assets/icons/credit_card.png"),height: 60),
-                                        const SizedBox(width: 15),
-                                        Text(AppLocalizations.of(context).translate("card_payment")),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                              : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: (){
-                                    paymeDialog(context, settings);
-                                  },
-                                  child: Container(
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    height: 50,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                        image: const DecorationImage(image: AssetImage("assets/images/img.png"))),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: (){
-                                    clickDialog(context, settings);
-                                  },
-                                  child: Container(
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    height: 50,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                        image: const DecorationImage(image: AssetImage("assets/images/click.png"))),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                            ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                                key: PageStorageKey<String>('controllerA'),
-                                itemCount: payedOrders.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(payedOrders[index].name, style: Theme.of(context).textTheme.titleMedium),
-                                            Text(" (${payedOrders[index].curtime})", style: Theme.of(context).textTheme.bodySmall),
-                                          ],
-                                        ),
-                                        Text(Utils.numFormat0.format(payedOrders[index].summ), style: Theme.of(context).textTheme.bodyLarge),
-
-                                      ],
-                                    ),
-
-                                  );
-
-                                }
-                        ),
-                        const SizedBox(height: 10),
-
-
-                      ],
                     ),
                     const SizedBox(height: 20),
                     Container(
@@ -409,7 +418,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
                         Expanded(child: Text(AppLocalizations.of(context).translate("cashback_warning"), style: const TextStyle(color: Colors.red, fontSize: 12))),
                       ],
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
 
                   ],
                 ),
@@ -451,130 +460,167 @@ class _SendOrdPageState extends State<SendOrdPage> {
                   Expanded(child: Text(AppLocalizations.of(context).translate("notes_warning"), style:  TextStyle(color: Colors.orange.shade500, fontSize: 12))),
                 ],
               ),
+              const SizedBox(height: 15),
+              Visibility(
+                visible: widget.hasPromo,
+                child: Row(
+                  children: [
+                    Checkbox(
+                      activeColor: Theme.of(context).primaryColor,
+                      visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+                      value: _isAksiyaChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isAksiyaChecked = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 5),
+                    Text(AppLocalizations.of(context).translate("hasPromoAdd"), style: Theme.of(context).textTheme.bodyLarge),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(20)),
-          height: 190,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 25, 20, 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        AppLocalizations.of(context).translate("gl_summa_ord"),
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                      ),
-                    ),
-                    Text(
-                      Utils.numFormat0.format(settings.itogSumm),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        "${AppLocalizations.of(context).translate("cashback")}:",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                      ),
-                    ),
-                    Text(selectPay == 3 ? "0" : Utils.numFormat0.format(settings.itogCashbackSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        "${AppLocalizations.of(context).translate("sales_vitrina")}:",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                      ),
-                    ),
-                    Text(Utils.numFormat0.format(settings.itogVitrinaSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  child: Row(
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Container(
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(20)),
+            height: 190,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 25, 20, 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        flex: 4,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              fixedSize: Size(MediaQuery.of(context).size.width, 45),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              AppLocalizations.of(context).translate("gl_back"),
-                              style: TextStyle(color: Theme.of(context).primaryColor),
-                            )),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          AppLocalizations.of(context).translate("gl_summa_ord"),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 6,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              fixedSize: Size(MediaQuery.of(context).size.width, 45),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                            ),
-                            onPressed: (){
-                              if(settings.clientPhone == "+998977406675"){
-                                sendOrder(settings);
-                                return;
-                              }
-                              if(selectPay == 0){
-                                showRedSnackBar(AppLocalizations.of(context).translate("inv_type"));
-                                return;
-                              }
-                              if(selectPay == 1 && deliveryDateController.text.isEmpty) {
-                                showRedSnackBar(AppLocalizations.of(context).translate("enter_delivery_date"));
-                                return;
-                              }
-                              debugPrint("Cashback: / settings.curRate ${DataService.cashBack / settings.curRate}");
-                              debugPrint("Cashback: ${DataService.cashBack}");
-                              if(selectPay == 3 && DataService.cashBack / settings.curRate < settings.itogSumm){
-                                showRedSnackBar(AppLocalizations.of(context).translate("lack_of_cashback"));
-                                return ;
-                              }
-                              if(selectPay == 4 && dateController.text.isEmpty) {
-                                showRedSnackBar(AppLocalizations.of(context).translate("enter_dolg_date"));
-                                return;
-                              }
-                              sendOrder(settings);
-                              settings.ordUuid = "";
-                            },
-                            child: Text(AppLocalizations.of(context).translate("gl_send"),
-                              style: TextStyle(color: Theme.of(context).primaryColor))),
+                      Text(
+                        Utils.numFormat0.format(settings.itogSumm),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                     ],
                   ),
-                )
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          "${AppLocalizations.of(context).translate("cashback")}:",
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                        ),
+                      ),
+                      Text((settings.clientPhone.startsWith("+998") && selectPay != 1) ? Utils.numFormat0.format(0) : (settings.clientPhone.startsWith("+971") && selectPay == 3) ? Utils.numFormat0.format(0) : Utils.numFormat0.format(settings.itogCashbackSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  Visibility(
+                    visible: DataService.jumaName.isNotEmpty || DataService.jumaSavdoSumm != 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            "${AppLocalizations.of(context).translate("cashback")} (${DataService.jumaName}):",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                          ),
+                        ),
+                        Text("${Utils.myNumFormat0(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm).toDouble())} сум", style:  const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          "${AppLocalizations.of(context).translate("sales_vitrina")}:",
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                        ),
+                      ),
+                      Text(Utils.numFormat0.format(settings.itogVitrinaSumm), style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                fixedSize: Size(MediaQuery.of(context).size.width, 45),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                AppLocalizations.of(context).translate("gl_back"),
+                                style: TextStyle(color: Theme.of(context).primaryColor),
+                              )),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 6,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                fixedSize: Size(MediaQuery.of(context).size.width, 45),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              ),
+                              onPressed: (){
+                                if(settings.clientPhone == "+998977406675"){
+                                  sendOrder(settings);
+                                  return;
+                                }
+                                if(selectPay == 0){
+                                  showRedSnackBar(AppLocalizations.of(context).translate("inv_type"));
+                                  return;
+                                }
+                                if(selectPay == 1 && deliveryDateController.text.isEmpty) {
+                                  showRedSnackBar(AppLocalizations.of(context).translate("enter_delivery_date"));
+                                  return;
+                                }
+                                if(selectPay == 3 && DataService.cashBack / settings.curRate < settings.itogSumm){
+                                  showRedSnackBar(AppLocalizations.of(context).translate("lack_of_cashback"));
+                                  return ;
+                                }
+                                if(selectPay == 4 && dateController.text.isEmpty) {
+                                  showRedSnackBar(AppLocalizations.of(context).translate("enter_dolg_date"));
+                                  return;
+                                }
+                                sendOrder(settings);
+                                settings.ordUuid = "";
+                              },
+                              child: Text(AppLocalizations.of(context).translate("gl_send"),
+                                style: TextStyle(color: Theme.of(context).primaryColor))),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
   void showRedSnackBar(String msg){
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700));
   }
@@ -836,8 +882,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
         ],
       ),
     ],
-  ),
-  );
+  ));
 
   Future<void> newClick(MySettings settings) async {
     String fcmToken = await Utils.getToken();
@@ -968,29 +1013,36 @@ class _SendOrdPageState extends State<SendOrdPage> {
           Padding(
               padding: const EdgeInsets.all(15),
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: Size(MediaQuery.of(context).size.width, 50),
-                    backgroundColor: const Color.fromRGBO(40, 105, 172, 1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  onPressed: ()async{
-                    if (networkController.text.isEmpty){
-                      showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
-                    } else {
-                      await networkPayment(settings);
-                      launchUrl(Uri.parse(networkUrl), mode: LaunchMode.externalApplication);
-                      networkController.clear();
-                      Navigator.pop(context);
-                    }
-                  }, child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 10),
-                  Text(AppLocalizations.of(context).translate("dash_do_pay")),
-                  const Icon(Icons.chevron_right),
-                ],
-              ))
-          ),
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: Size(MediaQuery.of(context).size.width, 50),
+                            backgroundColor: const Color.fromRGBO(40, 105, 172, 1),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                          onPressed: () async {
+                            if (isSending) {
+                              return;
+                            }
+                            Navigator.pop(context);
+                            setState(() {
+                              isSending = true;
+                            });
+                            if (networkController.text.isEmpty) {
+                              showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                              isSending = false;
+                            } else {
+                              await networkPayment(settings);
+                              launchUrl(Uri.parse(networkUrl), mode: LaunchMode.externalApplication);
+                              isSending = false;
+                              networkController.clear();
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const SizedBox(width: 10),
+                              Text(AppLocalizations.of(context).translate("dash_do_pay")),
+                              const Icon(Icons.chevron_right),
+                            ],
+                          ))),
         ],
       ),
     ],
@@ -1226,7 +1278,8 @@ class _SendOrdPageState extends State<SendOrdPage> {
 
   void sendOrder(MySettings settings) async {
     Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/send-order");
-    try {
+    // try {
+    print("SendOrd1");
       Response res = await post(
         uri,
         headers: <String, String>{
@@ -1245,13 +1298,15 @@ class _SendOrdPageState extends State<SendOrdPage> {
           "dolgDate": selectPay == 4 ? Utils.myDateFormat(Utils.formatYYYYMMdd, date1): "",
           "deliveryDate": selectPay == 1 ? Utils.myDateFormat(Utils.formatYYYYMMdd, deliveryDate): "",
           "dolgNotes": debtNotesController.text,
-          "cashbackSumm": selectPay == 3 ? 0.0 : settings.itogCashbackSumm,
+          "cashbackSumm": (settings.clientPhone.startsWith("+998") && selectPay != 1) ? 0.0 : (settings.clientPhone.startsWith("+971") && selectPay == 3) ? 0.0 : settings.itogCashbackSumm,
           "list": settings.cartList,
           "vitrina": settings.vitrinaList,
-          "payedSumm": Utils.checkDouble(totalSumm / settings.curRate)
-        }),
+          "payedSumm": Utils.checkDouble(totalSumm / settings.curRate),
+          "jumaCashback": Utils.checkDouble(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm)),
+          "dolgIs": widget.hasPromo == false || _isAksiyaChecked ? 0 : 1
+      }),
       );
-
+    print("SendOrd2");
       if (res.statusCode != 200) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1260,7 +1315,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
         }
         return;
       }
-
+    print("SendOrd3");
       Map<String, dynamic> data;
       try {
         data = jsonDecode(res.body);
@@ -1272,12 +1327,12 @@ class _SendOrdPageState extends State<SendOrdPage> {
         }
         return;
       }
-
+    print("SendOrd4");
       if (data["ok"] == 1) {
         settings.cartList.clear();
         settings.vitrinaList.clear();
         settings.saveAndNotify();
-
+        print("SendOrd5");
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))),
@@ -1291,12 +1346,18 @@ class _SendOrdPageState extends State<SendOrdPage> {
           );
         }
       }
-    } catch (e) {
+    print("SendOrd6");
+    // } catch (e) {
       if (context.mounted) {
-        debugPrint("An error occured: $e");
+        // debugPrint("An error occured: $e");
       }
-    }
+    print("SendOrd7");
+    // }
   }
+
+  // Future<bool> hasProdPromo(MySettings settings){
+  //
+  // }
 
 
 }

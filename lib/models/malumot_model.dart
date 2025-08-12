@@ -17,6 +17,8 @@ class MalumotModel extends MyTable {
   late double summ;
   late double summ_uzs;
   late String cur_name;
+  late String mijozName;
+  late int mijozId;
 
   MalumotModel({
     required this.id,
@@ -27,6 +29,8 @@ class MalumotModel extends MyTable {
     required this.summ,
     required this.summ_uzs,
     required this.cur_name,
+    required this.mijozName,
+    required this.mijozId,
   });
 
   factory MalumotModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +43,8 @@ class MalumotModel extends MyTable {
       summ: json['summ'],
       summ_uzs: json['summ_uzs'],
       cur_name: json['cur_name'],
+      mijozName: json['mijoz_name'],
+      mijozId: json['mijoz_id'],
     );
   }
 
@@ -53,6 +59,8 @@ class MalumotModel extends MyTable {
     map['summ'] = summ;
     map['summ_uzs'] = summ_uzs;
     map['cur_name'] = cur_name;
+    map['mijoz_name'] = mijozName;
+    map['mijoz_id'] = mijozId;
     return map;
   }
 
@@ -66,6 +74,8 @@ class MalumotModel extends MyTable {
       "summ": summ,
       "summ_uzs": summ_uzs,
       "cur_name": cur_name,
+      "mijoz_name": mijozName,
+      "mijoz_id": mijozId,
     };
   }
 
@@ -79,6 +89,8 @@ class MalumotModel extends MyTable {
     summ = Utils.checkDouble(map['summ']);
     summ_uzs = Utils.checkDouble(map['summ_uzs']);
     cur_name = map['cur_name']??"";
+    mijozName = map['mijoz_name']??"";
+    mijozId = Utils.checkDouble(map['mijoz_id']).toInt();
   }
 
   String getDocType(BuildContext context) {
@@ -87,6 +99,7 @@ class MalumotModel extends MyTable {
 
     if (doc_type == "payme") return "Payme";
     if (doc_type == "click") return "Click";
+    if (doc_type == "iyb") return AppLocalizations.of(context).translate("card_payment");
     return AppLocalizations.of(context).translate("vitrina");
   }
 

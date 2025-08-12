@@ -26,6 +26,16 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    	<string>App requests permission to determine your current location</string>
+    	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+        <string>The app requests permission to access your location at all times or while in use.</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>The app uses your location while it is open and in use.</string>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>The app requires access to your location even when it is running in the background.</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>Permission is required to select an image for commenting on the order</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

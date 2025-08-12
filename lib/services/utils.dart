@@ -5,6 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_djolis/core/mysettings.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -111,6 +112,14 @@ class Utils {
     return null;
   }
 
+  static String formatCardNumber(String cardNumber) {
+    return cardNumber.replaceAllMapped(
+      RegExp(r".{1,4}"),
+          (match) => "${match.group(0)} ",
+    ).trimRight();
+  }
+
+
   static Future<String?> getDeviceName() async {
     String deviceName = "";
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -118,9 +127,11 @@ class Utils {
       if (Platform.isAndroid) {
         AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
         deviceName = build.device;
+        MySettings.deviceType = build.type;
       } else if (Platform.isIOS) {
         IosDeviceInfo build = await deviceInfoPlugin.iosInfo;
         deviceName = build.name;
+        MySettings.deviceType = build.model;
       }
       return deviceName;
     }  catch(e) {

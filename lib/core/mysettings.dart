@@ -18,6 +18,10 @@ class MySettings with ChangeNotifier {
   static int intVersion = 0;
   static int syncVersion = 0;
   static String version = "";
+  static String deviceType = "";
+  static double userLatitude = 0;
+  static double userLongitude = 0;
+  static bool mijozMode = false;
 
   SharedPreferences prefs;
   int theme = THEME_AUTO;  //0 - auto, 1 - night, 2 - blue (default)
@@ -27,6 +31,12 @@ class MySettings with ChangeNotifier {
   String token = "";
   double curRate = 1;
   int clientId = 0;
+  int mijozId = 0;
+  String mijozName = "";
+  String mijozPhone = "";
+  String mijozAddress = "";
+  double mijozGpsLat = 0;
+  double mijozGpsLng = 0;
   int minVersion = 0;
   String clientPhone = "";
   String clientName = "";
@@ -44,6 +54,11 @@ class MySettings with ChangeNotifier {
   String today = "";
   String ordUuid = "";
   String ttClass = "";
+  String payInfo = "";
+  String botToken = "";
+  int botChatId = 0;
+  int allowedMijozCount = 0;
+
 
   String baseName = "";
   String basePhone = "";
@@ -91,20 +106,32 @@ class MySettings with ChangeNotifier {
 
   void load() {
     login = prefs.getString("login")??"";
+    deviceType = prefs.getString("deviceType")??"";
     theme = prefs.getInt("theme")??0;
     language = prefs.getInt("language")??0;
     token = prefs.getString("token")??"";
     clientPhone = prefs.getString("clientPhone")??"";
     curRate = prefs.getDouble("curRate")??1.0;
     clientId = prefs.getInt("clientId")??0;
+    mijozId = prefs.getInt("mijoz_id")??0;
+    mijozName = prefs.getString("mijoz_name")??"";
+    mijozPhone = prefs.getString("mijoz_phone")??"";
+    mijozAddress = prefs.getString("mijoz_address")??"";
+    mijozGpsLat = prefs.getDouble("mijoz_gps_lat")??0.0;
+    mijozGpsLng = prefs.getDouble("mijoz_gps_lng")??0.0;
     minVersion = prefs.getInt("minVersion")??0;
     clientName = prefs.getString("clientName")??"";
     clientFio = prefs.getString("clientFio")??"";
     clientAddress = prefs.getString("clientAddress")??"";
     baseName = prefs.getString("baseName")??"";
+    payInfo = prefs.getString("payInfo")??"";
+    botToken = prefs.getString("botToken")??"";
+    botChatId = prefs.getInt("botChatId")??0;
+    allowedMijozCount = prefs.getInt("allowedMijozCount")??0;
     ordUuid = prefs.getString("ordUuid")??"";
     basePhone = prefs.getString("basePhone")??"";
     serverUrl = prefs.getString("serverUrl")??"";
+    mijozMode = prefs.getBool("mijozMode")??false;
     if (prefs.getString("cartList") != null) {
       cartList = CartModel.fromJsonList(jsonDecode(prefs.getString("cartList") ?? ""));
     }
@@ -128,20 +155,32 @@ class MySettings with ChangeNotifier {
 
   save() async {
     await prefs.setString("login", login);
+    await prefs.setString("deviceType", deviceType);
     await prefs.setInt("theme", theme);
     await prefs.setInt("language", language);
     await prefs.setString("token", token);
     await prefs.setString("clientPhone", clientPhone);
     await prefs.setDouble("curRate", curRate);
     await prefs.setInt("clientId", clientId);
+    await prefs.setInt("mijoz_id", mijozId);
+    await prefs.setString("mijoz_name", mijozName);
+    await prefs.setString("mijoz_phone", mijozPhone);
+    await prefs.setString("mijoz_address", mijozAddress);
+    await prefs.setDouble("mijoz_gps_lat", mijozGpsLat);
+    await prefs.setDouble("mijoz_gps_lng", mijozGpsLng);
     await prefs.setInt("minVersion", minVersion);
     await prefs.setString("clientName", clientName);
     await prefs.setString("clientFio", clientFio);
     await prefs.setString("clientAddress", clientAddress);
     await prefs.setString("baseName", baseName);
+    await prefs.setString("payInfo", payInfo);
+    await prefs.setString("botToken", botToken);
+    await prefs.setInt("botChatId", botChatId);
+    await prefs.setInt("allowedMijozCount", allowedMijozCount);
     await prefs.setString("ordUuid", ordUuid);
     await prefs.setString("basePhone", basePhone);
     await prefs.setString("serverUrl", serverUrl);
+    await prefs.setBool("mijozMode", mijozMode);
     await prefs.setString("cartList", jsonEncode(cartList));
     await prefs.setString("vitrinaList", jsonEncode(vitrinaList));
 

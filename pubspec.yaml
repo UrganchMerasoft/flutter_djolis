@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-version: 1.0.15+15
+version: 1.0.26+26
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -42,19 +42,27 @@ dependencies:
   shimmer: ^3.0.0
   url_launcher: ^6.3.0
   animated_toggle_switch: ^0.8.2
-  sms_autodetect: ^1.1.0
+#  sms_autodetect: ^1.1.0
   qr_flutter: ^4.1.0
   easy_image_viewer: ^1.5.1
   share_plus: ^10.1.2
   video_player: ^2.9.2
   package_info_plus: ^8.2.1
   no_screenshot: ^0.3.1
+  confirm_dialog: ^1.0.4
+  appmetrica_plugin: ^3.1.0
+  star_menu: ^4.0.1
+  select_dialog: ^2.0.2
+  location: ^7.0.1
+  google_maps_flutter: ^2.9.0
 
 
   flutter_localizations:
     sdk: flutter
   extended_masked_text: ^3.0.1
   awesome_dialog: ^3.2.1
+  image_picker: ^1.1.2
+  teledart: ^0.6.1
 
 
 

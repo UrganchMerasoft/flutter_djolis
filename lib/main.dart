@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -24,6 +27,29 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if(Platform.isIOS){
+    AppMetrica.activate(
+        AppMetricaConfig(
+          "a072637e-f5bc-451d-952e-0c288b2bc22d",
+          appOpenTrackingEnabled: true,
+          anrMonitoring: true,
+          crashReporting: true,
+          flutterCrashReporting: true,
+          dataSendingEnabled: true,
+          appBuildNumber: 1,
+          appVersion: MySettings.version,
+          nativeCrashReporting: true,
+          locationTracking: true,
+          logs: true,
+          location: AppMetricaLocation(MySettings.userLatitude, MySettings.userLongitude),
+          revenueAutoTrackingEnabled: true,
+          deviceType: MySettings.deviceType,
+          firstActivationAsUpdate: true,
+          sessionsAutoTrackingEnabled: true,
+        ));
+  }
+
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   LocalNotificationService.initialize();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -49,6 +75,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
     ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(120, 46, 76, 1)), fontFamily: "Inter");
+    // ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(215, 167, 57, 1)), fontFamily: "Inter");
     ThemeData themeDataDark = FlexThemeData.dark(scheme: FlexScheme.custom, colorScheme: const ColorScheme.dark(brightness: Brightness.dark, primary: Color.fromRGBO(124, 46, 76, 1)), fontFamily: "Inter");
 
     ThemeData themeLight = themeDataLight.copyWith(textTheme: themeDataLight.textTheme.copyWith(
@@ -110,7 +137,8 @@ class MyApp extends StatelessWidget {
         return supportedLocales.first;
       },
       navigatorKey: navigatorKey,
-      home: settings.token.isEmpty ? const LoginPage() : const HomePage(),
+      // home: settings.token.isEmpty ? const LoginPage() : const HomePage(),
+      home: const Wrapper(),
 
       routes: {
         FirebaseNotificationPage.route: (context) => const FirebaseNotificationPage(),
@@ -121,6 +149,7 @@ class MyApp extends StatelessWidget {
 }
 
 Future<void> setInitialData() async {
+  await Utils.getDeviceName();
   Utils.numFormatCurrent = Utils.numFormat0;
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();

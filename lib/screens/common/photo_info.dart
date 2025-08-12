@@ -4,16 +4,16 @@ import 'package:provider/provider.dart';
 
 import '../../core/mysettings.dart';
 
-class PhotoPage extends StatefulWidget {
+class PhotoInfoPage extends StatefulWidget {
   final String title;
   final String url;
-  const PhotoPage({super.key, required this.url, required this.title});
+  const PhotoInfoPage({super.key, required this.url, required this.title});
 
   @override
-  PhotoPageState createState() => PhotoPageState();
+  PhotoInfoPageState createState() => PhotoInfoPageState();
 }
 
-class PhotoPageState extends State<PhotoPage> with SingleTickerProviderStateMixin {
+class PhotoInfoPageState extends State<PhotoInfoPage> with SingleTickerProviderStateMixin {
   final TransformationController _transformationController = TransformationController();
   TapDownDetails _doubleTapDetails = TapDownDetails();
   bool _zoomed = false;
@@ -59,7 +59,7 @@ class PhotoPageState extends State<PhotoPage> with SingleTickerProviderStateMixi
             panEnabled: true,
             scaleEnabled: true,
             child: CachedNetworkImage(
-              imageUrl: widget.url,
+              imageUrl: getLocalizedImageUrl(widget.url, settings.locale.languageCode),
               fit: BoxFit.contain,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, v, d) {
@@ -71,4 +71,13 @@ class PhotoPageState extends State<PhotoPage> with SingleTickerProviderStateMixi
       ),
     );
   }
+
+  String getLocalizedImageUrl(String url, String languageCode) {
+    const language = ['ru', 'en', 'uz', 'ar'];
+    if (language.contains(languageCode)) {
+      return url.replaceFirst('/pics/', '/pics/${languageCode}_');
+    }
+    return url;
+  }
+
 }

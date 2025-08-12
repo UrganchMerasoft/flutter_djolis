@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/new_click_model.dart';
 import 'package:flutter_djolis/models/new_payme_model.dart';
+import 'package:flutter_djolis/screens/home/pay_by_bank_card.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -18,8 +19,10 @@ import '../../../core/mysettings.dart';
 import '../../../models/malumot_model.dart';
 import '../../../services/data_service.dart';
 import '../../../services/utils.dart';
+import '../../models/bank_cards_model.dart';
 import '../../models/dic_groups.dart';
 import '../../models/dic_prod.dart';
+import '../../models/juma_model.dart';
 import '../../models/news.dart';
 import '../../models/notif.dart';
 
@@ -39,6 +42,8 @@ class _DashboardPageState extends State<DashboardPage> {
   List<NewPaymeModel> paymeList = [];
   List<DicGroups> grp = [];
   List<DicProd> prods = [];
+  List<BankCardsModel> bankCards = [];
+  bool isSending = false;
 
   TextEditingController clickController = TextEditingController();
   TextEditingController paymeController = TextEditingController();
@@ -72,6 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return RefreshIndicator(
       onRefresh: () async {
         getDash(settings);
+        getAll(settings);
         refreshCart(settings);
         return;
       },
@@ -83,7 +89,7 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Visibility(
                 visible: DataService.newsList.isNotEmpty,
                 child: SizedBox(
-                  height: (MediaQuery.of(context).size.width * 0.97) * 0.3 + 32,
+                  height: (MediaQuery.of(context).size.width * 0.97) * 0.3 + 24,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8, top: 8, right: 8),
                     child: ListView.builder(
@@ -128,7 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       InfoContainer(
                           text1: AppLocalizations.of(context).translate("cashback"),
                           text2: Utils.myNumFormat(Utils.numFormat0, DataService.cashBack.toDouble()),
-                          text3: "сум",
+                          text3: "у.е",
                           color: Colors.green
                       ),
                       const SizedBox(width: 10),
@@ -181,12 +187,13 @@ class _DashboardPageState extends State<DashboardPage> {
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                    child: Center(child: Image(image: AssetImage("assets/icons/credit_card.png"), height: 70,)),
+                                   Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                                    child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/visa_card.png"), height: 70)),
                                   ),
-                                  Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                  isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
                                 ],
                               ),
                             )
@@ -215,63 +222,74 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                             )
                           ),
+
                         ],
                       )
-                          :Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          InkWell(
-                              onTap: () {
-                                paymeDialog(context, settings);
-                              },
-                              child: Container(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                height: 70,
-                                width: 110,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: const Image(image: AssetImage("assets/images/img.png")),
-                              )
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PayByBankCard()));
+                                },
+                                child: Container(
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  height: 115,
+                                  width: 150,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                                        child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/credit_card_design.png"), height: 90,)),
+                                      ),
+                                      isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                                    ],
+                                  ),
+                                )
+                            ),
                           ),
 
-                          InkWell(
-                              onTap: () {
-                                clickDialog(context, settings);
-                              },
-                              child:  Container(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                height: 70,
-                                width: 110,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: const Image(image: AssetImage("assets/images/click.png")),
-                              )
+                          const SizedBox(width: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: InkWell(
+                                onTap: () {
+                                  cashDialog(context, settings);
+                                },
+                                child: Container(
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  height: 115,
+                                  width: 150,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.fromLTRB(2, 0, 2, 2),
+                                        child: Center(child: Image(image: AssetImage("assets/images/wallet.png"), height: 90,)),
+                                      ),
+                                      Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
+                                    ],
+                                  ),
+                                )
+                            ),
                           ),
 
-                          InkWell(
-                              onTap: () {
-                                cashDialog(context, settings);
-                              },
-                              child:  Container(
-                                height: 70,
-                                width: 110,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Image(image: AssetImage("assets/images/salary.png")),
-                                ),
-                              )
-                          ),
+
                         ],
-                      ),
+                      )
                     ),
+
                   ],
                 ),
               ),
@@ -286,10 +304,9 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
                   child: Container(
                       height: 20,
-                      child:  Text(AppLocalizations.of(context).translate("dash_info"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17,),)),
+                      child:  Text(AppLocalizations.of(context).translate("dash_info"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
                 ),
               ),
-
             ),
 
             DataService.malumot.isEmpty
@@ -340,13 +357,18 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(DataService.malumot[index].getDocType(context), style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
+                                Visibility(
+                                  visible: DataService.malumot[index].getDocType(context) != "order" && DataService.malumot[index].mijozId != 0,
+                                    child: Text("${DataService.malumot[index].mijozId} ${DataService.malumot[index].mijozName}", style: Theme.of(context).textTheme.bodySmall)),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(Utils.numFormat0_00.format(DataService.malumot[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
                                     const SizedBox(height: 2),
-                                    Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey)),
+                                    Visibility(
+                                      visible: settings.clientPhone.startsWith("+998"),
+                                        child: Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey))),
                                   ],
                                 )
                               ],
@@ -594,7 +616,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: TextFormField(
                     controller: networkController,
                     keyboardType: const TextInputType.numberWithOptions(),
-                    autofocus: true,
+                    // autofocus: true,
                     decoration: InputDecoration(
                       isDense: true,
                       fillColor: Colors.grey.shade200,
@@ -640,17 +662,25 @@ class _DashboardPageState extends State<DashboardPage> {
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     fixedSize: Size(MediaQuery.of(context).size.width, 50),
-                    backgroundColor: const Color.fromRGBO(40, 105, 172, 1),
+                    backgroundColor: isSending ? Colors.grey : const Color.fromRGBO(40, 105, 172, 1),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  onPressed: ()async{
+                  onPressed: () async {
+                    if (isSending) {
+                      return;
+                    }
+                    Navigator.pop(context);
+                    setState(() {
+                      isSending = true;
+                    });
                     if (networkController.text.isEmpty){
                       showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
+                      isSending = false;
                     } else {
                       await networkPayment(settings);
                       launchUrl(Uri.parse(networkUrl), mode: LaunchMode.externalApplication);
+                      isSending = false;
                       networkController.clear();
-                      Navigator.pop(context);
                     }
                   }, child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -659,8 +689,9 @@ class _DashboardPageState extends State<DashboardPage> {
                   Text(AppLocalizations.of(context).translate("dash_do_pay")),
                   const Icon(Icons.chevron_right),
                 ],
-              ))
+              )),
           ),
+
         ],
       ),
     ],
@@ -893,6 +924,17 @@ class _DashboardPageState extends State<DashboardPage> {
       DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
       DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]);
       DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
+      DataService.juma = (data['d']["juma"] as List?)?.map((item) => JumaModel.fromMapObject(item)).toList() ?? [];
+
+      DataService.jumaName = "";
+      DataService.jumaSavdoSumm = 0;
+      DataService.jumaSumm = 0;
+
+      for(int i = 0; i < DataService.juma.length; i++){
+        DataService.jumaName = DataService.juma[i].name;
+        DataService.jumaSavdoSumm = DataService.juma[i].savdo_summ;
+        DataService.jumaSumm = DataService.juma[i].summ;
+      }
       if(mounted){
         setState(() {
           _isLoading = false;
@@ -1319,3 +1361,58 @@ class InfoContainer extends StatelessWidget {
   }
 }
 
+
+//     :Row(
+//   mainAxisAlignment: MainAxisAlignment.spaceAround,
+//   children: [
+//     InkWell(
+//         onTap: () {
+//           paymeDialog(context, settings);
+//         },
+//         child: Container(
+//           clipBehavior: Clip.antiAliasWithSaveLayer,
+//           height: 70,
+//           width: 110,
+//           decoration: const BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.all(Radius.circular(10)),
+//           ),
+//           child: const Image(image: AssetImage("assets/images/img.png")),
+//         )
+//     ),
+//
+//     InkWell(
+//         onTap: () {
+//           clickDialog(context, settings);
+//         },
+//         child:  Container(
+//           clipBehavior: Clip.antiAliasWithSaveLayer,
+//           height: 70,
+//           width: 110,
+//           decoration: const BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.all(Radius.circular(10)),
+//           ),
+//           child: const Image(image: AssetImage("assets/images/click.png")),
+//         )
+//     ),
+//
+//     InkWell(
+//         onTap: () {
+//           cashDialog(context, settings);
+//         },
+//         child:  Container(
+//           height: 70,
+//           width: 110,
+//           decoration: const BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.all(Radius.circular(10)),
+//           ),
+//           child: const Padding(
+//             padding: EdgeInsets.all(16),
+//             child: Image(image: AssetImage("assets/images/salary.png")),
+//           ),
+//         )
+//     ),
+//   ],
+// ),

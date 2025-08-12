@@ -74,22 +74,23 @@ class FirebaseApi {
                   icon: "@mipmap/ic_launcher",
                   // largeIcon: ByteArrayAndroidBitmap.fromBase64String(await networkImageToBase64(message.data["userPhoto"]))
                 ),
-              ));
+              ),
+          );
         }
+      },
+      );
+    }else if (Platform.isIOS) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        AppleNotificationSound(critical: true, volume: 100);
+        RemoteNotification? notification = message.notification;
 
-        if (Platform.isIOS) {
-          FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-            RemoteNotification? notification = message.notification;
-
-            if (notification != null) {
-              // print("AAA");
-              flutterLocalNotificationsPlugin.show(
-                  notification.hashCode,
-                  notification.title,
-                  notification.body,
-                  const NotificationDetails(iOS: DarwinNotificationDetails()));
-            }
-          });
+        if (notification != null) {
+          // print("AAA");
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              const NotificationDetails(iOS: DarwinNotificationDetails()));
         }
       });
     }

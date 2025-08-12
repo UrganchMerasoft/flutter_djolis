@@ -25,6 +25,12 @@ class DicProd {
   late String infoPicUrl;
   late int hasVitrina;
   late int forVitrina;
+  late double clientMinPrice;
+  late double clientPrice;
+  late int forClients;
+  late int hasPromo;
+  late String promoName;
+
   late double prevOstVitrina;
   late double ostVitrina;
   late double savdoVitrina;
@@ -67,6 +73,11 @@ class DicProd {
     required this.infoPicUrl,
     required this.hasVitrina,
     required this.forVitrina,
+    required this.clientMinPrice,
+    required this.clientPrice,
+    required this.forClients,
+    required this.hasPromo,
+    required this.promoName,
     required this.prevOstVitrina,
     required this.ostVitrina,
     required this.savdoVitrina,
@@ -100,6 +111,11 @@ class DicProd {
       infoPicUrl: json['infoPicUrl'],
       hasVitrina: json['hasVitrina'],
       forVitrina: json['forVitrina'],
+      clientMinPrice: json['clientMinPrice'],
+      clientPrice: json['clientPrice'],
+      forClients: json['forClients'],
+      hasPromo: json['hasPromo'],
+      promoName: json['promoName'],
       prevOstVitrina: json['prevOstVitrina'],
       ostVitrina: json['ostVitrina'],
       savdoVitrina: json['savdoVitrina'],
@@ -135,6 +151,11 @@ class DicProd {
     'infoPicUrl':infoPicUrl,
     'hasVitrina':hasVitrina,
     'forVitrina':forVitrina,
+    'clientMinPrice':clientMinPrice,
+    'clientPrice':clientPrice,
+    'forClients':forClients,
+    'hasPromo':hasPromo,
+    'promoName':promoName,
     'prevOstVitrina':prevOstVitrina,
     'ostVitrina':ostVitrina,
     'savdoVitrina':savdoVitrina,
@@ -168,6 +189,11 @@ class DicProd {
       "infoPicUrl":infoPicUrl,
       "hasVitrina":hasVitrina,
       "forVitrina":forVitrina,
+      "clientMinPrice":clientMinPrice,
+      "clientPrice":clientPrice,
+      "forClients":forClients,
+      "hasPromo":hasPromo,
+      "promoName":promoName,
       "prevOstVitrina":prevOstVitrina,
       "ostVitrina":ostVitrina,
       "savdoVitrina":savdoVitrina,
@@ -201,6 +227,11 @@ class DicProd {
     infoPicUrl = map['infoPicUrl'] ?? "";
     hasVitrina = Utils.checkDouble(map['hasVitrina']).toInt();
     forVitrina = Utils.checkDouble(map['forVitrina']).toInt();
+    clientMinPrice = Utils.checkDouble(map['clientMinPrice']);
+    clientPrice = Utils.checkDouble(map['clientPrice']);
+    forClients = Utils.checkDouble(map['forClients']).toInt();
+    hasPromo = Utils.checkDouble(map['hasPromo']).toInt();
+    promoName = map['promoName'] ?? "";
     prevOstVitrina = Utils.checkDouble(map['prevOstVitrina']);
     ostVitrina = Utils.checkDouble(map['ostVitrina']);
     savdoVitrina = Utils.checkDouble(map['savdoVitrina']);

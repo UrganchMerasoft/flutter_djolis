@@ -240,9 +240,11 @@ class _FirebaseNotificationPageState extends State<FirebaseNotificationPage> {
 
     if (data["ok"] == 1) {
       DataService.notifs = (data['d']["notifs"] as List?)?.map((item) => NotifModel.fromMapObject(item)).toList() ?? [];
+    if(mounted){
       setState(() {
         _isLoading = false;
       });
+    }
     }
   }
 

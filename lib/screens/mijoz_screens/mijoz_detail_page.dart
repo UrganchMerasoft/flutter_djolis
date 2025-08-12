@@ -12,16 +12,16 @@ import 'package:provider/provider.dart';
 import '../common/photo_info.dart';
 import '../firebase_notifications/video_notifs_page.dart';
 
-class DetailPage extends StatefulWidget {
+class MijozDetailPage extends StatefulWidget {
   final DicProd prod;
   final bool isVitrina;
-  const DetailPage(this.prod, this.isVitrina, {super.key});
+  const MijozDetailPage(this.prod, this.isVitrina, {super.key});
 
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  State<MijozDetailPage> createState() => _MijozDetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateMixin{
+class _MijozDetailPageState extends State<MijozDetailPage> with SingleTickerProviderStateMixin{
 
   TextEditingController amountController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -69,23 +69,13 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     final settings = Provider.of<MySettings>(context);
     if (_first) {
       _first = false;
-      if (widget.isVitrina) {
-        getFirstVitrinaData(settings);
-      } else {
-        getFirstData(settings);
-      }
-
+      getFirstData(settings);
     }
 
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text(AppLocalizations.of(context).translate("prod_info")),
-          actions: [
-            Visibility(visible: widget.isVitrina, child: IconButton(onPressed: () {
-              deleteVitrina(settings);
-            }, icon: const Icon(Icons.delete)))
-          ],
         ),
         body: SafeArea(
           child: Column(
@@ -173,30 +163,14 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text("${AppLocalizations.of(context).translate("prod_price_kg")}:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400, color: Colors.grey.shade600)),
-                                Visibility(
-                                  visible: widget.isVitrina == false,
-                                  child: Text(AppLocalizations.of(context).translate("exist_in_wh"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400, color: Colors.grey.shade600))),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
                                 Text(Utils.myNumFormat0(price), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500)),
-                                Visibility(
-                                  visible: widget.isVitrina == false,
-                                  child: widget.prod.ostQty == 0 ?
-                                        Text(AppLocalizations.of(context).translate("not_exist"), style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.w500))
-                                      : Text(AppLocalizations.of(context).translate("exist"), style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
-                                ),
                               ],
                             ),
                             const SizedBox(height: 40),
-                            Visibility(visible: widget.isVitrina, child: Text("${AppLocalizations.of(context).translate("previous_ost")}: ${Utils.myNumFormat0(prevOst)} ")),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(widget.isVitrina == false ? AppLocalizations.of(context).translate("amount") : AppLocalizations.of(context).translate("home_vitrina"), style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),),
+                                Text(AppLocalizations.of(context).translate("amount"), style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),),
                                 Row(
                                   children: [
                                     Container(
@@ -214,11 +188,11 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         setState(() {
                                           qty = Utils.checkDouble(amountController.text.trim());
                                           summ = qty * price;
-                                          if (widget.isVitrina) summ = (prevOst - qty) * price;
-
-                                          if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
-                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
-                                          }
+                                          // if (widget.isVitrina) summ = (prevOst - qty) * price;
+                                          //
+                                          // if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                          //   widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                          // }
                                         });
                                         },
                                         keyboardType: TextInputType.number,
@@ -239,15 +213,15 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         qty--;
                                         if (qty < 0) qty = 0;
                                         summ = qty * price;
-                                        if (widget.isVitrina) summ = (prevOst - qty) * price;
-                                        if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
-
-                                          if (settings.clientPhone.startsWith("+971")) {
-                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
-                                          } else {
-                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
-                                          }
-                                        }
+                                        // if (widget.isVitrina) summ = (prevOst - qty) * price;
+                                        // if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
+                                        //
+                                        //   if (settings.clientPhone.startsWith("+971")) {
+                                        //     widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                        //   } else {
+                                        //     widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                        //   }
+                                        // }
                                       });
                                       amountController.text = Utils.myNumFormat0(qty);
                                     }, icon: const Icon(Icons.remove), color: Colors.black,),
@@ -256,13 +230,13 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                       setState(() {
                                         qty++;
                                         summ = qty * price;
-                                        if (widget.isVitrina) summ = (prevOst - qty) * price;
-
-                                        if (settings.clientPhone.startsWith("+971")) {
-                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
-                                        } else {
-                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
-                                        }
+                                        // if (widget.isVitrina) summ = (prevOst - qty) * price;
+                                        //
+                                        // if (settings.clientPhone.startsWith("+971")) {
+                                        //   widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                        // } else {
+                                        //   widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+                                        // }
                                       });
                                       amountController.text = Utils.myNumFormat0(qty);
                                     }, icon: const Icon(Icons.add), color: Colors.black),
@@ -277,16 +251,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                   ),
                 ),
               ),
-              Visibility(
-                visible: widget.isVitrina == false && widget.prod.cashbackProcent > 0,
-                child: Text(
-                  qty != 0
-                      ? "${AppLocalizations.of(context).translate("cashback")}: ${Utils.myNumFormat2(widget.prod.cashbackSumm)}"
-                      : "",
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.green),
-                ),
-              ),
-              Visibility(visible: widget.isVitrina, child: Text("${AppLocalizations.of(context).translate("sales")}: ${Utils.myNumFormat0(prevOst - qty)} ", style: Theme.of(context).textTheme.titleLarge,)),
+
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 22),
                 child: Row(
@@ -344,8 +309,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     }
 
     if (found == false) {
-      price = widget.prod.price;
-      cart = CartModel(prodId: widget.prod.id, qty: 0, price: widget.prod.price, summ: 0, cashbackProcent: widget.prod.cashbackProcent, cashbackSumm: 0);
+      price = widget.prod.clientPrice;
+      cart = CartModel(prodId: widget.prod.id, qty: 0, price: widget.prod.clientPrice, summ: 0, cashbackProcent: widget.prod.cashbackProcent, cashbackSumm: 0);
       cart.prod = widget.prod;
     }
     amountController.text = Utils.myNumFormat0(qty);
@@ -401,8 +366,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     }
 
     if (found == false) {
-      price = widget.prod.price;
-      vitrina = VitrinaModel(prodId: widget.prod.id, prevOst: widget.prod.prevOstVitrina, ost: 0, qty: 0, price: widget.prod.price, summ: 0);
+      price = widget.prod.clientPrice;
+      vitrina = VitrinaModel(prodId: widget.prod.id, prevOst: widget.prod.prevOstVitrina, ost: 0, qty: 0, price: widget.prod.clientPrice, summ: 0);
       vitrina.prod = widget.prod;
     }
     prevOst = widget.prod.prevOstVitrina;
