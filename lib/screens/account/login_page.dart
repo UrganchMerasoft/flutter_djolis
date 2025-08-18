@@ -562,8 +562,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _checkVisibilityStatus() async {
     final now = DateTime.now();
 
-    final hiddenStart = DateTime(2025, 8, 8, 19, 0);  // 8-avgust 19:00
-    final hiddenEnd = DateTime(2025, 8, 11, 9, 0);    // 11-avgust 09:00
+    final hiddenStart = DateTime(2025, 8, 12, 14, 15);  // 12-avgust 14:15
+    final hiddenEnd = DateTime(2025, 8, 13, 12, 0);    // 13-avgust 12:00
 
     if (now.isAfter(hiddenStart) && now.isBefore(hiddenEnd)) {
       _isButtonVisible = false;
