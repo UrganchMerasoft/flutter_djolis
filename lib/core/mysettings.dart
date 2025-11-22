@@ -58,6 +58,7 @@ class MySettings with ChangeNotifier {
   String botToken = "";
   int botChatId = 0;
   int allowedMijozCount = 0;
+  String djolisPayType = "";
 
 
   String baseName = "";
@@ -122,6 +123,7 @@ class MySettings with ChangeNotifier {
     minVersion = prefs.getInt("minVersion")??0;
     clientName = prefs.getString("clientName")??"";
     clientFio = prefs.getString("clientFio")??"";
+    djolisPayType = prefs.getString("djolisPayType")??"";
     clientAddress = prefs.getString("clientAddress")??"";
     baseName = prefs.getString("baseName")??"";
     payInfo = prefs.getString("payInfo")??"";
@@ -171,6 +173,7 @@ class MySettings with ChangeNotifier {
     await prefs.setInt("minVersion", minVersion);
     await prefs.setString("clientName", clientName);
     await prefs.setString("clientFio", clientFio);
+    await prefs.setString("djolisPayType", djolisPayType);
     await prefs.setString("clientAddress", clientAddress);
     await prefs.setString("baseName", baseName);
     await prefs.setString("payInfo", payInfo);
@@ -196,7 +199,7 @@ class MySettings with ChangeNotifier {
     mainDbId = 0;
     clientPhone = "";
     token = "";
-
+    cartList.clear();
     saveAndNotify();
   }
 

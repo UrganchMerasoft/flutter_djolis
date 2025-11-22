@@ -12,9 +12,7 @@ class LocalNotificationService {
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
-        onDidReceiveLocalNotification: (int id, String? title, String? body, String? payload) async {
-
-        }),
+      ),
     );
     _notificationsPlugin.initialize(initializationSettings);
   }

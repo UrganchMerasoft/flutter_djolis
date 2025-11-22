@@ -69,6 +69,7 @@ class _MijozHomePageState extends State<MijozHomePage> {
         }
       });
     });
+
   }
 
 
@@ -76,7 +77,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
     refreshCart(settings);
-
     return PopScope(
       canPop: _selectedGroupId == 0&&_tabIndex == 0,
       onPopInvoked: (v) async {
@@ -147,7 +147,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
                     textOK: Text(AppLocalizations.of(context).translate("gl_yes")),
                     textCancel: Text(AppLocalizations.of(context).translate("gl_no")),
                   )) {
-                    // logout(settings);
                     settings.logout();
                     settings.cartList.clear();
                     settings.saveAndNotify();
@@ -161,6 +160,7 @@ class _MijozHomePageState extends State<MijozHomePage> {
         body: RefreshIndicator(
           onRefresh: () {
             return getAll(settings);
+
           },
           child: SafeArea(
             child: settings.minVersion > MySettings.intVersion ? Column(
@@ -345,12 +345,10 @@ class _MijozHomePageState extends State<MijozHomePage> {
       debugPrint("$res");
     } catch (e) {
       _isLoading = false;
-      if (kDebugMode) {
-        print("Mijoz HomePage getAll Error data null or data['ok] != 1");
-      }
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Mijoz HomePage getAll Error")));
+        debugPrint("Mijoz HomePage getAll Error data null or data['ok] != 1");
       return;
     }
-
     if (res.body.toString().contains("Invalid Token...")) {
       settings.logout();
       return;
@@ -362,79 +360,84 @@ class _MijozHomePageState extends State<MijozHomePage> {
     } catch (e) {
       _isLoading = false;
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error JSON")));
       }
       return;
     }
 
     if (data == null || data["ok"] != 1) {
       _isLoading = false;
-      if (kDebugMode) {
-        print("Mijoz HomePage getAll Error data null or data['ok] != 1");
-      }
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error: Mijoz data null")));
+      debugPrint("Mijoz HomePage getAll Error data null or data['ok] != 1");
       return;
     }
 
-    if (data["ok"] == 1) {
-      grp = (data['d']["groups"] as List?)?.map((item) => DicGroups.fromMapObject(item)).toList() ?? [];
-      prods = (data['d']["prods"] as List?)?.map((item) => DicProd.fromMapObject(item)).toList() ?? [];
-      DataService.notifs = (data['d']["notifs"] as List?)?.map((item) => NotifModel.fromMapObject(item)).toList() ?? [];
-      DataService.newsList = (data['d']["news"] as List?)?.map((item) => NewsModel.fromMapObject(item)).toList() ?? [];
-      DataService.cards = (data['d']["cards"] as List?)?.map((item) => DicCardModel.fromMapObject(item)).toList() ?? [];
-      DataService.juma = (data['d']["juma"] as List?)?.map((item) => JumaModel.fromMapObject(item)).toList() ?? [];
 
-      DataService.jumaName = "";
-      DataService.jumaSavdoSumm = 0;
-      DataService.jumaSumm = 0;
+    try {
+      if (data["ok"] == 1) {
+        grp = (data['d']["groups"] as List?)?.map((item) => DicGroups.fromMapObject(item)).toList() ?? [];
+        prods = (data['d']["prods"] as List?)?.map((item) => DicProd.fromMapObject(item)).toList() ?? [];
+        DataService.notifs = (data['d']["notifs"] as List?)?.map((item) => NotifModel.fromMapObject(item)).toList() ?? [];
+        DataService.newsList = (data['d']["news"] as List?)?.map((item) => NewsModel.fromMapObject(item)).toList() ?? [];
+        DataService.cards = (data['d']["cards"] as List?)?.map((item) => DicCardModel.fromMapObject(item)).toList() ?? [];
+        DataService.juma = (data['d']["juma"] as List?)?.map((item) => JumaModel.fromMapObject(item)).toList() ?? [];
+        DataService.jumaName = "";
+        DataService.jumaSavdoSumm = 0;
+        DataService.jumaSumm = 0;
 
-      for(int i = 0; i < DataService.juma.length; i++){
-        DataService.jumaName = DataService.juma[i].name;
-        DataService.jumaSavdoSumm = DataService.juma[i].savdo_summ;
-        DataService.jumaSumm = DataService.juma[i].summ;
-      }
-      DataService.grp = grp;
-      DataService.prods = prods;
-      for (int i = 0; i < grp.length; i++) {
-        grp[i].prodCount = 0;
-        for (int k = 0; k < prods.length; k++) {
-          if (grp[i].id == prods[k].groupId&&prods[k].ostQty > 0) {
-            grp[i].prodCount++;
+        for (int i = 0; i < DataService.juma.length; i++) {
+          DataService.jumaName = DataService.juma[i].name;
+          DataService.jumaSavdoSumm = DataService.juma[i].savdo_summ;
+          DataService.jumaSumm = DataService.juma[i].summ;
+        }
+        DataService.grp = grp;
+        DataService.prods = prods;
+        for (int i = 0; i < grp.length; i++) {
+          grp[i].prodCount = 0;
+          for (int k = 0; k < prods.length; k++) {
+            if (grp[i].id == prods[k].groupId && prods[k].ostQty > 0) {
+              grp[i].prodCount++;
+            }
           }
         }
+
+        DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
+        DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]);
+        DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
+
+        settings.curRate = Utils.checkDouble(data['d']["settings"]["curRate"]);
+        settings.clientId = Utils.checkDouble(data['d']["settings"]["clientId"]).toInt();
+        settings.clientName = data['d']["settings"]["clientName"] ?? "";
+        settings.clientFio = data['d']["settings"]["clientFio"] ?? "";
+        settings.clientAddress = data['d']["settings"]["clientAddress"] ?? "";
+        settings.baseName = data['d']["settings"]["baseName"] ?? "";
+        settings.basePhone = data['d']["settings"]["basePhone"] ?? "";
+        settings.firmInn = data['d']["settings"]["firmInn"] ?? "";
+        settings.firmName = data['d']["settings"]["firmName"] ?? "";
+        settings.firmAddress = data['d']["settings"]["firmAddress"] ?? "";
+        settings.firmSchet = data['d']["settings"]["firmSchet"] ?? "";
+        settings.firmBank = data['d']["settings"]["firmBank"] ?? "";
+        settings.firmMfo = data['d']["settings"]["firmMfo"] ?? "";
+        settings.contractNum = data['d']["settings"]["contractNum"] ?? "";
+        settings.contractDate = data['d']["settings"]["contractDate"] ?? "";
+        settings.today = data['d']["settings"]["today"] ?? "";
+        settings.ttClass = data['d']["settings"]["ttClass"] ?? "";
+        settings.minVersion = Utils.checkDouble(data['d']["settings"]["min_version"]).toInt();
+        settings.payInfo = data['d']["settings"]["payInfo"] ?? "";
+        settings.botToken = data['d']["settings"]["botToken"] ?? "";
+        settings.botChatId = Utils.checkDouble(data['d']["settings"]["botChatId"]).toInt();
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _shimmer = false;
+          });
+        }
       }
-      DataService.cashBack = Utils.checkDouble(data['d']["settings"]["cashback"]);
-      DataService.debt = Utils.checkDouble(data['d']["settings"]["dolg"]);
-      DataService.creditLimit = Utils.checkDouble(data['d']["settings"]["credit_limit"]);
-      if(mounted){
-        setState(() {
-          _isLoading = false;
-          _shimmer = false;
-        });
+    } catch (e) {
+      _isLoading = false;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error!")));
       }
-
-      settings.curRate = Utils.checkDouble(data['d']["settings"]["curRate"]);
-      settings.clientId = Utils.checkDouble(data['d']["settings"]["clientId"]).toInt();
-      settings.clientName = data['d']["settings"]["clientName"]??"";
-      settings.clientFio = data['d']["settings"]["clientFio"]??"";
-      settings.clientAddress = data['d']["settings"]["clientAddress"]??"";
-      settings.baseName = data['d']["settings"]["baseName"]??"";
-      settings.basePhone = data['d']["settings"]["basePhone"]??"";
-
-      settings.firmInn = data['d']["settings"]["firmInn"]??"";
-      settings.firmName = data['d']["settings"]["firmName"]??"";
-      settings.firmAddress = data['d']["settings"]["firmAddress"]??"";
-      settings.firmSchet = data['d']["settings"]["firmSchet"]??"";
-      settings.firmBank = data['d']["settings"]["firmBank"]??"";
-      settings.firmMfo = data['d']["settings"]["firmMfo"]??"";
-      settings.contractNum = data['d']["settings"]["contractNum"]??"";
-      settings.contractDate = data['d']["settings"]["contractDate"]??"";
-      settings.today = data['d']["settings"]["today"]??"";
-      settings.ttClass = data['d']["settings"]["ttClass"]??"";
-      settings.minVersion = Utils.checkDouble(data['d']["settings"]["min_version"]).toInt();
-      settings.payInfo = data['d']["settings"]["payInfo"]??"";
-      settings.botToken = data['d']["settings"]["botToken"]??"";
-      settings.botChatId = Utils.checkDouble(data['d']["settings"]["botChatId"]).toInt();
-
     }
   }
 
@@ -650,93 +653,255 @@ class _MijozHomePageState extends State<MijozHomePage> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filteredProds.length,
             itemBuilder: (context, index) {
+              final screenWidth = MediaQuery.of(context).size.width;
+              final imageWidth = (screenWidth * 0.45).clamp(140.0, 170.0);
+              final imageHeight = imageWidth * 1.82;
+              final product = filteredProds[index];
+              final hasOrder = product.orderQty > 0;
+
               return Padding(
-                padding: const EdgeInsets.fromLTRB(15, 12, 15, 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: filteredProds[index].orderQty > 0 ? Colors.orange : Colors.grey.shade400,
-                    ),
-                    color: filteredProds[index].orderQty != 0
-                        ? Colors.orange.withOpacity(0.15)
-                        : Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: hasOrder
+                            ? Theme.of(context).primaryColor.withOpacity(0.5)
+                            : Colors.grey.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 0,
+                      ),
+                    ],
                   ),
                   child: Material(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     color: Colors.transparent,
                     child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
                       onTap: () async {
-                        Future.delayed(const Duration(milliseconds: 200), () async {
-                          if (filteredProds[index].ostQty == 0) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(AppLocalizations.of(context).translate("lack_of_prods")),
+                        if (product.ostQty == 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.error_outline, color: Colors.white),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: Text(AppLocalizations.of(context).translate("lack_of_prods")),
+                                  ),
+                                ],
+                              ),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: Colors.red.shade700,
-                            ));
-                            return;
-                          }
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MijozDetailPage(filteredProds[index], false),
-                            ),
-                          );
-                          refreshCart(settings);
-                        });
-                      },
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MijozDetailPage(filteredProds[index], false),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: CachedNetworkImage(
-                                imageUrl: filteredProds[index].picUrl,
-                                errorWidget: (context, v, d) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      image: const DecorationImage(
-                                        image: AssetImage("assets/images/no_image_red.jpg"),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                height: 310,
-                                width: 170,
-                                fit: BoxFit.fill,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
+                          );
+                          return;
+                        }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MijozDetailPage(product, false),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
-                            child: Text(
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              filteredProds[index].name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w500),
-                            ),
+                        );
+                        refreshCart(settings);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Rasm qismi
+                          Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Stack(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl: product.picUrl,
+                                        errorWidget: (context, v, d) {
+                                          return Container(
+                                            height: imageHeight,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              image: const DecorationImage(
+                                                image: AssetImage("assets/images/no_image_red.jpg"),
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        height: imageHeight,
+                                        width: double.infinity,
+                                        fit: BoxFit.contain,
+                                      ),
+                                      // Gradient overlay (rasm ustida yengil qorong'ulik)
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.bottomCenter,
+                                              end: Alignment.topCenter,
+                                              colors: [
+                                                Colors.black.withOpacity(0.3),
+                                                Colors.transparent,
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // Badge agar mahsulot tanlangan bo'lsa
+                              if (hasOrder)
+                                Positioned(
+                                  top: 20,
+                                  right: 20,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context).primaryColor,
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.shopping_cart,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${product.orderQty.toInt()}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              // Stock badge
+                              if (product.ostQty == 0)
+                                Positioned(
+                                  top: 20,
+                                  left: 20,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(AppLocalizations.of(context).translate("out_of_stock"), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                            ],
                           ),
+
+                          // Ma'lumot qismi
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 16, top: 8),
-                            child: Text(
-                              "${AppLocalizations.of(context).translate("price")}: ${Utils.myNumFormat0(filteredProds[index].clientPrice)}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w500),
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Mahsulot nomi
+                                Text(
+                                  product.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.3,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // Narx va button
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).translate("price"),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            Utils.myNumFormat0(product.clientPrice),
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Batafsil button
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context).primaryColor.withOpacity(0.8),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(12),
+                                          onTap: () async {
+                                            await Navigator.push(context, MaterialPageRoute(builder: (context) => MijozDetailPage(product, false)));
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: Icon(
+                                              Icons.arrow_forward_rounded,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -746,12 +911,11 @@ class _MijozHomePageState extends State<MijozHomePage> {
                 ),
               );
             },
-          ),
+          )
         ],
       ),
     );
   }
-
 
 
   void showRedSnackBar(String msg){
@@ -762,7 +926,7 @@ class _MijozHomePageState extends State<MijozHomePage> {
   }
 
   Future<void> checkUserAndSetScreenshot(MySettings settings) async {
-    if (settings.mijozPhone == "+998935550801" || settings.mijozName == "Director") {
+    if (settings.mijozPhone == "+998935550801" || settings.mijozName == "Director" || settings.clientPhone == "+971552620505" || settings.mijozName == "Feruz" || settings.mijozName == "Akmaral") {
       await noScreenshot.screenshotOn();
     } else {
       await noScreenshot.screenshotOff();

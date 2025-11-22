@@ -24,6 +24,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
   final _formKey = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+  final _formKey4 = GlobalKey<FormState>();
 
   bool _isLoading = false;
   List<DicClients> clients = [];
@@ -31,6 +32,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController expiryController = TextEditingController();
   TextEditingController panController = TextEditingController();
+  TextEditingController cvvController = TextEditingController();
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
           centerTitle: true,
           actions:[
             IconButton(onPressed: (){
-              showDialog(context: context, builder: (BuildContext context) => addClientDialog(settings, 2, ));
+              showDialog(context: context, builder: (BuildContext context) => addCardDialog(settings, 2, ));
             }, icon: const Icon(Icons.add))
           ]
       ),
@@ -84,7 +86,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
                         ],
                       ),
                       child: Container(
-                        height: 170,
+                        height: 175,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                             image:  DecorationImage(image: AssetImage(imagePath),fit: BoxFit.cover),
@@ -97,19 +99,25 @@ class _BankCardsPageState extends State<BankCardsPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               Padding(
-                                padding: const EdgeInsets.only(top: 20, left: 12),
+                                padding: const EdgeInsets.only(top: 15, left: 12),
                                 child: Text(cards[index].name, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(top: 20, left: 12),
+                                padding: const EdgeInsets.only(top: 15, left: 12),
                                 child: Text(Utils.formatCardNumber(cards[index].pan), style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
                               ),
 
                               Padding(
                                 padding: const EdgeInsets.only(top: 20, left: 15),
-                                child: Text("${cards[index].expiry.substring(0, 2)}/${cards[index].expiry.substring(2)}", style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 18)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("${cards[index].expiry.substring(0, 2)}/${cards[index].expiry.substring(2)}", style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 18)),
+                                    const SizedBox(height: 10),
+                                    cards[index].cvv.isEmpty ? Text("", style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 18)) : Text("CVV: ${cards[index].cvv}", style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white, fontSize: 18)),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -126,7 +134,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).primaryColor,
           onPressed: () {
-            showDialog(context: context, builder: (BuildContext context) => addClientDialog(settings, 2, ));
+            showDialog(context: context, builder: (BuildContext context) => addCardDialog(settings, 2, ));
           },
           child: const Icon(Icons.add, color: Colors.white,)),
       )
@@ -134,7 +142,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
   }
 
 
-  AlertDialog addClientDialog(MySettings settings, int index, {int? clientId}) {
+  AlertDialog addCardDialog(MySettings settings, int index, {int? clientId}) {
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -218,6 +226,45 @@ class _BankCardsPageState extends State<BankCardsPage> {
                 ),
                 const SizedBox(height: 10),
                 Form(
+                  key: _formKey4,
+                  child: Visibility(
+                    visible: settings.clientPhone.startsWith("+971"),
+                    child: TextFormField(
+                      validator: settings.clientPhone.startsWith("971") ? (val){
+                        if(val == null || val.isEmpty){
+                          return AppLocalizations.of(context).translate("enter_cvv");
+                        }
+                        if(val.length != 3){
+                          return AppLocalizations.of(context).translate("cvv_must_be_3");
+                        }
+                        return null;
+                      }: null,
+                      controller: cvvController,
+                      autofocus: true,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(3),
+                      ],
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(onPressed: (){
+                          cvvController.clear();
+                        }, icon: const Icon(Icons.clear)),
+                        isDense: true,
+                        fillColor: Colors.grey.shade200,
+                        errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                        labelText: "CVV",
+                        focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
+                        border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                        enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Form(
                   key: _formKey3,
                   child: TextFormField(
                     validator: (val){
@@ -256,6 +303,9 @@ class _BankCardsPageState extends State<BankCardsPage> {
                             return;
                           }
                           if (!_formKey2.currentState!.validate()) {
+                            return;
+                          }
+                          if (settings.clientPhone.startsWith("971") && !_formKey4.currentState!.validate()) {
                             return;
                           }
                           if (!_formKey3.currentState!.validate()) {
@@ -395,6 +445,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
       body: jsonEncode({
         "name": nameController.text,
         "pan": cleanedCardNumber,
+        "cvv": cvvController.text,
         "expiry": cleanedExpiry
       }),
     );
@@ -429,6 +480,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
       nameController.clear();
       panController.clear();
       expiryController.clear();
+      cvvController.clear();
       Navigator.pop(context);
     } else {
       debugPrint("Error: ${res.statusCode}");
@@ -466,6 +518,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
       nameController.clear();
       panController.clear();
       expiryController.clear();
+      cvvController.clear();
       Navigator.pop(context);
     } else {
       debugPrint("Error: ${res.statusCode}");

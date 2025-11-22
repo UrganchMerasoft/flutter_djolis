@@ -34,19 +34,10 @@ class _PayByBankCardState extends State<PayByBankCard> {
   List<BankCardsModel> bankCards = [];
   String? _selectedPan;
   String? _selectedExpiry;
-  late Future<void> _smsTimerFuture;
   int? _selectedCardIndex;
   String transferId = "";
   bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final settings = Provider.of<MySettings>(context, listen: false);
-      getAllBankCards(settings);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,12 +186,12 @@ class _PayByBankCardState extends State<PayByBankCard> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Row(
+                 Row(
                   children: [
-                    Icon(CupertinoIcons.exclamationmark_circle, color: Colors.orange, size: 25),
+                   const Icon(CupertinoIcons.exclamationmark_circle, color: Colors.orange, size: 25),
                     Flexible(child: Padding(
-                      padding: EdgeInsets.only(top: 8, left: 6),
-                      child: Text("Kartangizga ulangan telefon raqamga kelgan 6 xonali kodni kiriting", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.grey),),
+                      padding: const EdgeInsets.only(top: 8, left: 6),
+                      child: Text(AppLocalizations.of(context).translate("enter_6_digit_code"), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.grey),),
                     )),
                   ],
                 ),
@@ -384,6 +375,7 @@ class _PayByBankCardState extends State<PayByBankCard> {
 
     final Map<String, dynamic> body = {
       "client_id": settings.clientId,
+      "mijoz_id": settings.mijozId,
       "pan": _selectedPan,
       "expiry": _selectedExpiry,
       "summ": int.parse(summ)
@@ -437,6 +429,7 @@ class _PayByBankCardState extends State<PayByBankCard> {
         "transfer_id": transferId,
         "code": smsCodeController.text,
         "client_id": settings.clientId,
+        "mijoz_id": settings.mijozId,
         "pan": _selectedPan,
         "expiry": _selectedExpiry,
         "summ": int.parse(summ)
@@ -475,7 +468,7 @@ class _PayByBankCardState extends State<PayByBankCard> {
       } else {
         print(response);
         print(response.body);
-        debugPrint("❌ Server xatosi: ${response.statusCode}");
+        debugPrint("❌ Server xatosii: ${response.statusCode}");
         _showErrorDialog("Server error: ${response.statusCode}");
       }
     } catch (e) {

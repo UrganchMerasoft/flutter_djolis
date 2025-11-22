@@ -243,7 +243,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         if (!widget.isVitrina && widget.prod.cashbackProcent > 0) {
 
                                           if (settings.clientPhone.startsWith("+971")) {
-                                            widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                            // widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                            widget.prod.cashbackSumm = (summ * widget.prod.cashbackProcent / 100);
                                           } else {
                                             widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
                                           }
@@ -259,7 +260,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                                         if (widget.isVitrina) summ = (prevOst - qty) * price;
 
                                         if (settings.clientPhone.startsWith("+971")) {
-                                          widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                          // widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1;
+                                          widget.prod.cashbackSumm = (summ * widget.prod.cashbackProcent / 100);
                                         } else {
                                           widget.prod.cashbackSumm = ((summ * widget.prod.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
                                         }
@@ -373,7 +375,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     cart.qty = qty;
     cart.price = price;
     cart.summ = summ;
-    cart.cashbackSumm = settings.clientPhone.startsWith("+971") ? ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 1).roundToDouble() * 1 : ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
+    cart.cashbackSumm = settings.clientPhone.startsWith("+971") ? (cart.summ * cart.cashbackProcent / 100) : ((cart.summ * cart.cashbackProcent / 100) * settings.curRate / 500).roundToDouble() * 500;
     bool added = false;
     for (int i = 0; i < settings.cartList.length; i++) {
       if (settings.cartList[i].prodId == cart.prodId) {

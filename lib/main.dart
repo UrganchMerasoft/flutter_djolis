@@ -51,11 +51,8 @@ Future<void> main() async {
   }
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  LocalNotificationService.initialize();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseApi().initNotifications();
   await setInitialData();
-  FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
   runApp(
     MultiProvider(
@@ -74,7 +71,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<MySettings>(context);
-    ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(120, 46, 76, 1)), fontFamily: "Inter");
+    ThemeData themeDataLight = FlexThemeData.light(useMaterial3: false, scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(120, 46, 76, 1)), fontFamily: "Inter");
     // ThemeData themeDataLight = FlexThemeData.light(scheme: FlexScheme.custom, colorScheme: const ColorScheme.light(primary: Color.fromRGBO(215, 167, 57, 1)), fontFamily: "Inter");
     ThemeData themeDataDark = FlexThemeData.dark(scheme: FlexScheme.custom, colorScheme: const ColorScheme.dark(brightness: Brightness.dark, primary: Color.fromRGBO(124, 46, 76, 1)), fontFamily: "Inter");
 

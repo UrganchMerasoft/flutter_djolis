@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/foundation.dart';
@@ -6,8 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_djolis/app_localizations.dart';
 import 'package:flutter_djolis/core/mysettings.dart';
 import 'package:flutter_djolis/services/utils.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -87,35 +91,55 @@ class _OrdersPageState extends State<OrdersPage> {
                     visible: currentValue == 1 ? (Utils.checkDouble(orders[index]["status_id"]).toInt() == 0) : (Utils.checkDouble(orders[index]["status_id"]).toInt() != 0 ),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 6, 8, 2),
-                      child: Card(
-                        child: InkWell(
-                          onTap: () {
-                            openOrder(settings, orders[index]);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("# " + orders[index]["id"].toString() + "      ", style: Theme.of(context).textTheme.titleSmall),
-                                    Expanded(child: Text(orders[index]["curdate_str"].toString(), style: Theme.of(context).textTheme.titleSmall)),
-                                    Text(Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])), style: Theme.of(context).textTheme.titleSmall),
-                                  ],
-                                ),
-                                const SizedBox(height: 12,),
-                                Row(
-                                  children: [
-                                    Expanded(child: Text(orders[index]["notes"], style: Theme.of(context).textTheme.bodyMedium,)),
-                                    getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                    getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                  ],
-                                )
-                              ],
+                      child: Slidable(
+                        // key: ValueKey(orders[index].id),
+                        enabled: settings.clientPhone.startsWith("+971"),
+                        endActionPane: ActionPane(
+                          extentRatio: 0.3,
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) async {
+                                await _downloadAndShareInvoicePDF(context, settings, Utils.checkDouble(orders[index]["invoice_id"]).toInt(), Utils.checkDouble(orders[index]["order_id"]).toInt());
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.share,
+                              label: AppLocalizations.of(context).translate("gl_share"),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ],
+                        ),
+                        child: Card(
+                          child: InkWell(
+                            onTap: () {
+                              openOrder(settings, orders[index]);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("# " + orders[index]["id"].toString() + "      ", style: Theme.of(context).textTheme.titleSmall),
+                                      Expanded(child: Text(orders[index]["curdate_str"].toString(), style: Theme.of(context).textTheme.titleSmall)),
+                                      Text(Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])), style: Theme.of(context).textTheme.titleSmall),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12,),
+                                  Row(
+                                    children: [
+                                      Expanded(child: Text(orders[index]["notes"], style: Theme.of(context).textTheme.bodyMedium,)),
+                                      getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                      getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -238,6 +262,76 @@ class _OrdersPageState extends State<OrdersPage> {
         ),
       ));
     });
+  }
+
+  Future<void> _downloadAndShareInvoicePDF(BuildContext context, MySettings settings, int invoiceId, int orderId) async {
+    // Context ni saqlab qolamiz
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).translate("wait")))
+    );
+
+    try {
+      // URL da invoiceId va orderId parametrlarini qo'shamiz
+      Uri uri = Uri.parse("http://37.230.115.134/telegram_bot_pdf/esale_dubai_invoice.php?inv_id=$invoiceId&order_id=$orderId");
+
+      // GET so'rov yuboramiz (POST o'rniga)
+      Response res = await get(uri);
+
+      if (res.statusCode == 200) {
+        // PDF faylni vaqtinchalik saqlash
+        final bytes = res.bodyBytes;
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/invoice_${invoiceId}_$orderId.pdf');
+        await file.writeAsBytes(bytes);
+
+        // Context tekshirish va origin hisoblash
+        Rect? origin;
+        if (context.mounted) {
+          final renderBox = context.findRenderObject();
+          if (renderBox is RenderBox) {
+            final position = renderBox.localToGlobal(Offset.zero);
+            final size = renderBox.size;
+
+            if (size.width > 0 && size.height > 0) {
+              origin = position & size;
+            }
+          }
+        }
+
+        // Agar origin null yoki nol bo'lsa, fallback qiymat berish
+        // iOS 26 uchun MAJBURIY!
+        origin ??= Rect.fromLTWH(0, 0, 100, 100);
+
+        // PDF faylni share qilish
+        final params = ShareParams(
+          files: [XFile(file.path)],
+          sharePositionOrigin: origin,
+        );
+
+        final result = await SharePlus.instance.share(params);
+
+        // Share natijasini tekshirish
+        if (context.mounted) {
+          if (result.status == ShareResultStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_shared_successfully"))));
+          } else if (result.status == ShareResultStatus.dismissed) {
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("share_cancelled"))));
+          } else {
+            // ShareResultStatus.unavailable
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("share_unavailable")), backgroundColor: Colors.orange));
+          }
+        }
+      } else {
+        throw Exception('Failed to download PDF: ${res.statusCode}');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_download_error")), backgroundColor: Colors.red));
+      }
+      debugPrint("PDF download error: $e");
+    }
   }
 
   getStatusText(MySettings settings, int status_id) {

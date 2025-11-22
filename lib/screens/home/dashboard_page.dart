@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_djolis/models/new_click_model.dart';
 import 'package:flutter_djolis/models/new_payme_model.dart';
 import 'package:flutter_djolis/screens/home/pay_by_bank_card.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
@@ -85,39 +90,32 @@ class _DashboardPageState extends State<DashboardPage> {
         backgroundColor: Colors.grey.shade200,
         body: CustomScrollView(
           slivers: [
+
             SliverToBoxAdapter(
               child: Visibility(
                 visible: DataService.newsList.isNotEmpty,
-                child: SizedBox(
-                  height: (MediaQuery.of(context).size.width * 0.97) * 0.3 + 24,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, top: 8, right: 8),
-                    child: ListView.builder(
-                      itemCount: DataService.newsList.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            // openNews(DataService.newsList[index]);
-                          },
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.97,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  // width: 300,
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8), child: CachedNetworkImage(imageUrl: DataService.newsList[index].picUrl, fit: BoxFit.cover))),
-                            ),
-                          ),
-                        );
-                      },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  child: CarouselSlider.builder(
+                    itemCount: DataService.newsList.length,
+                    itemBuilder: (context, index, realIndex) {
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.97,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CachedNetworkImage(
+                              imageUrl: DataService.newsList[index].picUrl, fit: BoxFit.cover),
+                        ),
+                      );
+                    },
+                    options: CarouselOptions(
+                      height: (MediaQuery.of(context).size.width * 0.97) * 0.27 + 16,
+                      viewportFraction: 1.1,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 3),
+                      autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+                      enlargeCenterPage: false,
+                      enableInfiniteScroll: false,
                     ),
                   ),
                 ),
@@ -134,21 +132,21 @@ class _DashboardPageState extends State<DashboardPage> {
                       InfoContainer(
                           text1: AppLocalizations.of(context).translate("cashback"),
                           text2: Utils.myNumFormat(Utils.numFormat0, DataService.cashBack.toDouble()),
-                          text3: "у.е",
+                          text3: settings.clientPhone.startsWith("+998") ? "у.е":"AED",
                           color: Colors.green
                       ),
                       const SizedBox(width: 10),
                       InfoContainer(
                         text1: getDebtText(DataService.debt.toDouble()),
                         text2: Utils.myNumFormat(Utils.numFormat0_00, DataService.debt.toDouble().abs()),
-                        text3: "у.е",
+                        text3: settings.clientPhone.startsWith("+998") ? "у.е":"AED",
                         color: getColor(DataService.debt.toDouble()),
                       ),
                       const SizedBox(width: 10),
                       InfoContainer(
                           text1: AppLocalizations.of(context).translate("credit_limit"),
                           text2: Utils.myNumFormat(Utils.numFormat0, DataService.creditLimit.toDouble()),
-                          text3: "у.е"
+                        text3: settings.clientPhone.startsWith("+998") ? "у.е":"AED",
                       ),
                     ],
                   ),
@@ -162,11 +160,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
-                      child: Container(
-                        height: 20,
-                        child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
+                    Visibility(
+                      visible: settings.djolisPayType != "NONE",
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
+                        child: SizedBox(
+                          height: 20,
+                          child:  Text(AppLocalizations.of(context).translate("dash_pay"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8),
@@ -180,8 +181,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             },
                             child: Container(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              height: 100,
-                              width: 170,
+                              height: 115,
+                              width: 150,
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -189,11 +190,11 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                    child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/visa_card.png"), height: 70)),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                                    child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/credit_card_design.png"), height: 90,)),
                                   ),
-                                  isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                  isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
                                 ],
                               ),
                             )
@@ -205,8 +206,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             },
                             child: Container(
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              height: 100,
-                              width: 170,
+                              height: 115,
+                              width: 150,
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -214,10 +215,10 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: Column(
                                 children: [
                                   const Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                    child: Center(child: Image(image: AssetImage("assets/icons/money.png"), height: 70,)),
+                                    padding: EdgeInsets.fromLTRB(2, 0, 2, 2),
+                                    child: Center(child: Image(image: AssetImage("assets/images/wallet.png"), height: 90,)),
                                   ),
-                                  Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+                                  Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
                                 ],
                               ),
                             )
@@ -225,69 +226,128 @@ class _DashboardPageState extends State<DashboardPage> {
 
                         ],
                       )
-                          : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                          : settings.djolisPayType == "NONE"
+                          ? const SizedBox.shrink()
+
+                          : settings.djolisPayType == "PAYME"
+                          ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PayByBankCard()));
-                                },
-                                child: Container(
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  height: 115,
-                                  width: 150,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                                        child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/credit_card_design.png"), height: 90,)),
-                                      ),
-                                      isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                                    ],
-                                  ),
-                                )
-                            ),
+                          InkWell(
+                              onTap: () {
+                                paymeDialog(context, settings);
+                              },
+                              child: Container(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Image(image: AssetImage("assets/images/img.png")),
+                              )
                           ),
 
-                          const SizedBox(width: 10),
-
-                          Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: InkWell(
-                                onTap: () {
-                                  cashDialog(context, settings);
-                                },
-                                child: Container(
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  height: 115,
-                                  width: 150,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.fromLTRB(2, 0, 2, 2),
-                                        child: Center(child: Image(image: AssetImage("assets/images/wallet.png"), height: 90,)),
-                                      ),
-                                      Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
-                                    ],
-                                  ),
-                                )
-                            ),
+                          InkWell(
+                              onTap: () {
+                                clickDialog(context, settings);
+                              },
+                              child:  Container(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Image(image: AssetImage("assets/images/click.png")),
+                              )
                           ),
 
-
+                          InkWell(
+                              onTap: () {
+                                cashDialog(context, settings);
+                              },
+                              child:  Container(
+                                height: 70,
+                                width: 110,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: const Image(image: AssetImage("assets/images/wallet.png")),
+                              )
+                          ),
                         ],
-                      )
+                      )   /// CLICK, PAYME chiqadi
+
+                          : settings.djolisPayType == "IYB"
+                          ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: InkWell(
+                                  onTap: () {
+                                    // networkPayDialog(context, settings);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const PayByBankCard()));
+                                  },
+                                  child: Container(
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    height: 115,
+                                    width: 150,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                                          child: Center(child: isSending ? const CircularProgressIndicator() : const Image(image: AssetImage("assets/images/credit_card_design.png"), height: 90,)),
+                                        ),
+                                        isSending ? Text(AppLocalizations.of(context).translate("wait")): Text(AppLocalizations.of(context).translate("card_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                                      ],
+                                    ),
+                                  )
+                              ),
+                            ),
+
+                            const SizedBox(width: 10),
+
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: InkWell(
+                                  onTap: () {
+                                    cashDialog(context, settings);
+                                  },
+                                  child: Container(
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    height: 115,
+                                    width: 150,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.fromLTRB(2, 0, 2, 2),
+                                          child: Center(child: Image(image: AssetImage("assets/images/wallet.png"), height: 90,)),
+                                        ),
+                                        Text(AppLocalizations.of(context).translate("cash_payment"), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
+                                      ],
+                                    ),
+                                  )
+                              ),
+                            ),
+                          ],
+                        )
+
+                          : const SizedBox.shrink()
                     ),
 
                   ],
@@ -295,14 +355,12 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
 
-
-
             SliverToBoxAdapter(
               child: Visibility(
                 visible: DataService.malumot.isEmpty,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 8, top: 16, bottom: 0),
-                  child: Container(
+                  child: SizedBox(
                       height: 20,
                       child:  Text(AppLocalizations.of(context).translate("dash_info"), textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey, fontSize: 17))),
                 ),
@@ -332,66 +390,95 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             )
                 : SliverList(
-                key: const PageStorageKey<String>('controllerA'),
-                delegate: SliverChildBuilderDelegate(
+              key: const PageStorageKey<String>('controllerA'),
+              delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      if (index == DataService.malumot.length) {
-                        return const SizedBox(height: 70);
-                      }
-                  return DataService.malumot.isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("list_empty")),) :Container(
-                    margin: const EdgeInsets.all(8),
-
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                  if (index == DataService.malumot.length) {
+                    return const SizedBox(height: 70);
+                  }
+                  return DataService.malumot.isEmpty
+                      ? Center(child: Text(AppLocalizations.of(context).translate("list_empty")))
+                      : Slidable(
+                    key: ValueKey(DataService.malumot[index].id),
+                    enabled: settings.clientPhone.startsWith("+971"),
+                    endActionPane: ActionPane(
+                      extentRatio: 0.3,
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) async {
+                            if (DataService.malumot[index].invoiceId > 0) {
+                              await _downloadAndShareInvoicePDF(context, settings, DataService.malumot[index].invoiceId, DataService.malumot[index].id);
+                              return;
+                            }
+                            if (DataService.malumot[index].paymentId > 0) {
+                              await _downloadAndSharePaymentPDF(context, settings, DataService.malumot[index].paymentId,);
+                              return;
+                            }
+                          },
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          icon: Icons.share,
+                          label: AppLocalizations.of(context).translate("gl_share"),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ],
                     ),
-                    child: Material(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 10 ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(DataService.malumot[index].getDocType(context), style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
-                                Visibility(
-                                  visible: DataService.malumot[index].getDocType(context) != "order" && DataService.malumot[index].mijozId != 0,
-                                    child: Text("${DataService.malumot[index].mijozId} ${DataService.malumot[index].mijozName}", style: Theme.of(context).textTheme.bodySmall)),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(Utils.numFormat0_00.format(DataService.malumot[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
-                                    const SizedBox(height: 2),
-                                    Visibility(
-                                      visible: settings.clientPhone.startsWith("+998"),
-                                        child: Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey))),
-                                  ],
-                                )
-                              ],
-                            ),
-                           const SizedBox(height: 4),
-                           Visibility(
-                              visible: DataService.malumot[index].notes.isNotEmpty,
-                              child: Text(DataService.malumot[index].notes, maxLines: 2),
-                            ),
-                            Row(
-                              children: [
-                                const Expanded(child: Text("")),
-                                Text(DataService.malumot[index].curtime_str, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500)),
-                              ],
-                            ),
-                          ],
+                    child: Container(
+                      margin: const EdgeInsets.all(8),
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Material(
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(DataService.malumot[index].getDocType(context), style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16)),
+                                  Visibility(
+                                      visible: DataService.malumot[index].getDocType(context) != "order" && DataService.malumot[index].mijozId != 0,
+                                      child: Text("${DataService.malumot[index].mijozId} ${DataService.malumot[index].mijozName}", style: Theme.of(context).textTheme.bodySmall)),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(Utils.numFormat0_00.format(DataService.malumot[index].summ), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: Colors.blue)),
+                                      const SizedBox(height: 2),
+                                      Visibility(
+                                          visible: settings.clientPhone.startsWith("+998"),
+                                          child: Text("${Utils.numFormat0.format(DataService.malumot[index].summ_uzs)} ${DataService.malumot[index].cur_name.toString()}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.grey))),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Visibility(
+                                visible: DataService.malumot[index].notes.isNotEmpty,
+                                child: Text(DataService.malumot[index].notes, maxLines: 2),
+                              ),
+                              Row(
+                                children: [
+                                  const Expanded(child: Text("")),
+                                  Text(DataService.malumot[index].curtime_str, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   );
                 },
-                childCount: DataService.malumot.length + 1
-            ))
+                childCount: DataService.malumot.length + 1,
+              ),
+            )
           ],
         ),
       ),
@@ -485,7 +572,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     const SizedBox(width: 10),
                     Text(AppLocalizations.of(context).translate("dash_do_pay")),
-                    Icon(Icons.chevron_right),
+                    const Icon(Icons.chevron_right),
                   ],
                 ))
           ),
@@ -616,7 +703,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: TextFormField(
                     controller: networkController,
                     keyboardType: const TextInputType.numberWithOptions(),
-                    // autofocus: true,
+                    autofocus: true,
                     decoration: InputDecoration(
                       isDense: true,
                       fillColor: Colors.grey.shade200,
@@ -677,7 +764,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       showRedSnackBar(AppLocalizations.of(context).translate("enter_summ"));
                       isSending = false;
                     } else {
-                      await networkPayment(settings);
+                      settings.clientPhone.startsWith("+971") ? await networkPayment(settings) : await networkPaymentUz(settings);
                       launchUrl(Uri.parse(networkUrl), mode: LaunchMode.externalApplication);
                       isSending = false;
                       networkController.clear();
@@ -721,6 +808,7 @@ class _DashboardPageState extends State<DashboardPage> {
               onTap: () async{
                 await _selectDate(context, settings);
               },
+              autofocus: true,
               decoration: InputDecoration(
                 suffixIcon: const Icon(Icons.calendar_month),
                 isDense: true,
@@ -797,6 +885,7 @@ class _DashboardPageState extends State<DashboardPage> {
   ));
 
   Future<void> getDash(MySettings settings) async {
+
     if (_isLoading) return;
     String fcmToken = await Utils.getToken();
     String device_name = (await Utils.getDeviceName())??"";
@@ -819,7 +908,7 @@ class _DashboardPageState extends State<DashboardPage> {
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
-        debugPrint("getAll Error 1 data null or data['ok] != 1");
+        debugPrint("getDash Error 1 data null or data['ok] != 1");
       }
       return;
     }
@@ -843,7 +932,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (data == null || data["ok"] != 1) {
       _isLoading = false;
       if (kDebugMode) {
-        debugPrint("getAll 2 Error data null or data['ok] != 1");
+        debugPrint("getDash 2 Error data null or data['ok] != 1");
       }
       return;
     }
@@ -889,7 +978,7 @@ class _DashboardPageState extends State<DashboardPage> {
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
-        print("Error data null or data['ok] != 1");
+        print("getAll dash 983: Error data null or data['ok] != 1");
       }
       return;
     }
@@ -913,7 +1002,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (data == null || data["ok"] != 1) {
       _isLoading = false;
       if (kDebugMode) {
-        print("Error data null or data['ok] != 1");
+        print("getAll dash 1007: Error data null or data['ok] != 1");
       }
       return;
     }
@@ -963,6 +1052,7 @@ class _DashboardPageState extends State<DashboardPage> {
           },
         body: jsonEncode({
           "client_id": settings.clientId,
+          "mijoz_id": settings.mijozId,
           "summ": double.parse(clickController.text),
         })
       );
@@ -1023,6 +1113,7 @@ class _DashboardPageState extends State<DashboardPage> {
           },
           body: jsonEncode({
             "client_id": settings.clientId,
+            "mijoz_id": settings.mijozId,
             "summ": double.parse(paymeController.text),
           })
       );
@@ -1083,6 +1174,7 @@ class _DashboardPageState extends State<DashboardPage> {
         },
         body: jsonEncode({
           "client_id": settings.clientId,
+          "mijoz_id": settings.mijozId,
           "summ": double.parse(networkController.text),
         }),
       );
@@ -1121,6 +1213,64 @@ class _DashboardPageState extends State<DashboardPage> {
         }
   }
 
+  Future<void> networkPaymentUz(MySettings settings) async {
+    String fcmToken = await Utils.getToken();
+    String device_name = (await Utils.getDeviceName()) ?? "";
+
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/new-ngenius-uz");
+    Response? res;
+    try {
+      res = await post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "lang": settings.locale.languageCode,
+          "fcm_token": fcmToken,
+          "phone": settings.clientPhone,
+          "device_name": device_name,
+          "Authorization": "Bearer ${settings.token}",
+        },
+        body: jsonEncode({
+          "client_id": settings.clientId,
+          "mijoz_id": settings.mijozId,
+          "summ": double.parse(networkController.text),
+        }),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("Network error: $e");
+      }
+      return;
+    }
+
+    if (res.body.toString().contains("Invalid Token...")) {
+      settings.logout();
+      return;
+    }
+
+    Map? data;
+    try {
+      data = jsonDecode(res.body);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: $e")));
+      }
+      return;
+    }
+
+    if (data == null || data["ok"] != 1) {
+      if (kDebugMode) {
+        debugPrint("Response error: data null or data['ok'] != 1");
+      }
+      return;
+    }
+
+    if (data["ok"] == 1) {
+      networkUrl = data['d']['_links']['payment']['href'];
+      debugPrint("networkUrl $networkUrl");
+    }
+  }
+
   Future<void> newCashPay(MySettings settings) async {
     String fcmToken = await Utils.getToken();
     String device_name = (await Utils.getDeviceName())??"";
@@ -1141,6 +1291,7 @@ class _DashboardPageState extends State<DashboardPage> {
           body: jsonEncode({
             "curdate_mysql": Utils.myDateFormat(Utils.formatYYYYMMdd, date1),
             "client_id": settings.clientId,
+            "mijoz_id": settings.mijozId,
             "summ": Utils.checkDouble(cashController.text),
             "notes": notesController.text
           })
@@ -1323,6 +1474,132 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  Future<void> _downloadAndShareInvoicePDF(BuildContext context, MySettings settings, int invoiceId, int orderId) async {
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("wait"))));
+
+    try {
+      Uri uri = Uri.parse("http://37.230.115.134/telegram_bot_pdf/esale_dubai_invoice.php?inv_id=$invoiceId&order_id=$orderId");
+
+      Response res = await get(uri);
+
+      if (res.statusCode == 200) {
+
+        final bytes = res.bodyBytes;
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/invoice_${invoiceId}_$orderId.pdf');
+        await file.writeAsBytes(bytes);
+
+        Rect? origin;
+        if (context.mounted) {
+          final renderBox = context.findRenderObject();
+          if (renderBox is RenderBox) {
+            final position = renderBox.localToGlobal(Offset.zero);
+            final size = renderBox.size;
+
+            if (size.width > 0 && size.height > 0) {
+              origin = position & size;
+            }
+          }
+        }
+
+        // Agar origin null yoki nol bo'lsa, fallback qiymat berish
+        // iOS 26 uchun MAJBURIY!
+        origin ??= Rect.fromLTWH(0, 0, 100, 100);
+
+        // PDF faylni share qilish
+        final params = ShareParams(
+          files: [XFile(file.path)],
+          sharePositionOrigin: origin,
+        );
+
+        final result = await SharePlus.instance.share(params);
+
+        if (context.mounted) {
+          if (result.status == ShareResultStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_shared_successfully"))));
+          } else if (result.status == ShareResultStatus.dismissed) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("share_cancelled"))));
+          } else {
+            // ShareResultStatus.unavailable
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("share_unavailable")), backgroundColor: Colors.orange));
+          }
+        }
+      } else {
+        throw Exception('Failed to download PDF: ${res.statusCode}');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_download_error")), backgroundColor: Colors.red));
+      }
+      debugPrint("PDF download error: $e");
+    }
+  }
+
+  Future<void> _downloadAndSharePaymentPDF(BuildContext context, MySettings settings, int paymentId) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("wait"))));
+
+    try {
+      // Yangi URL bilan to'g'ridan-to'g'ri PDF yuklab olish
+      Uri uri = Uri.parse("http://37.230.115.134/telegram_bot_pdf/esale_dubai_payment.php?payment_id=$paymentId");
+
+      Response res = await get(uri);  // POST o'rniga GET ishlatiladi
+
+      if (res.statusCode == 200) {
+        // PDF faylni vaqtinchalik saqlash
+        final bytes = res.bodyBytes;
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/invoice_$paymentId.pdf');
+        await file.writeAsBytes(bytes);
+
+        // Context dan RenderBox olishga harakat qilish
+        Rect? origin;
+        if (context.mounted) {
+          final renderBox = context.findRenderObject();
+          if (renderBox is RenderBox) {
+            final position = renderBox.localToGlobal(Offset.zero);
+            final size = renderBox.size;
+
+            // Faqat nol bo'lmagan o'lchamlar bo'lsa ishlatamiz
+            if (size.width > 0 && size.height > 0) {
+              origin = position & size;
+            }
+          }
+        }
+
+        // Agar origin null yoki nol bo'lsa, fallback qiymat berish
+        // iOS 26 uchun MAJBURIY!
+        origin ??= Rect.fromLTWH(0, 0, 100, 100);
+
+        // PDF faylni share qilish
+        final params = ShareParams(
+          files: [XFile(file.path)],
+          sharePositionOrigin: origin,
+        );
+
+        final result = await SharePlus.instance.share(params);
+
+        if (context.mounted) {
+          if (result.status == ShareResultStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_shared_successfully"))));
+          } else if (result.status == ShareResultStatus.dismissed) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("share_cancelled"))));
+          } else {
+            // ShareResultStatus.unavailable
+            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context).translate("share_unavailable")), backgroundColor: Colors.orange));
+          }
+        }
+      } else {
+        throw Exception('Failed to download PDF: ${res.statusCode}');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("pdf_download_error")), backgroundColor: Colors.red));
+      }
+      debugPrint("PDF download error: $e");
+    }
+  }
+
 }
 
 class InfoContainer extends StatelessWidget {
@@ -1362,7 +1639,7 @@ class InfoContainer extends StatelessWidget {
 }
 
 
-//     :Row(
+//     Row(
 //   mainAxisAlignment: MainAxisAlignment.spaceAround,
 //   children: [
 //     InkWell(

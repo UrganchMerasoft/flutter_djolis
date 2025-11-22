@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../app_localizations.dart';
 import '../../core/mysettings.dart';
+import '../../services/firebase_api.dart';
+import '../../services/local_notification_service.dart';
 import '../../services/utils.dart';
 import '../../wrapper.dart';
 import '../home/home.dart';
@@ -52,6 +55,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      LocalNotificationService.initialize();
+      await FirebaseApi().initNotifications();
+      FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+    });
     _checkVisibilityStatus();
   }
 
@@ -365,18 +373,19 @@ class _LoginPageState extends State<LoginPage> {
         "code": code,
       });
       if (response == null) {
-        print("response: $response");
-        showSnackBar(AppLocalizations.of(context).translate("fail_login1"));
+        debugPrint("response: $response");
+        await verifyMijozDubai(settings, clientCodeController.text.trim());
         return;
       }
 
       Map? data = jsonDecode(response);
       if (data == null || data["token"] == null) {
-        print("data: $data");
-        showSnackBar(AppLocalizations.of(context).translate("fail_login2"));
+        debugPrint("data: $data");
+        await verifyMijozDubai(settings, clientCodeController.text.trim());
         return;
       }
 
+      settings.serverUrl = "http://212.109.199.213:3143";
       settings.token = data["token"];
       MySettings.mijozMode = true;
       settings.clientName = data["d"]["name"] ?? '';
@@ -390,6 +399,43 @@ class _LoginPageState extends State<LoginPage> {
       settings.mijozGpsLat = Utils.checkDouble(data["d"]["mijoz_gps_lat"]);
       settings.mijozGpsLng = Utils.checkDouble(data["d"]["mijoz_gps_lng"]);
       await settings.saveAndNotify();
+    //
+    // } catch (e) {
+    //   showSnackBar("${AppLocalizations.of(context).translate("error_verify_psw")} $e");
+    // }
+  }
+
+  Future<void> verifyMijozDubai(MySettings settings, String code) async {
+    final response = await _myMijozHttpPost(settings, settings.token, "http://212.109.199.213:3147/api-djolis/login-mijoz", {
+      "code": code,
+    });
+    if (response == null) {
+      debugPrint("response: $response");
+      showSnackBar(AppLocalizations.of(context).translate("fail_login1"));
+      return;
+    }
+
+    Map? data = jsonDecode(response);
+    if (data == null || data["token"] == null) {
+      debugPrint("data: $data");
+      showSnackBar(AppLocalizations.of(context).translate("fail_login2"));
+      return;
+    }
+
+    settings.serverUrl = "http://212.109.199.213:3147";
+    settings.token = data["token"];
+    MySettings.mijozMode = true;
+    settings.clientName = data["d"]["name"] ?? '';
+    settings.clientFio = data["d"]["contact_fio"] ?? '';
+    settings.clientAddress = data["d"]["address"] ?? '';
+    settings.clientPhone = data["d"]["phone"] ?? '';
+    settings.mijozId = data["d"]["mijoz_id"];
+    settings.mijozName = data["d"]["mijoz_name"] ?? '';
+    settings.mijozPhone = data["d"]["mijoz_phone"] ?? '';
+    settings.mijozAddress = data["d"]["mijoz_address"] ?? '';
+    settings.mijozGpsLat = Utils.checkDouble(data["d"]["mijoz_gps_lat"]);
+    settings.mijozGpsLng = Utils.checkDouble(data["d"]["mijoz_gps_lng"]);
+    await settings.saveAndNotify();
     //
     // } catch (e) {
     //   showSnackBar("${AppLocalizations.of(context).translate("error_verify_psw")} $e");
@@ -560,17 +606,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _checkVisibilityStatus() async {
+
     final now = DateTime.now();
 
-    final hiddenStart = DateTime(2025, 8, 12, 14, 15);  // 12-avgust 14:15
-    final hiddenEnd = DateTime(2025, 8, 13, 12, 0);    // 13-avgust 12:00
+    final hiddenStart = DateTime(2025, 10, 20, 11, 30);  // 20-oktabr 11:30
+    final hiddenEnd   = DateTime(2025, 10, 21, 14, 30);  // 21-oktabr 14:30
 
     if (now.isAfter(hiddenStart) && now.isBefore(hiddenEnd)) {
       _isButtonVisible = false;
     } else {
       _isButtonVisible = true;
     }
-
     setState(() {});
   }
 

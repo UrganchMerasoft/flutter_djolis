@@ -1,12 +1,14 @@
 class BankCardsModel {
   late int client_id;
   late String name;
+  late String cvv;
   late String pan;
   late String expiry;
 
   BankCardsModel({
     required this.client_id,
     required this.name,
+    required this.cvv,
     required this.pan,
     required this.expiry,
   });
@@ -23,6 +25,7 @@ class BankCardsModel {
       name: json["name"] ?? "",
       pan: json["pan"] ?? "",
       expiry: json["expiry"] ?? "",
+      cvv: json["cvv"] ?? "",
     );
   }
 
@@ -32,6 +35,7 @@ class BankCardsModel {
       "name": name,
       "pan": pan,
       "expiry": expiry,
+      "cvv": cvv,
     };
   }
 
@@ -41,6 +45,7 @@ class BankCardsModel {
       "name": name,
       "pan": pan,
       "expiry": expiry,
+      "cvv": cvv,
     };
   }
 
@@ -50,6 +55,7 @@ class BankCardsModel {
       name: map['name'] as String,
       pan: map['pan'] as String,
       expiry: map['expiry'] as String,
+      cvv: map['cvv'] as String? ?? "",
     );
   }
 }

@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                   child: Visibility(
                     visible: _tabIndex == 0 || _tabIndex == 1 && settings.itogSumm > 0,
                     child: Container(
-                      height: 80,
+                      height: 90,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(12)),
                         border: Border.all(color: Colors.grey.shade300, width: 2),
@@ -283,13 +283,13 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
+                                  Text("${AppLocalizations.of(context).translate("gl_summa_ord")}  ${Utils.myNumFormat0(settings.itogSumm)} ${settings.clientPhone.startsWith("+998") ? "у.е":"AED"}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue, fontWeight: FontWeight.w500)),
                                   const SizedBox(height: 2),
-                                  Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
+                                  Text("${AppLocalizations.of(context).translate("cashback")}  ${Utils.myNumFormat0(settings.itogCashbackSumm)} ${settings.clientPhone.startsWith("+998") ? "у.е":"AED"}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500)),
                                   const SizedBox(height: 2),
                                   Visibility(
                                     visible: DataService.jumaName.isNotEmpty || DataService.jumaSavdoSumm != 0,
-                                      child: Text("${AppLocalizations.of(context).translate("cashback")} (${DataService.jumaName}) ${Utils.myNumFormat0(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm).toDouble())} у.е", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500))),
+                                      child: Text("${AppLocalizations.of(context).translate("cashback")} (${DataService.jumaName}) ${Utils.myNumFormat0(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm).toDouble())} ${settings.clientPhone.startsWith("+998") ? "у.е":"AED"}", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.w500))),
                                 ],
                               ),
                             ),
@@ -820,7 +820,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getAll(MySettings settings) async {
     if (_isLoading) return;
-      String fcmToken = await Utils.getToken();
+      // String fcmToken = await Utils.getToken();
       String device_name = (await Utils.getDeviceName())??"";
 
     _isLoading = true;
@@ -832,17 +832,18 @@ class _HomePageState extends State<HomePage> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           "lang": settings.locale.languageCode,
-          "fcm_token": fcmToken,
+          "fcm_token": "fcmToken",
           "phone": settings.clientPhone,
           "device_name": device_name,
           "Authorization": "Bearer ${settings.token}",
         },
       );
-      debugPrint("$res");
+      debugPrint("getAll home: ${res.body}");
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
-        print("Error data null or data['ok] != 1");
+        print("getAll home 845: Error data null or data['ok] != 1");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON: getAll home ")));
       }
       return;
     }
@@ -866,7 +867,8 @@ class _HomePageState extends State<HomePage> {
     if (data == null || data["ok"] != 1) {
       _isLoading = false;
       if (kDebugMode) {
-        print("Error data null or data['ok] != 1");
+        print("getAll home 869: Error data null or data['ok] != 1");
+        print("DATA: $data");
       }
       return;
     }
@@ -931,6 +933,9 @@ class _HomePageState extends State<HomePage> {
       settings.botToken = data['d']["settings"]["botToken"]??"";
       settings.botChatId = Utils.checkDouble(data['d']["settings"]["botChatId"]).toInt();
       settings.allowedMijozCount = Utils.checkDouble(data['d']["settings"]["allowedMijozCount"]).toInt();
+      // settings.djolisPayType = data['d']["settings"]["djolisPayType"]??"";
+      settings.djolisPayType = "IYB";
+      debugPrint("DjolisPayType: ${settings.djolisPayType}");
     }
   }
 
@@ -1476,7 +1481,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> checkUserAndSetScreenshot(MySettings settings) async {
-    if (settings.clientPhone == "+998935550801" || settings.clientPhone == "+971977406675" || settings.clientPhone == "+998977406675") {
+    if (settings.clientPhone == "+998935550801" || settings.clientPhone == "+971977406675" || settings.clientPhone == "+998977406675" || settings.clientPhone == "+971552620505") {
       await noScreenshot.screenshotOn();
     } else {
       await noScreenshot.screenshotOff();

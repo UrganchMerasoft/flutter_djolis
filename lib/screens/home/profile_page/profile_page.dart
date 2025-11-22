@@ -14,6 +14,7 @@ import '../../../core/mysettings.dart';
 import '../../../services/utils.dart';
 import 'clients_page.dart';
 import '../my_promo_page.dart';
+import 'orders_from_clients.dart';
 
 class ProfilePage extends StatefulWidget {
   final MySettings settings;
@@ -201,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                        ),
                      ),
                    )),
-                   Card(color: Colors.yellow, child: InkWell(
+                   Card(color: Colors.yellow.shade200, child: InkWell(
                      onTap: () {
                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyPromo()));
                      },
@@ -223,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Colors.blue.shade50,
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => OrdersPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const OrdersPage()));
                         },
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
@@ -240,6 +241,30 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
+                   Visibility(
+                     visible: settings.clientPhone != "+998977406675",
+                     child: Card(
+                       child: InkWell(
+                         onTap: () {
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => const OrdersFromClients()));
+                         },
+                         child: Padding(
+                           padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
+                           child: Row(
+                             mainAxisAlignment: MainAxisAlignment.start,
+                             crossAxisAlignment: CrossAxisAlignment.center,
+                             children: [
+                               const Icon(Icons.reorder_sharp),
+                               const SizedBox(width: 5),
+                               Expanded(child: Text(AppLocalizations.of(context).translate("profile_open_orders_from_client"), style: Theme.of(context).textTheme.titleSmall)),
+                               const Icon(Icons.chevron_right)
+                             ],
+                           ),
+                         ),
+                       ),
+                     ),
+                   ),
+
                    Visibility(
                      visible: settings.clientPhone != "+998977406675",
                      child: Card(

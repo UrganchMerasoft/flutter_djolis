@@ -19,6 +19,8 @@ class MalumotModel extends MyTable {
   late String cur_name;
   late String mijozName;
   late int mijozId;
+  late int invoiceId;
+  late int paymentId;
 
   MalumotModel({
     required this.id,
@@ -31,6 +33,8 @@ class MalumotModel extends MyTable {
     required this.cur_name,
     required this.mijozName,
     required this.mijozId,
+    required this.invoiceId,
+    required this.paymentId,
   });
 
   factory MalumotModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +49,8 @@ class MalumotModel extends MyTable {
       cur_name: json['cur_name'],
       mijozName: json['mijoz_name'],
       mijozId: json['mijoz_id'],
+      invoiceId: json['invoice_id'],
+      paymentId: json['payment_id'],
     );
   }
 
@@ -61,6 +67,8 @@ class MalumotModel extends MyTable {
     map['cur_name'] = cur_name;
     map['mijoz_name'] = mijozName;
     map['mijoz_id'] = mijozId;
+    map['invoice_id'] = invoiceId;
+    map['payment_id'] = paymentId;
     return map;
   }
 
@@ -76,6 +84,8 @@ class MalumotModel extends MyTable {
       "cur_name": cur_name,
       "mijoz_name": mijozName,
       "mijoz_id": mijozId,
+      "invoice_id": invoiceId,
+      "payment_id": paymentId,
     };
   }
 
@@ -91,6 +101,8 @@ class MalumotModel extends MyTable {
     cur_name = map['cur_name']??"";
     mijozName = map['mijoz_name']??"";
     mijozId = Utils.checkDouble(map['mijoz_id']).toInt();
+    invoiceId = Utils.checkDouble(map['invoice_id']).toInt();
+    paymentId = Utils.checkDouble(map['payment_id']).toInt();
   }
 
   String getDocType(BuildContext context) {

@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 import '../../core/mysettings.dart';
 import '../../models/dic_prod.dart';
 import '../common/photo.dart';
+import 'dubai_mijoz_send_ord_page.dart';
+import 'mijoz_detail_page.dart';
 
 class MijozCartPage extends StatefulWidget {
   final Function refreshCart;
@@ -103,7 +105,7 @@ class _MijozCartPageState extends State<MijozCartPage> {
                       child: InkWell(
                         onTap: () async {
                           Future.delayed(const Duration(milliseconds: 300));
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(settings.cartList[index].prod!, false)));
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => MijozDetailPage(settings.cartList[index].prod!, false)));
                           widget.refreshCart(settings);
                         },
                         child: Column(
@@ -221,7 +223,7 @@ class _MijozCartPageState extends State<MijozCartPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: settings.cartList.isEmpty ? null : () async {
-                    if(DataService.debt.toDouble() > -100){
+                    if(DataService.debt.toDouble() > DataService.creditLimit.toDouble()){
                       AwesomeDialog(
                         context: context,
                         dialogType: DialogType.warning,
@@ -232,7 +234,11 @@ class _MijozCartPageState extends State<MijozCartPage> {
                       ).show();
                       return;
                     }
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MijozSendOrdPage()));
+                    if(settings.serverUrl.contains("http://212.109.199.213:3143")){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MijozSendOrdPage()));
+                    }else{
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DubaiMijozSendOrdPage()));
+                    }
                         },
                   child: Text(AppLocalizations.of(context).translate("gl_send"), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
                 ),
@@ -255,6 +261,8 @@ class _MijozCartPageState extends State<MijozCartPage> {
   void showSuccessInfo(MySettings settings) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))));
   }
+
+
 
 
 }

@@ -144,14 +144,12 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                 errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
                                 labelText: AppLocalizations.of(context).translate("enter_date"),
                                 focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue), borderRadius: BorderRadius.circular(10)),
+                                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue), borderRadius: BorderRadius.circular(10)),
                                 border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
                                 enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 15),
                         ],
                       ),
@@ -160,7 +158,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
                         visible: settings.clientPhone.startsWith("+971"),
                         child: const SizedBox(height: 20)),
                     Visibility(
-                        visible: settings.clientPhone.startsWith("+971"),
+                      visible: settings.clientPhone.startsWith("+971"),
                       child: ExpansionTile(
                         collapsedIconColor: Theme.of(context).primaryColor,
                         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade400)),
@@ -171,7 +169,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
                             Text(AppLocalizations.of(context).translate("dash_do_pay"),
                                 style: TextStyle(fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700)),
                             Text("  (${AppLocalizations.of(context).translate("paid")}: ${Utils.numFormat0_00.format(totalSumm / settings.curRate)})", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
-
                           ],
                         ),
                         trailing: Icon(selectPay == 2 ? Icons.check_circle : Icons.circle_outlined, size: 23),
@@ -264,7 +261,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
                             ),
                           ),
                           const SizedBox(height: 10),
-
                               ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
@@ -283,17 +279,12 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                             ],
                                           ),
                                           Text(Utils.numFormat0.format(payedOrders[index].summ), style: Theme.of(context).textTheme.bodyLarge),
-
                                         ],
                                       ),
-
                                     );
-
                                   }
                           ),
                           const SizedBox(height: 10),
-
-
                         ],
                       ),
                     ),
@@ -313,7 +304,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                 Text("  ( ${Utils.numFormat0_00.format(DataService.cashBack / settings.curRate)})", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green)),
                               ],
                             ),
-
                             Radio(
                               activeColor: Theme.of(context).primaryColor,
                               value: 3,
@@ -337,7 +327,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
                     ),
                      Visibility(
                          visible: isVisible,
-                         child: SizedBox(height: 20)),
+                         child: const SizedBox(height: 20)),
                     Visibility(
                       visible: isVisible,
                       child: ExpansionTile(
@@ -381,8 +371,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
                                 errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
                                 labelText: AppLocalizations.of(context).translate("enter_date"),
                                 focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue), borderRadius: BorderRadius.circular(10)),
+                                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue), borderRadius: BorderRadius.circular(10)),
                                 border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
                                 enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
                               ),
@@ -419,7 +408,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
                       ],
                     ),
                     const SizedBox(height: 20),
-
                   ],
                 ),
               ),
@@ -744,6 +732,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
           },
           body: jsonEncode({
             "client_id": settings.clientId,
+            "mijoz_id": settings.mijozId,
             "summ": Utils.checkDouble(paymeController.text),
           })
       );
@@ -903,6 +892,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
           },
           body: jsonEncode({
             "client_id": settings.clientId,
+            "mijoz_id": settings.mijozId,
             "summ": Utils.checkDouble(clickController.text),
           })
       );
@@ -923,7 +913,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
       data = jsonDecode(res.body);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON: send_ord_page: 914")));
       }
       return;
     }
@@ -1067,6 +1057,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
         },
         body: jsonEncode({
           "client_id": settings.clientId,
+          "mijoz_id": settings.mijozId,
           "summ": Utils.checkDouble(networkController.text),
         }),
       );
@@ -1087,7 +1078,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
       data = jsonDecode(res.body);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: send_ord_page: 1078")));
       }
       return;
     }
@@ -1188,7 +1179,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
       data = jsonDecode(res.body);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error parsing JSON: paidOrder: 1179")));
       }
       return;
     }
@@ -1278,8 +1269,6 @@ class _SendOrdPageState extends State<SendOrdPage> {
 
   void sendOrder(MySettings settings) async {
     Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/send-order");
-    // try {
-    print("SendOrd1");
       Response res = await post(
         uri,
         headers: <String, String>{
@@ -1291,6 +1280,7 @@ class _SendOrdPageState extends State<SendOrdPage> {
         body: jsonEncode({
           "notes": commentController.text,
           "clientId": settings.clientId,
+          "mijoz_id": settings.mijozId,
           "itogSumm": settings.itogSumm,
           "itogVitrinaSumm": settings.itogVitrinaSumm,
           "myUuid": "",
@@ -1303,10 +1293,10 @@ class _SendOrdPageState extends State<SendOrdPage> {
           "vitrina": settings.vitrinaList,
           "payedSumm": Utils.checkDouble(totalSumm / settings.curRate),
           "jumaCashback": Utils.checkDouble(DataService.getJuma(settings.itogSumm, DataService.jumaSavdoSumm, DataService.jumaSumm)),
-          "dolgIs": widget.hasPromo == false || _isAksiyaChecked ? 0 : 1
+          "dolgIs": widget.hasPromo == false || _isAksiyaChecked ? 0 : 1,
+          "checkPromo": _isAksiyaChecked ? 1 : 0
       }),
       );
-    print("SendOrd2");
       if (res.statusCode != 200) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1315,24 +1305,21 @@ class _SendOrdPageState extends State<SendOrdPage> {
         }
         return;
       }
-    print("SendOrd3");
       Map<String, dynamic> data;
       try {
         data = jsonDecode(res.body);
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid JSON response: $e")),
+            SnackBar(content: Text("Invalid JSON response: On send_ord_page: 1310")),
           );
         }
         return;
       }
-    print("SendOrd4");
       if (data["ok"] == 1) {
         settings.cartList.clear();
         settings.vitrinaList.clear();
         settings.saveAndNotify();
-        print("SendOrd5");
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(AppLocalizations.of(context).translate("sent_ord"))),
@@ -1346,18 +1333,10 @@ class _SendOrdPageState extends State<SendOrdPage> {
           );
         }
       }
-    print("SendOrd6");
     // } catch (e) {
       if (context.mounted) {
         // debugPrint("An error occured: $e");
       }
-    print("SendOrd7");
     // }
   }
-
-  // Future<bool> hasProdPromo(MySettings settings){
-  //
-  // }
-
-
 }
