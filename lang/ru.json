@@ -170,10 +170,10 @@
   "delivered": "Доставлено",
   "cancelled": "Отменено",
   "language": "Язык",
-  "uzbek": "Узбекский",
+  "uzbek": "O'zbekcha",
   "russian": "Русский",
-  "english": "Английский ",
-  "arabic": "Арабский ",
+  "english": "English",
+  "arabic": "العربية",
 
 
   "warnings": "Оповещения",
@@ -298,5 +298,13 @@
   "no_orders_currently": "В настоящее время заказов нет",
   "pieces": "шт",
   "view_order_history": "Посмотреть историю заказов",
-  "choose_language": "Выберите язык"
+  "choose_language": "Выберите язык",
+  "last_month": "Прошлый месяц",
+  "this_month": "Этот месяц",
+  "profit": "Прибыль",
+  "from_patient": "От пациента",
+  "from_cashback": "От кэшбэка",
+  "payment_warning": "Оплата безопасно осуществляется через Apple Pay и Samsung Pay. Ввод номера карты не требуется. При оплате банковской картой безопасность транзакции полностью обеспечивается системой Ngenius.",
+  "do_not_show_again": "Больше не показывать",
+  "got_it": "Понятно"
 }

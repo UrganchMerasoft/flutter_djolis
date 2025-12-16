@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confirm_dialog/confirm_dialog.dart';
@@ -94,111 +95,120 @@ class _MijozHomePageState extends State<MijozHomePage> {
           return;
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          title: _tabIndex == 0 ? Text(AppLocalizations.of(context).translate("home_dash"), style: const TextStyle(color: Colors.white)) : (_tabIndex == 0 ? Text(AppLocalizations.of(context).translate("home_dash"), style: const TextStyle(color: Colors.white)) : (_tabIndex == 1 ? Text(AppLocalizations.of(context).translate("home_card_app_bar"), style: const TextStyle(color: Colors.white)) : Text(AppLocalizations.of(context).translate("profile_info")))),
-          actions: [
-            Visibility(
-              visible: _tabIndex == 0 || _tabIndex == 1,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Badge(
-                  label: Text(
-                    DataService.notifs.where((v) => !v.has_read).length.toString(),
-                  ),
-                  isLabelVisible: DataService.notifs.where((v) => !v.has_read).isNotEmpty,
-                  offset: const Offset(-4, 0),
-                  textStyle: const TextStyle(fontWeight: FontWeight.w500),
-                  largeSize: 20,
-                  smallSize: 18,
-                  backgroundColor: Colors.yellow,
-                  textColor: Colors.red,
-                  child: IconButton(
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FirebaseNotificationPage(),
-                        ),
-                      );
-                      setState(() {});
-                    },
-                    icon: const Icon(CupertinoIcons.bell, color: Colors.white,),
-                  ),
-                ),
-              ),
-            ),
-            Visibility(
-              visible: settings.minVersion > MySettings.intVersion,
-              child: IconButton(onPressed: (){
-                getAll(settings);
-              }, icon: const Icon(Icons.sync)),
-            ),
-            Visibility(
-              visible: _tabIndex == 2,
-              child: IconButton(
-                onPressed: () async{
-                  if (await confirm(
-                    context,
-                    title: Text("${AppLocalizations.of(context).translate("log_out")}?"),
-                    content: Text(AppLocalizations.of(context).translate("confirm_log_out")),
-                    textOK: Text(AppLocalizations.of(context).translate("gl_yes")),
-                    textCancel: Text(AppLocalizations.of(context).translate("gl_no")),
-                  )) {
-                    settings.logout();
-                    settings.cartList.clear();
-                    settings.saveAndNotify();
-                  }
-                },
-                icon: const Icon(Icons.logout_outlined),
-              ),
-            ),
-          ],
+      child: Container(
+        decoration:  const BoxDecoration(
+            image: DecorationImage(image: AssetImage("assets/images/back_wallpaper.png"),fit: BoxFit.fill)
         ),
-        body: RefreshIndicator(
-          onRefresh: () {
-            return getAll(settings);
-
-          },
-          child: SafeArea(
-            child: settings.minVersion > MySettings.intVersion ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context).translate("app_update_warning"), textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text("${AppLocalizations.of(context).translate("your_version")} ${MySettings.intVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                      Text("${AppLocalizations.of(context).translate("required_min_version")} ${settings.minVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                    ],
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: _tabIndex == 0 ? Text(AppLocalizations.of(context).translate("home_dash"), style: const TextStyle(color: Colors.white)) : (_tabIndex == 0 ? Text(AppLocalizations.of(context).translate("home_dash"), style: const TextStyle(color: Colors.white)) : (_tabIndex == 1 ? Text(AppLocalizations.of(context).translate("home_card_app_bar"), style: const TextStyle(color: Colors.white)) : Text(AppLocalizations.of(context).translate("profile_info")))),
+            actions: [
+              Visibility(
+                visible: _tabIndex == 0 || _tabIndex == 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Badge(
+                    label: Text(
+                      DataService.notifs.where((v) => !v.has_read).length.toString(),
+                    ),
+                    isLabelVisible: DataService.notifs.where((v) => !v.has_read).isNotEmpty,
+                    offset: const Offset(-4, 0),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w500),
+                    largeSize: 20,
+                    smallSize: 18,
+                    backgroundColor: Colors.yellow,
+                    textColor: Colors.red,
+                    child: IconButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FirebaseNotificationPage(),
+                          ),
+                        );
+                        setState(() {});
+                      },
+                      icon: const Icon(CupertinoIcons.bell, color: Colors.white,),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(onPressed: (){
-                  if(Platform.isIOS){
-                    launchUrl(Uri.parse("https://apps.apple.com/us/app/djolis/id6736938912"));
-                  }else{
-                    launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=uz.merasoft.flutter_djolis&pcampaignid=web_share"));
-                  }
-                }, child: Text(AppLocalizations.of(context).translate("update_app"))),
-              ],
-            ) :getBody(settings),
+              ),
+              Visibility(
+                visible: settings.minVersion > MySettings.intVersion,
+                child: IconButton(onPressed: (){
+                  getAll(settings);
+                }, icon: const Icon(Icons.sync)),
+              ),
+              Visibility(
+                visible: _tabIndex == 2,
+                child: IconButton(
+                  onPressed: () async{
+                    if (await confirm(
+                      context,
+                      title: Text("${AppLocalizations.of(context).translate("log_out")}?"),
+                      content: Text(AppLocalizations.of(context).translate("confirm_log_out")),
+                      textOK: Text(AppLocalizations.of(context).translate("gl_yes")),
+                      textCancel: Text(AppLocalizations.of(context).translate("gl_no")),
+                    )) {
+                      settings.logout();
+                      settings.cartList.clear();
+                      settings.saveAndNotify();
+                    }
+                  },
+                  icon: const Icon(Icons.logout_outlined),
+                ),
+              ),
+            ],
           ),
+          body: RefreshIndicator(
+            onRefresh: () {
+              return getAll(settings);
+
+            },
+            child: SafeArea(
+              child: settings.minVersion > MySettings.intVersion ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(AppLocalizations.of(context).translate("app_update_warning"), textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text("${AppLocalizations.of(context).translate("your_version")} ${MySettings.intVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                        Text("${AppLocalizations.of(context).translate("required_min_version")} ${settings.minVersion}", textAlign: TextAlign.center,style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(onPressed: (){
+                    if(Platform.isIOS){
+                      launchUrl(Uri.parse("https://apps.apple.com/us/app/djolis/id6736938912"));
+                    }else{
+                      launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=uz.merasoft.flutter_djolis&pcampaignid=web_share"));
+                    }
+                  }, child: Text(AppLocalizations.of(context).translate("update_app"))),
+                ],
+              ) :getBody(settings),
+            ),
+          ),
+          bottomNavigationBar: getBottomNavigationBar(settings),
         ),
-        bottomNavigationBar: getBottomNavigationBar(settings),
       ),
     );
   }
 
   Widget getBottomNavigationBar(MySettings settings) {
     return BottomNavigationBar(
+      backgroundColor: Colors.white.withOpacity(0.7),
       elevation: 0,
       selectedLabelStyle: TextStyle(color: Theme.of(context).primaryColor, fontSize: 10, fontWeight: FontWeight.w400),
       unselectedLabelStyle: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w400),
@@ -227,8 +237,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
         BottomNavigationBarItem(
           icon: Column(
             children: [
-              myNavbarContainer(0),
-              const SizedBox(height: 10),
               Image.asset("assets/icons/akt_sverka.png", color: _tabIndex == 0 ? Theme.of(context).primaryColor : Colors.black, height: 24,),
             ],
           ),
@@ -238,8 +246,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
         BottomNavigationBarItem(
             icon: Column(
               children: [
-                myNavbarContainer(1),
-                const SizedBox(height: 10),
                 Badge(
                     label: Text(
                       settings.cartList.length.toString(),
@@ -255,8 +261,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
         BottomNavigationBarItem(
           icon: Column(
             children: [
-              myNavbarContainer(2),
-              const SizedBox(height: 10),
               Image.asset("assets/icons/profile.png", color: _tabIndex == 2 ? Theme.of(context).primaryColor : Colors.black, height: 24),
             ],
           ),
@@ -286,41 +290,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
     return const Text("");
   }
 
-
-  Widget getSearchBar(MySettings settings) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
-      child: Container(
-        height: 36,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-        ),
-        child: TextField(
-          controller: searchQueryController,
-          autofocus: false,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.only(top: 6, left: 12, bottom: 10),
-            hintText: AppLocalizations.of(context).translate("gl_search"),
-            border: InputBorder.none,
-            hintStyle: const TextStyle(color: Colors.grey),
-            suffixIcon: InkWell(
-                onTap: () {
-                  setState(() {
-                    searchQueryController.text = "";
-                  });
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                child: const Icon(Icons.clear)),
-          ),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(height: 1),
-          onChanged: (value) {
-            setState(() {});
-          },
-        ),
-      ),
-    );
-  }
 
   Future<void> getAll(MySettings settings) async {
     if (_isLoading) return;
@@ -489,61 +458,129 @@ class _MijozHomePageState extends State<MijozHomePage> {
   Widget shimmerList(MySettings settings) {
     return Column(
       children: [
-        Expanded(child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade200,
-            highlightColor: Colors.white,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        )),
+        settings.ttClass == "D" ? const SizedBox(height: 60) : const SizedBox(height: 10),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: 6,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      height: 120,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.white.withOpacity(0.7),
+                            Colors.white.withOpacity(0.5),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.white.withOpacity(0.3),
+                        highlightColor: Colors.white.withOpacity(0.7),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              // Icon container shimmer
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
 
-        Expanded(child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade200,
-            highlightColor: Colors.white,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        )),
+                              const SizedBox(width: 16),
 
-        Expanded(child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade200,
-            highlightColor: Colors.white,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        )),
+                              // Content shimmer
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Title shimmer
+                                    Container(
+                                      height: 16,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
 
-        Expanded(child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade200,
-            highlightColor: Colors.white,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+                                    const SizedBox(height: 8),
+
+                                    // Subtitle shimmer
+                                    Container(
+                                      height: 14,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 12),
+
+                                    // Bottom info row shimmer
+                                    Row(
+                                      children: [
+                                        Container(
+                                          height: 28,
+                                          width: 80,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                        ),
+
+                                        const Spacer(),
+
+                                        Container(
+                                          height: 28,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
-        ))
+        ),
       ],
     );
   }
@@ -647,7 +684,6 @@ class _MijozHomePageState extends State<MijozHomePage> {
             ),
           ),
 
-
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -664,17 +700,7 @@ class _MijozHomePageState extends State<MijozHomePage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: hasOrder
-                            ? Theme.of(context).primaryColor.withOpacity(0.5)
-                            : Colors.grey.withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
-                    ],
+                    color: Colors.white.withOpacity( 0.6),
                   ),
                   child: Material(
                     borderRadius: BorderRadius.circular(16),
@@ -722,6 +748,23 @@ class _MijozHomePageState extends State<MijozHomePage> {
                                   borderRadius: BorderRadius.circular(12),
                                   child: Stack(
                                     children: [
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          height: imageHeight,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Colors.white.withOpacity(0.7),
+                                                Colors.white.withOpacity(0.6),
+                                                Colors.white.withOpacity(0.5),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                       CachedNetworkImage(
                                         imageUrl: product.picUrl,
                                         errorWidget: (context, v, d) {
@@ -742,24 +785,7 @@ class _MijozHomePageState extends State<MijozHomePage> {
                                         fit: BoxFit.contain,
                                       ),
                                       // Gradient overlay (rasm ustida yengil qorong'ulik)
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        child: Container(
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.bottomCenter,
-                                              end: Alignment.topCenter,
-                                              colors: [
-                                                Colors.black.withOpacity(0.3),
-                                                Colors.transparent,
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+
                                     ],
                                   ),
                                 ),

@@ -59,6 +59,7 @@ class MySettings with ChangeNotifier {
   int botChatId = 0;
   int allowedMijozCount = 0;
   String djolisPayType = "";
+  int doNotShowAgain = 0;
 
 
   String baseName = "";
@@ -129,6 +130,7 @@ class MySettings with ChangeNotifier {
     payInfo = prefs.getString("payInfo")??"";
     botToken = prefs.getString("botToken")??"";
     botChatId = prefs.getInt("botChatId")??0;
+    doNotShowAgain = prefs.getInt("doNotShowAgain")??0;
     allowedMijozCount = prefs.getInt("allowedMijozCount")??0;
     ordUuid = prefs.getString("ordUuid")??"";
     basePhone = prefs.getString("basePhone")??"";
@@ -179,6 +181,7 @@ class MySettings with ChangeNotifier {
     await prefs.setString("payInfo", payInfo);
     await prefs.setString("botToken", botToken);
     await prefs.setInt("botChatId", botChatId);
+    await prefs.setInt("doNotShowAgain", doNotShowAgain);
     await prefs.setInt("allowedMijozCount", allowedMijozCount);
     await prefs.setString("ordUuid", ordUuid);
     await prefs.setString("basePhone", basePhone);

@@ -35,66 +35,252 @@ class _OrdersFromClientsState extends State<OrdersFromClients> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(AppLocalizations.of(context).translate("profile_open_orders_from_client")),
-      ),
-      body: SafeArea(child: Container(
-        color: Colors.grey.shade200,
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
-            Expanded(
-              child: _isLoading ? const Center(child: CircularProgressIndicator()) : (orders.isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("gl_no_data")))
-                  :  ListView.builder(
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 2),
-                      child: Card(
-                        child: InkWell(
-                          onTap: () {
-                            openOrder(settings, orders[index]);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("# ${orders[index]["id"]}    ", style: Theme.of(context).textTheme.titleSmall),
-                                    Expanded(child: Text(orders[index]["mijoz_name"].toString(), style: Theme.of(context).textTheme.titleSmall)),
-                                    Text(Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])), style: Theme.of(context).textTheme.titleSmall),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Text(orders[index]["mijoz_phone"], style: Theme.of(context).textTheme.bodyMedium),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(child: Text(orders[index]["curdate_str"], style: Theme.of(context).textTheme.bodySmall,)),
-                                    getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                    const SizedBox(width: 5),
-                                    getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                  ],
-                                )
-                              ],
-                            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/back_wallpaper.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context).translate("profile_open_orders_from_client"),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0, 1),
+                                blurRadius: 3,
+                                color: Colors.black26,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  })),
-            ),
-          ],
+                    ),
+                    const SizedBox(width: 48),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : orders.isEmpty
+                        ? Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                AppLocalizations.of(context).translate("gl_no_data"),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(0, 1),
+                                      blurRadius: 2,
+                                      color: Colors.black26,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: ListView.builder(
+                              itemCount: orders.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            openOrder(settings, orders[index]);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  Colors.white.withOpacity(0.2),
+                                                  Colors.white.withOpacity(0.1),
+                                                ],
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(20),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          orders[index]["mijoz_name"].toString(),
+                                                          style: TextStyle(
+                                                            color: Theme.of(context).primaryColor,
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                        decoration: BoxDecoration(
+                                                          color: Theme.of(context).primaryColor,
+                                                          borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        child: Text(
+                                                          Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])),
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold,
+                                                            shadows: [
+                                                              Shadow(
+                                                                offset: Offset(0, 1),
+                                                                blurRadius: 2,
+                                                                color: Colors.black26,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        padding: const EdgeInsets.all(8),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white.withOpacity(0.2),
+                                                          borderRadius: BorderRadius.circular(8),
+                                                          border: Border.all(
+                                                            color: Colors.white,
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.phone,
+                                                          color: Theme.of(context).primaryColor,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Text(
+                                                        orders[index]["mijoz_phone"],
+                                                        style:  TextStyle(
+                                                          color: Theme.of(context).primaryColor,
+                                                          fontSize: 15,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text("#${orders[index]["id"]}   ${orders[index]["curdate_str"]}",
+                                                          style:  TextStyle(
+                                                            color: Theme.of(context).primaryColor,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white.withOpacity(0.5),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(
+                                                            color: Colors.white,
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                                            const SizedBox(width: 4),
+                                                            getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -169,64 +355,225 @@ class _OrdersFromClientsState extends State<OrdersFromClients> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       builder: (BuildContext context) {
         return Container(
-          color: Colors.grey.shade200,
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (list.isNotEmpty)
-                  Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
-                    child: Text(AppLocalizations.of(context).translate("akt_sverka_prod_list"), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                  ),
-                const SizedBox(height: 10),
-                Expanded(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.list_alt,
+                        color: Colors.blue,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).translate("akt_sverka_prod_list"),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ListView(
                     children: [
                       ...list.map((item) {
-                        return Card(
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(16),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (item["pic_url"] != null && item["pic_url"].toString().isNotEmpty)
                                   InkWell(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: item["pic_url"], title: item["name"])));
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PhotoPage(
+                                            url: item["pic_url"],
+                                            title: item["name"],
+                                          ),
+                                        ),
+                                      );
                                     },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover, imageUrl: item["pic_url"],
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: CachedNetworkImage(
+                                          width: 60,
+                                          height: 60,
+                                          fit: BoxFit.cover,
+                                          imageUrl: item["pic_url"],
+                                        ),
                                       ),
                                     ),
                                   )
                                 else
-                                  const Icon(Icons.image, size: 50, color: Colors.grey),
-                                const SizedBox(width: 10),
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.grey.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.image,
+                                      size: 30,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(item["name"].toString(), style: Theme.of(context).textTheme.titleSmall),
-                                      const SizedBox(height: 4),
+                                      Text(
+                                        item["name"].toString(),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          Text(item["qty"].toString()),
-                                          Text("  x  ", style: Theme.of(context).textTheme.bodySmall),
-                                          Text(Utils.myNumFormat0(Utils.checkDouble(item["price"])), style: Theme.of(context).textTheme.bodySmall),
-                                          Expanded(child: Text(" = ", style: Theme.of(context).textTheme.bodySmall)),
-                                          Text(Utils.myNumFormat0(Utils.checkDouble(item["summ"]))),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              "Qty: ${item["qty"]}",
+                                              style: const TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              Utils.myNumFormat0(Utils.checkDouble(item["price"])),
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [Colors.orange, Colors.deepOrange],
+                                              ),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              Utils.myNumFormat0(Utils.checkDouble(item["summ"])),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ],
@@ -238,22 +585,59 @@ class _OrdersFromClientsState extends State<OrdersFromClients> {
                         );
                       }),
                       if (list.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.blue.shade50, Colors.blue.shade100],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.2),
+                            ),
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text("${AppLocalizations.of(context).translate("gl_total")}: ", style: Theme.of(context).textTheme.titleSmall),
-                              Text(Utils.myNumFormat0(list.fold(0.0, (sum, item) => sum + Utils.checkDouble(item["summ"]))),
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                              Text(
+                                "${AppLocalizations.of(context).translate("gl_total")}: ",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                Utils.myNumFormat0(list.fold(0.0, (sum, item) => sum + Utils.checkDouble(item["summ"]))),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-
                       if (orderFiles.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Center(child: Text(AppLocalizations.of(context).translate("order_screenshots"), style: Theme.of(context).textTheme.titleMedium)),
-                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context).translate("order_screenshots"),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: orderFiles.map((f) {
@@ -261,39 +645,76 @@ class _OrdersFromClientsState extends State<OrdersFromClients> {
                               future: getTelegramFileUrl(settings, f["fileId"]),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const SizedBox(
-                                    width: 150,
-                                    height: 150,
-                                    child: Center(child: CircularProgressIndicator()),
+                                  return Container(
+                                    width: 200,
+                                    height: 200,
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Center(child: CircularProgressIndicator()),
                                   );
                                 }
                                 if (!snapshot.hasData) {
-                                  return const Icon(Icons.broken_image, size: 150, color: Colors.grey);
+                                  return Container(
+                                    width: 200,
+                                    height: 200,
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+                                  );
                                 }
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
                                   child: InkWell(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoPage(url: snapshot.data!, title: "Screenshot")),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PhotoPage(
+                                            url: snapshot.data!,
+                                            title: "Screenshot",
+                                          ),
+                                        ),
                                       );
                                     },
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
-                                      child: CachedNetworkImage(fit: BoxFit.fitHeight, imageUrl: snapshot.data!),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.fitHeight,
+                                        imageUrl: snapshot.data!,
+                                      ),
                                     ),
                                   ),
                                 );
                               },
                             );
                           }).toList(),
-                        )
-
+                        ),
                       ],
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

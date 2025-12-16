@@ -147,9 +147,9 @@
   "delivered": "تم التوصيل",
   "cancelled": "ملغي",
   "language": "اللغة",
-  "uzbek": "الأوزبكية",
-  "russian": "الروسية",
-  "english": "الإنجليزية",
+  "uzbek": "O'zbekcha",
+  "russian": "Русский",
+  "english": "English",
   "arabic": "العربية",
   "warnings": "تحذيرات",
   "delete_account": "حذف الحساب",
@@ -226,7 +226,7 @@
 
   "payment_status_checking": "جارٍ فحص حالة الدفع...",
   "payment_successful_order_ready": "الدفع ناجح! يمكنك الآن إرسال طلبك.",
-  "payment_required_before_order": "يرجى الدفع قبل إرسال الطلب.",
+  "payment_required_before_order": "لإرسال الطلب، قم بالدفع أولاً أو اختر الدفع عند التسليم",
   "payment_required_before_order_exc": "يرجى الدفع قبل إرسال الطلب!",
   "order_sent_successfully": "تم إرسال الطلب بنجاح!",
   "server_error_code": "خطأ في الخادم:",
@@ -246,6 +246,15 @@
   "no_orders_currently": "لا توجد طلبات حالياً",
   "pieces": "قطعة",
   "view_order_history": "عرض تاريخ الطلبات",
-  "choose_language": "اختر لغتك"
+  "choose_language": "اختر لغتك",
+
+  "last_month": "الشهر الماضي",
+  "this_month": "هذا الشهر",
+  "profit": "الربح",
+  "from_patient": "من المريض",
+  "from_cashback": "من الكاشباك",
+  "payment_warning": "يمكن إتمام الدفع بأمان عبر Apple Pay وSamsung Pay دون الحاجة لإدخال رقم البطاقة. وفي حال اختيار الدفع بالبطاقة، فإن نظام Ngenius يضمن تأمين العملية بالكامل.",
+  "do_not_show_again": "لا تظهر مرة أخرى",
+  "got_it": "فهمت"
 
 }

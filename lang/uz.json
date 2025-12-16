@@ -167,9 +167,9 @@
   "cancelled": "Bekor qilindi",
   "language": "Til",
   "uzbek": "O'zbekcha",
-  "russian": "Ruscha",
-  "english": "Inglizcha",
-  "arabic": "Arabcha",
+  "russian": "Русский",
+  "english": "English",
+  "arabic": "العربية",
 
   "warnings": "Bildirishnomalar",
 
@@ -204,7 +204,7 @@
   "paid": "To'landi",
   "share_app": "Ilovani ulashish",
   "lack_of_cashback": "Cashback yetarli emas! To'lov usulini o'zgartiring",
-  "card_payment": "Karta b-n to‘lov",
+  "card_payment": "Karta bilan to‘lov",
   "app_update_warning": "Ilovaning yangi imkoniyatlaridan to‘liq foydalanish uchun ilovani yangilashingiz zarur!",
   "update_app": "Ilovani yangilash",
   "your_version":"Sizning versiyangiz:",
@@ -293,6 +293,16 @@
   "no_orders_currently": "Hozirda buyurtmalar yo'q",
   "pieces": "dona",
   "view_order_history": "Buyurtmalar tarixini ko'rish",
-  "choose_language": "Tilni tanlang"
+  "choose_language": "Tilni tanlang",
+
+  "last_month": "O‘tgan oy",
+  "this_month": "Shu oy",
+  "profit": "Foyda",
+  "from_patient": "Bemordan",
+  "from_cashback": "Kashbekdan",
+  "payment_warning": "Apple Pay va Samsung Pay orqali xavfsiz to‘lov amalga oshiriladi. Karta raqamini kiritish talab etilmaydi. Agar karta orqali to‘lashni tanlasangiz, to‘lovning xavfsizligi Ngenius tomonidan to‘liq ta’minlanadi.",
+  "do_not_show_again": "Boshqa ko'rsatilmasin",
+  "got_it": "Tushundim"
+
 
 }

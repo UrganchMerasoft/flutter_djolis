@@ -36,121 +36,360 @@ class _OrdersPageState extends State<OrdersPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(AppLocalizations.of(context).translate("profile_open_orders")),
-      ),
-      body: SafeArea(child: Container(
-        color: Colors.grey.shade200,
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 48,
-              child: AnimatedToggleSwitch.size(
-                current: currentValue,
-                values: const [1, 2],
-                iconOpacity: 1,
-                height: 60,
-                indicatorSize: const Size.fromWidth(115),
-                borderWidth: 5,
-                customIconBuilder: (context, local, global) {
-                  switch (local.value) {
-                    case 1:
-                      return Text(AppLocalizations.of(context).translate("active_order"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
-                    case 2:
-                      return Text(AppLocalizations.of(context).translate("archive_order"), style: TextStyle(color: Color.lerp(Colors.black, Colors.white, local.animationValue), fontWeight: FontWeight.w700),);
-                    default:
-                      return const Text("");
-                  }
-                },
-                style: ToggleStyle(
-                  indicatorColor: Theme.of(context).primaryColor,
-                  borderColor: Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  backgroundColor: Colors.transparent,
-                ),
-                selectedIconScale: 1,
-                onChanged: (value) {
-                  currentValue = value;
-                  setState(() {});
-                },
-              ),
-            ),
-            Expanded(
-              child: orders.where((v) {
-                if (currentValue == 1) {
-                  return v["status_id"] == 0;
-                }
-                return v["status_id"] != 0;
-              }) .isEmpty ? Center(child: Text(AppLocalizations.of(context).translate("gl_no_data")))
-               :  ListView.builder(
-                itemCount: orders.length >  2 && currentValue == 2 ? 2 : orders.length ,
-                itemBuilder: (context, index) {
-                  return Visibility(
-                    visible: currentValue == 1 ? (Utils.checkDouble(orders[index]["status_id"]).toInt() == 0) : (Utils.checkDouble(orders[index]["status_id"]).toInt() != 0 ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 2),
-                      child: Slidable(
-                        // key: ValueKey(orders[index].id),
-                        enabled: settings.clientPhone.startsWith("+971"),
-                        endActionPane: ActionPane(
-                          extentRatio: 0.3,
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) async {
-                                await _downloadAndShareInvoicePDF(context, settings, Utils.checkDouble(orders[index]["invoice_id"]).toInt(), Utils.checkDouble(orders[index]["order_id"]).toInt());
-                              },
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              icon: Icons.share,
-                              label: AppLocalizations.of(context).translate("gl_share"),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ],
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/back_wallpaper.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 1,
                         ),
-                        child: Card(
-                          child: InkWell(
-                            onTap: () {
-                              openOrder(settings, orders[index]);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("# " + orders[index]["id"].toString() + "      ", style: Theme.of(context).textTheme.titleSmall),
-                                      Expanded(child: Text(orders[index]["curdate_str"].toString(), style: Theme.of(context).textTheme.titleSmall)),
-                                      Text(Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])), style: Theme.of(context).textTheme.titleSmall),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12,),
-                                  Row(
-                                    children: [
-                                      Expanded(child: Text(orders[index]["notes"], style: Theme.of(context).textTheme.bodyMedium,)),
-                                      getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                      getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context).translate("profile_open_orders"),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                  );
-                }),
-            ),
-          ],
+                    const SizedBox(width: 48),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: AnimatedToggleSwitch.size(
+                    current: currentValue,
+                    values: const [1, 2],
+                    iconOpacity: 1,
+                    height: 60,
+                    indicatorSize: const Size.fromWidth(130),
+                    borderWidth: 0,
+                    customIconBuilder: (context, local, global) {
+                      switch (local.value) {
+                        case 1:
+                          return Text(
+                            AppLocalizations.of(context).translate("active_order"),
+                            style: TextStyle(
+                              color: Color.lerp(Colors.white, Colors.white, local.animationValue),
+                              fontWeight: FontWeight.w700,
+                              shadows: const [
+                                Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 2,
+                                  color: Colors.black26,
+                                ),
+                              ],
+                            ),
+                          );
+                        case 2:
+                          return Text(
+                            AppLocalizations.of(context).translate("archive_order"),
+                            style: TextStyle(
+                              color: Color.lerp(Colors.white, Colors.white, local.animationValue),
+                              fontWeight: FontWeight.w700,
+                              shadows: const [
+                                Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 2,
+                                  color: Colors.black26,
+                                ),
+                              ],
+                            ),
+                          );
+                        default:
+                          return const Text("");
+                      }
+                    },
+                    style: ToggleStyle(
+                      indicatorColor: Theme.of(context).primaryColor,
+                      borderColor: Colors.transparent,
+                      borderRadius: BorderRadius.circular(25),
+                      backgroundColor: Colors.transparent,
+                    ),
+                    selectedIconScale: 1,
+                    onChanged: (value) {
+                      currentValue = value;
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: orders.where((v) {
+                  if (currentValue == 1) {
+                    return v["status_id"] == 0;
+                  }
+                  return v["status_id"] != 0;
+                }).isEmpty
+                    ? Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context).translate("gl_no_data"),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              shadows: [
+                                Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 2,
+                                  color: Colors.black26,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ListView.builder(
+                          itemCount: orders.length > 2 && currentValue == 2 ? 2 : orders.length,
+                          itemBuilder: (context, index) {
+                            return Visibility(
+                              visible: currentValue == 1
+                                  ? (Utils.checkDouble(orders[index]["status_id"]).toInt() == 0)
+                                  : (Utils.checkDouble(orders[index]["status_id"]).toInt() != 0),
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: Slidable(
+                                  enabled: settings.clientPhone.startsWith("+971"),
+                                  endActionPane: ActionPane(
+                                    extentRatio: 0.3,
+                                    motion: const ScrollMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) async {
+                                          await _downloadAndShareInvoicePDF(
+                                              context,
+                                              settings,
+                                              Utils.checkDouble(orders[index]["invoice_id"]).toInt(),
+                                              Utils.checkDouble(orders[index]["order_id"]).toInt()
+                                          );
+                                        },
+                                        backgroundColor: Colors.blue.withOpacity(0.8),
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.share,
+                                        label: AppLocalizations.of(context).translate("gl_share"),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            openOrder(settings, orders[index]);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  Colors.white.withOpacity(0.2),
+                                                  Colors.white.withOpacity(0.1),
+                                                ],
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(20),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                        decoration: BoxDecoration(
+                                                          color: Theme.of(context).primaryColor,
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          border: Border.all(
+                                                            color: Colors.white.withOpacity(0.3),
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          "# ${orders[index]["id"]}",
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold,
+                                                            shadows: [
+                                                              Shadow(
+                                                                offset: Offset(0, 1),
+                                                                blurRadius: 2,
+                                                                color: Colors.black26,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          orders[index]["curdate_str"].toString(),
+                                                          textAlign: TextAlign.center,
+                                                          style: const TextStyle(
+                                                            color: Colors.black54,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.green.withOpacity(0.6),
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          border: Border.all(
+                                                            color: Colors.green,
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          Utils.myNumFormat0(Utils.checkDouble(orders[index]["itog_summ"])),
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold,
+                                                            shadows: [
+                                                              Shadow(
+                                                                offset: Offset(0, 1),
+                                                                blurRadius: 2,
+                                                                color: Colors.black26,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          orders[index]["notes"],
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 15,
+                                                            fontWeight: FontWeight.w400,
+                                                            shadows: [
+                                                              Shadow(
+                                                                offset: Offset(0, 1),
+                                                                blurRadius: 2,
+                                                                color: Colors.black26,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white.withOpacity(0.7),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(
+                                                            color: Colors.white.withOpacity(0.3),
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            getStatusIcon(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                                            const SizedBox(width: 4),
+                                                            getStatusText(settings, Utils.checkDouble(orders[index]["status_id"]).toInt()),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -219,49 +458,264 @@ class _OrdersPageState extends State<OrdersPage> {
     List<dynamic> list = ordList.where((v) => v["doc_id"] == order["id"]).toList();
     debugPrint("$list");
 
-    showDialog(context: context, builder: (BuildContext context) {
-      return Dialog(child: Container(
-        color: Colors.grey.shade200,
-        height: list.length > 0 ? MediaQuery.of(context).size.height * 0.8 : 180,
-        width: 200,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Visibility(visible: list.length > 0, child: const Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 2),
-                child: Text("Список товаров", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
-              )),
-              Expanded(
-                child: ListView.builder(itemCount: list.length, itemBuilder: (context, index) {
-                  return Card(child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    showDialog(
+      context: context,
+      barrierColor: Colors.black38,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: list.isNotEmpty
+                  ? MediaQuery.of(context).size.height * 0.75
+                  : 220,
+              maxWidth: 500,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 40,
+                  offset: const Offset(0, 16),
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Row(
                       children: [
-                        Text(list[index]["name"].toString(), style: Theme.of(context).textTheme.titleSmall,),
-                        const SizedBox(height: 4,),
-                        Row(
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3b82f6).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.receipt_long_rounded,
+                            color: Color(0xFF3b82f6),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context).translate("order_details"),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1f2937),
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => Navigator.pop(context),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.close_rounded,
+                                color: Colors.grey.shade600,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Content
+                  if (list.isNotEmpty)
+                    Flexible(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(16),
+                        shrinkWrap: true,
+                        itemCount: list.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final item = list[index];
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item["name"].toString(),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1f2937),
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    _buildInfoChip(
+                                      icon: Icons.inventory_2_rounded,
+                                      label: "${item["qty"]}",
+                                      bgColor: const Color(0xFF3b82f6).withOpacity(0.1),
+                                      color: const Color(0xFF3b82f6),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildInfoChip(
+                                      icon: Icons.sell_outlined,
+                                      label: Utils.myNumFormat0(Utils.checkDouble(item["price"])),
+                                      bgColor: const Color(0xFF10b981).withOpacity(0.1),
+                                      color: const Color(0xFF10b981),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFFf59e0b),
+                                            Color(0xFFf97316),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFFf59e0b).withOpacity(0.25),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        Utils.myNumFormat0(Utils.checkDouble(item["summ"])),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(list[index]["qty"].toString()),
-                            Text("  x  ", style: Theme.of(context).textTheme.bodySmall),
-                            Text(Utils.myNumFormat0(Utils.checkDouble(list[index]["price"])), style: Theme.of(context).textTheme.bodySmall),
-                            Expanded(child: Text(" = ", style: Theme.of(context).textTheme.bodySmall)),
-                            Text(Utils.myNumFormat0(Utils.checkDouble(list[index]["summ"])))
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.inbox_outlined,
+                                color: Colors.grey.shade400,
+                                size: 40,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppLocalizations.of(context).translate("gl_no_data"),
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
-                        )
-                      ],),
-                  ));
-                }),
-              )
-            ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ));
-    });
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    required Color bgColor,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _downloadAndShareInvoicePDF(BuildContext context, MySettings settings, int invoiceId, int orderId) async {
@@ -277,7 +731,7 @@ class _OrdersPageState extends State<OrdersPage> {
       Uri uri = Uri.parse("http://37.230.115.134/telegram_bot_pdf/esale_dubai_invoice.php?inv_id=$invoiceId&order_id=$orderId");
 
       // GET so'rov yuboramiz (POST o'rniga)
-      Response res = await get(uri);
+      Response res = await post(uri);
 
       if (res.statusCode == 200) {
         // PDF faylni vaqtinchalik saqlash

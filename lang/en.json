@@ -169,10 +169,10 @@
   "delivered": "Delivered",
   "cancelled": "Cancelled",
   "language": "Language",
-  "uzbek": "Uzbek",
-  "russian": "Russian",
+  "uzbek": "O'zbekcha",
+  "russian": "Русский",
   "english": "English",
-  "arabic": "Arabic",
+  "arabic": "العربية",
 
   "warnings": "Notifications",
   "delete_account": "Delete account",
@@ -185,7 +185,7 @@
 
   "debt": "Debt",
   "pre_paid": "Pre-paid",
-  "in_debt": "In debt",
+  "in_debt": "For consignment",
   "cashback": "Cashback",
   "credit_limit": "Limit",
   "add_product": "Please add a product",
@@ -193,9 +193,9 @@
   "enter_date":"Select date",
   "enter_dolg_date":"Select due date",
   "inv_type": "Select payment method!",
-  "pay_on_delivery": "Pay on delivery",
-  "pay_by_cashback": "Pay with cashback",
-  "cashback_warning": "Cashback is calculated in case of 100% payment",
+  "pay_on_delivery": "Cash on delivery",
+  "pay_by_cashback": "Payment with cashback",
+  "cashback_warning": "Cashback is only calculated upon 100% payment",
   "notes_warning": "Write your feedback and complaints about staff service.",
   "limit_warning": "You've exceeded the limit!",
   "enter_delivery_date": "Select the delivery date",
@@ -276,7 +276,7 @@
 
   "payment_status_checking": "Checking payment status...",
   "payment_successful_order_ready": "Payment successful! You can now send your order.",
-  "payment_required_before_order": "Please make a payment before sending your order.",
+  "payment_required_before_order": "To send an order, pay first or select Cash on delivery",
   "payment_required_before_order_exc": "Please make a payment before sending your order!",
   "order_sent_successfully": "Order sent successfully!",
   "server_error_code": "Server error:",
@@ -296,6 +296,14 @@
   "no_orders_currently": "No orders currently",
   "pieces": "pcs",
   "view_order_history": "View your order history",
-  "choose_language": "Choose your language"
+  "choose_language": "Choose your language",
+  "last_month": "Last month",
+  "this_month": "This month",
+  "profit": "Profit",
+  "from_patient": "From patient",
+  "from_cashback": "From cashback",
+  "payment_warning": "Secure payment is available via Apple Pay and Samsung Pay, with no need to enter your card number. If you choose to pay by card, the security of the transaction is fully ensured by Ngenius.",
+  "do_not_show_again": "Do not show again",
+  "got_it": "Got it"
 
 }

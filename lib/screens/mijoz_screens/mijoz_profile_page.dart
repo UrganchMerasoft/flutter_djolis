@@ -44,8 +44,9 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
     DataService.getAllSettings(settings);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        color: Colors.grey.shade100,
+        color: Colors.transparent,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -61,17 +62,13 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
                         height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.grey.shade100,
+                          color: Theme.of(context).primaryColor,
                           border: Border.all(
                             color: Colors.grey.shade300,
                             width: 2,
                           ),
                         ),
-                        child: Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.grey.shade600,
-                        ),
+                        child: Image(image: AssetImage("assets/images/djolis_logo.png"))
                       ),
                       const SizedBox(height: 16),
                       // Profile Name
@@ -80,7 +77,7 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade800,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -88,8 +85,9 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: Colors.white.withOpacity(0.7),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white)
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -134,20 +132,6 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
                         },
                         actionIcon: Icons.call,
                       ),
-                      // const SizedBox(height: 16),
-                      // // Client Name Card
-                      // _buildInfoCard(
-                      //   icon: Icons.person_outline,
-                      //   title: AppLocalizations.of(context).translate("mijoz_name"),
-                      //   subtitle: settings.mijozName,
-                      // ),
-                      // const SizedBox(height: 16),
-                      // // Client Phone Card
-                      // _buildInfoCard(
-                      //   icon: Icons.phone_android,
-                      //   title: AppLocalizations.of(context).translate("mijoz_phone"),
-                      //   subtitle: settings.mijozPhone,
-                      // ),
                       const SizedBox(height: 16),
                       // Address Card
                       _buildInfoCard(
@@ -175,7 +159,7 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.white.withOpacity(0.7),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
@@ -281,7 +265,7 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.7),
         border: Border.all(
           color: Colors.grey.shade200,
           width: 1,
@@ -373,7 +357,7 @@ class _MijozProfilePageState extends State<MijozProfilePage> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.7),
         border: Border.all(
           color: Colors.grey.shade200,
           width: 1,
