@@ -22,11 +22,18 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
-  bool _isLoading = false;
+  final FocusNode _searchFocusNode = FocusNode();
   List<DicClients> clients = [];
-  TextEditingController nameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController pswController = TextEditingController();
+  List<DicClients> filteredClients = [];
+  bool _isSearching = false;
+  bool _isLoading = false;
+
+  final TextEditingController searchController = TextEditingController();
+  String _searchQuery = "";
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController pswController = TextEditingController();
 
   @override
   void initState() {
@@ -37,6 +44,51 @@ class _ClientsPageState extends State<ClientsPage> {
     });
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+    pswController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _openSearch() {
+    setState(() {
+      _isSearching = true;
+    });
+    // keyingi frame’da fokus beramiz
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      FocusScope.of(context).requestFocus(FocusNode()); // eski fokusni tozalash
+      FocusScope.of(context).requestFocus(_searchFocusNode);
+    });
+  }
+
+  void _closeSearch() {
+    setState(() {
+      _isSearching = false;
+      _searchQuery = "";
+      searchController.clear();
+      filteredClients = List.from(clients);
+    });
+  }
+
+  void _applySearch() {
+    if (_searchQuery.trim().isEmpty) {
+      filteredClients = List.from(clients);
+      return;
+    }
+
+    final q = _searchQuery.toLowerCase().trim();
+
+    filteredClients = clients.where((c) {
+      final name = (c.name).toLowerCase();
+      final phone = c.phone.toLowerCase();
+      return name.contains(q) || phone.contains(q);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +105,7 @@ class _ClientsPageState extends State<ClientsPage> {
         child: SafeArea(
           child: Column(
             children: [
+              // Header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -61,70 +114,141 @@ class _ClientsPageState extends State<ClientsPage> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
+                        border: Border.all(color: Colors.white, width: 1),
                       ),
                       child: IconButton(
                         onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Colors.white,
-                        ),
+                        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
                       ),
                     ),
                     Expanded(
-                      child: Center(
-                        child: Text(
-                          AppLocalizations.of(context).translate("clients"),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        child: _isSearching
+                            ? Container(
+                          key: const ValueKey("search_field"),
+                          height: 44,
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: TextField(
+                            onSubmitted: (_) {
+                              _closeSearch();
+                            },
+                            focusNode: _searchFocusNode,
+                            controller: searchController,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                            cursorColor: Colors.white,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(onPressed: () {
+                                _closeSearch();
+                            }, icon: Icon(Icons.clear, color: Colors.white,)),
+                              hintText: AppLocalizations.of(context).translate("gl_search"),
+                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            ),
+                            onChanged: (v) {
+                              setState(() {
+                                _searchQuery = v;
+                                _applySearch();
+                              });
+                            },
+                          ),
+                        )
+                            : Center(
+                          key: const ValueKey("title_text"),
+                          child: Text(
+                            AppLocalizations.of(context).translate("clients"),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
+
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Visibility(
+                          visible: !_isSearching,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white, width: 1),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                _openSearch();
+                              },
+                              icon: Icon(
+                                _isSearching ? Icons.close : Icons.search,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => addClientDialog(settings, 2),
-                          );
-                        },
-                        icon: const Icon(Icons.add, color: Colors.white),
-                      ),
+                        const SizedBox(width: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              nameController.clear();
+                              phoneController.clear();
+                              pswController.clear();
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => addClientDialog(settings, 2),
+                              );
+                            },
+                            icon: const Icon(Icons.add, color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
+
                   ],
                 ),
               ),
+
               SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+
+
+              // List
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator( color: Colors.white,))
+                      ? const Center(child: CircularProgressIndicator(color: Colors.white))
                       : ListView.builder(
-                    itemCount: clients.length,
+                    itemCount: filteredClients.length,
                     itemBuilder: (context, index) {
+                      final client = filteredClients[index];
+
                       return InkWell(
                         onTap: () {
-                          nameController.text = clients[index].name;
-                          phoneController.text = clients[index].phone;
-                          pswController.text = clients[index].psw;
+                          nameController.text = client.name;
+                          phoneController.text = client.phone;
+                          pswController.text = client.psw;
+
                           showDialog(
                             context: context,
-                            builder: (BuildContext context) => addClientDialog(settings, 1, clientId: clients[index].id),
+                            builder: (BuildContext context) =>
+                                addClientDialog(settings, 1, clientId: client.id),
                           );
                         },
                         child: Container(
@@ -141,7 +265,7 @@ class _ClientsPageState extends State<ClientsPage> {
                                   label: "Code",
                                   onPressed: (BuildContext context1) async {
                                     Future.delayed(const Duration(milliseconds: 200), () async {
-                                      await generateCode(context, settings, clients[index].id);
+                                      await generateCode(context, settings, client.id);
                                     });
                                   },
                                 ),
@@ -151,10 +275,7 @@ class _ClientsPageState extends State<ClientsPage> {
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
-                                ),
+                                border: Border.all(color: Colors.white, width: 1),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
@@ -179,7 +300,7 @@ class _ClientsPageState extends State<ClientsPage> {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                clients[index].name,
+                                                client.name,
                                                 style: TextStyle(
                                                   color: Theme.of(context).primaryColor,
                                                   fontSize: 18,
@@ -192,10 +313,7 @@ class _ClientsPageState extends State<ClientsPage> {
                                               decoration: BoxDecoration(
                                                 color: Colors.white.withOpacity(0.6),
                                                 borderRadius: BorderRadius.circular(20),
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 1,
-                                                ),
+                                                border: Border.all(color: Colors.white, width: 1),
                                               ),
                                               child: Icon(
                                                 Icons.person,
@@ -213,20 +331,17 @@ class _ClientsPageState extends State<ClientsPage> {
                                               decoration: BoxDecoration(
                                                 color: Colors.white.withOpacity(0.6),
                                                 borderRadius: BorderRadius.circular(8),
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 1,
-                                                ),
+                                                border: Border.all(color: Colors.white, width: 1),
                                               ),
                                               child: Icon(
                                                 Icons.phone,
-                                                color:Theme.of(context).primaryColor,
+                                                color: Theme.of(context).primaryColor,
                                                 size: 16,
                                               ),
                                             ),
                                             const SizedBox(width: 12),
                                             Text(
-                                              clients[index].phone,
+                                              client.phone,
                                               style: TextStyle(
                                                 color: Theme.of(context).primaryColor,
                                                 fontSize: 16,
@@ -254,17 +369,20 @@ class _ClientsPageState extends State<ClientsPage> {
       ),
     );
   }
-  Future<void> getAllClients(MySettings settings) async {
 
+  Future<void> getAllClients(MySettings settings) async {
     if (_isLoading) return;
+
     String fcmToken = await Utils.getToken();
-    String device_name = (await Utils.getDeviceName())??"";
+    String device_name = (await Utils.getDeviceName()) ?? "";
 
     setState(() {
       _isLoading = true;
     });
+
     Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-get");
     Response? res;
+
     try {
       res = await post(
         uri,
@@ -278,11 +396,13 @@ class _ClientsPageState extends State<ClientsPage> {
         },
       );
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       if (kDebugMode) {
-        debugPrint("getAll Error 1 data null or data['ok] != 1");
+        debugPrint("getAll Error 1: $e");
       }
       return;
     }
@@ -296,9 +416,11 @@ class _ClientsPageState extends State<ClientsPage> {
     try {
       data = jsonDecode(res.body);
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
       }
@@ -306,27 +428,32 @@ class _ClientsPageState extends State<ClientsPage> {
     }
 
     if (data == null || data["ok"] != 1) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       if (kDebugMode) {
         debugPrint("getAll 2 Error data null or data['ok] != 1");
       }
       return;
     }
 
-    if (data["ok"] == 1) {
-      final List<dynamic> clientsData = data['d'] ?? [];
-      clients = clientsData.map((item) => DicClients.fromMapObject(item)).toList();
-      debugPrint("Clients: $clients");
-      setState(() {});
+    final List<dynamic> clientsData = data['d'] ?? [];
 
-      if(mounted){
-        setState(() {
-          _isLoading = false;
-        });
+    if (mounted) {
+      setState(() {
+        clients = clientsData.map((item) => DicClients.fromMapObject(item)).toList();
 
-      }
+        // Yangi qo‘shilganlar birinchi (id bo‘yicha)
+        clients.sort((a, b) => b.id.compareTo(a.id));
+
+        // Filtered init + mavjud searchni qayta qo‘llash
+        filteredClients = List.from(clients);
+        _applySearch();
+
+        _isLoading = false;
+      });
     }
   }
 
@@ -336,12 +463,15 @@ class _ClientsPageState extends State<ClientsPage> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-        index == 2 ? Text(AppLocalizations.of(context).translate("add_client")) : Text(AppLocalizations.of(context).translate("edit")),
+          index == 2
+              ? Text(AppLocalizations.of(context).translate("add_client"))
+              : Text(AppLocalizations.of(context).translate("edit")),
           InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: const Icon(Icons.cancel)),
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.cancel),
+          ),
         ],
       ),
       actions: [
@@ -353,17 +483,32 @@ class _ClientsPageState extends State<ClientsPage> {
                 controller: nameController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(onPressed: (){
-                    nameController.clear();
-                  }, icon: const Icon(Icons.clear)),
+                  suffixIcon: IconButton(
+                    onPressed: () => nameController.clear(),
+                    icon: const Icon(Icons.clear),
+                  ),
                   isDense: true,
                   fillColor: Colors.grey.shade200,
-                  errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.red),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   labelText: AppLocalizations.of(context).translate("new_account_name"),
-                  focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                  border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                  enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                  focusColor: Colors.blue,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -372,69 +517,98 @@ class _ClientsPageState extends State<ClientsPage> {
                 keyboardType: TextInputType.phone,
                 autofocus: true,
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(onPressed: (){
-                    phoneController.clear();
-                  }, icon: const Icon(Icons.clear)),
+                  suffixIcon: IconButton(
+                    onPressed: () => phoneController.clear(),
+                    icon: const Icon(Icons.clear),
+                  ),
                   isDense: true,
                   fillColor: Colors.grey.shade200,
-                  errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.red),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   labelText: AppLocalizations.of(context).translate("new_account_phone"),
-                  focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                  border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                  enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                  focusColor: Colors.blue,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
+
               Visibility(
                 visible: false,
                 child: TextFormField(
                   controller: pswController,
                   autofocus: true,
                   decoration: InputDecoration(
-                    suffixIcon: IconButton(onPressed: (){
-                      pswController.clear();
-                    }, icon: const Icon(Icons.clear)),
+                    suffixIcon: IconButton(
+                      onPressed: () => pswController.clear(),
+                      icon: const Icon(Icons.clear),
+                    ),
                     isDense: true,
                     fillColor: Colors.grey.shade200,
-                    errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red),borderRadius: BorderRadius.circular(10)),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     labelText: AppLocalizations.of(context).translate("new_account_password"),
-                    focusColor: Theme.of(context).brightness == Brightness.light ? Colors.blue : Colors.blue,
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue),borderRadius: BorderRadius.circular(10)),
-                    border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
-                    enabledBorder:  OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey),borderRadius: BorderRadius.circular(10)),
+                    focusColor: Colors.blue,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey : Colors.blue,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
+
               Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size(MediaQuery.of(context).size.width, 50),
-                        backgroundColor: Colors.blue.shade600,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onPressed: () async {
-                        if (nameController.text == "") {
-                          showRedSnackBar("${AppLocalizations.of(context).translate("profile_name_error")}");
-                          return;
-                        }
-                        if (phoneController.text == "") {
-                          showRedSnackBar("${AppLocalizations.of(context).translate("profile_phone_error")}");
-                          return;
-                        }
-                        // if (pswController.text == "") {
-                        //   showRedSnackBar("${AppLocalizations.of(context).translate("profile_psw_error")}");
-                        //   return;
-                        // }
+                padding: const EdgeInsets.all(18),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(MediaQuery.of(context).size.width, 50),
+                    backgroundColor: Colors.blue.shade600,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: () async {
+                    if (nameController.text == "") {
+                      showRedSnackBar(AppLocalizations.of(context).translate("profile_name_error"));
+                      return;
+                    }
+                    if (phoneController.text == "") {
+                      showRedSnackBar(AppLocalizations.of(context).translate("profile_phone_error"));
+                      return;
+                    }
 
-                        if (index == 1 && clientId != null) {
-                          await editClient(settings, clientId);
-                        } else {
-                          await addClient(settings);
-                        }
-
-                      }, child: Text(AppLocalizations.of(context).translate("profile_save")))
+                    if (index == 1 && clientId != null) {
+                      await editClient(settings, clientId);
+                    } else {
+                      await addClient(settings);
+                    }
+                  },
+                  child: Text(AppLocalizations.of(context).translate("profile_save")),
+                ),
               ),
             ],
           ),
@@ -442,17 +616,21 @@ class _ClientsPageState extends State<ClientsPage> {
       ],
     );
   }
-  
-  void showRedSnackBar(String msg){
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700));
+
+  void showRedSnackBar(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700),
+    );
   }
-  void showSuccessSnackBar(String msg){
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.green.shade700));
+
+  void showSuccessSnackBar(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.green.shade700),
+    );
   }
 
   Future<void> addClient(MySettings settings) async {
     String fcmToken = await Utils.getToken();
-
     final uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-add");
 
     Response? res;
@@ -468,17 +646,19 @@ class _ClientsPageState extends State<ClientsPage> {
       body: jsonEncode({
         "name": nameController.text,
         "phone": phoneController.text,
-        "psw": "1"
+        "psw": "1",
       }),
     );
 
     if (res.statusCode == 200) {
       showSuccessSnackBar(AppLocalizations.of(context).translate("gl_success"));
-      getAllClients(settings);
+      await getAllClients(settings);
+
       nameController.clear();
       phoneController.clear();
       pswController.clear();
-      Navigator.pop(context);
+
+      if (mounted) Navigator.pop(context);
     } else {
       debugPrint("Error: ${res.statusCode}");
       showRedSnackBar("${AppLocalizations.of(context).translate("unknown_error")}: ${res.statusCode}");
@@ -487,7 +667,6 @@ class _ClientsPageState extends State<ClientsPage> {
 
   Future<void> editClient(MySettings settings, int id) async {
     String fcmToken = await Utils.getToken();
-
     final uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-edit");
 
     Response? res;
@@ -504,28 +683,27 @@ class _ClientsPageState extends State<ClientsPage> {
         "id": id,
         "name": nameController.text,
         "phone": phoneController.text,
-        "psw": pswController.text
+        "psw": pswController.text,
       }),
     );
 
     if (res.statusCode == 200) {
       showSuccessSnackBar(AppLocalizations.of(context).translate("gl_success"));
-      getAllClients(settings);
+      await getAllClients(settings);
+
       nameController.clear();
       phoneController.clear();
       pswController.clear();
-      Navigator.pop(context);
+
+      if (mounted) Navigator.pop(context);
     } else {
       debugPrint("Error: ${res.statusCode}");
       showRedSnackBar("${AppLocalizations.of(context).translate("unknown_error")}: ${res.statusCode}");
     }
   }
 
-
-
   Future<void> generateCode(BuildContext context, MySettings settings, int id) async {
     String fcmToken = await Utils.getToken();
-
     final uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-qr");
 
     Response? res;
@@ -538,19 +716,17 @@ class _ClientsPageState extends State<ClientsPage> {
         "phone": settings.clientPhone,
         "Authorization": "Bearer ${settings.token}",
       },
-      body: jsonEncode({
-        "id": id,
-      }),
+      body: jsonEncode({"id": id}),
     );
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       if (data["ok"] == 1 && data["d"] != null) {
-
         String code = data["d"].toString();
         String formattedCode = "${code.substring(0, 3)} ${code.substring(3)}";
 
-        showDialog(context: context,
+        showDialog(
+          context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(AppLocalizations.of(context).translate("code_for_login")),
@@ -559,12 +735,18 @@ class _ClientsPageState extends State<ClientsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(formattedCode, style: const TextStyle(letterSpacing: 5,fontWeight: FontWeight.bold, fontSize: 30)),
+                    Text(
+                      formattedCode,
+                      style: const TextStyle(letterSpacing: 5, fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
                     const SizedBox(width: 10),
-                    IconButton(onPressed: () {
-                      Clipboard.setData(ClipboardData(text: code));
-                      showSuccessSnackBar(AppLocalizations.of(context).translate("gl_successfully_copied"));
-                    }, icon: const Icon(Icons.copy))
+                    IconButton(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: code));
+                        showSuccessSnackBar(AppLocalizations.of(context).translate("gl_successfully_copied"));
+                      },
+                      icon: const Icon(Icons.copy),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),

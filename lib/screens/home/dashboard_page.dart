@@ -48,7 +48,6 @@ class _DashboardPageState extends State<DashboardPage> {
   List<NewPaymeModel> paymeList = [];
   List<DicGroups> grp = [];
   List<DicProd> prods = [];
-  List<BankCardsModel> bankCards = [];
   bool isSending = false;
   double foydaUtgan = 0.0;
   double foydaShu = 0.0;

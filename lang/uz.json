@@ -302,7 +302,12 @@
   "from_cashback": "Kashbekdan",
   "payment_warning": "Apple Pay va Samsung Pay orqali xavfsiz to‘lov amalga oshiriladi. Karta raqamini kiritish talab etilmaydi. Agar karta orqali to‘lashni tanlasangiz, to‘lovning xavfsizligi Ngenius tomonidan to‘liq ta’minlanadi.",
   "do_not_show_again": "Boshqa ko'rsatilmasin",
-  "got_it": "Tushundim"
+  "got_it": "Tushundim",
+  "order_accepted": "Buyurtma qabul qilindi",
+  "payment_and_order_success": "To'lov muvaffaqiyatli amalga oshirildi va buyurtmangiz qabul qilindi",
+  "order_not_sent": "Buyurtma yuborilmadi",
+  "payment_ok_order_failed": "To'lovingiz muvaffaqiyatli o'tdi, lekin buyurtma serverga yuborilmadi. Qayta to'lash shart emas — faqat buyurtmani qayta yuboring.",
+  "try_again": "Qayta urinish"
 
 
 }

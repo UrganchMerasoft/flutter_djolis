@@ -609,8 +609,8 @@ class _LoginPageState extends State<LoginPage> {
 
     final now = DateTime.now();
 
-    final hiddenStart = DateTime(2025, 12, 1, 15, 30);   // 1-dekabr 15:30
-    final hiddenEnd   = DateTime(2025, 12, 2, 14, 30);   // 2-dekabr 14:30
+    final hiddenStart = DateTime(2026, 1, 28, 20, 30); // 28-yanvar 2026 20:30
+    final hiddenEnd   = DateTime(2026, 1, 29, 12, 00); // 29-yanvar 2026 12:00
 
     if (now.isAfter(hiddenStart) && now.isBefore(hiddenEnd)) {
       _isButtonVisible = false;

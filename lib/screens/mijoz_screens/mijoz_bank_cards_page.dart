@@ -13,14 +13,14 @@ import '../../../models/bank_cards_model.dart';
 import '../../../models/dic_clients.dart';
 import '../../../services/utils.dart';
 
-class BankCardsPage extends StatefulWidget {
-  const BankCardsPage({super.key});
+class MijozBankCardsPage extends StatefulWidget {
+  const MijozBankCardsPage({super.key});
 
   @override
-  State<BankCardsPage> createState() => _BankCardsPageState();
+  State<MijozBankCardsPage> createState() => _MijozBankCardsPageState();
 }
 
-class _BankCardsPageState extends State<BankCardsPage> {
+class _MijozBankCardsPageState extends State<MijozBankCardsPage> {
   final _formKey = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
@@ -340,7 +340,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
     String device_name = (await Utils.getDeviceName())??"";
 
     _isLoading = true;
-    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/cards-get");
+    Uri uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-cards-get");
     Response? res;
     try {
       res = await post(
@@ -353,7 +353,13 @@ class _BankCardsPageState extends State<BankCardsPage> {
           "device_name": device_name,
           "Authorization": "Bearer ${settings.token}",
         },
+        body: jsonEncode({
+          "mijoz_id": settings.mijozId,
+          "clientId": settings.clientId,
+        }),
       );
+
+      print(res.body);
     } catch (e) {
       _isLoading = false;
       if (kDebugMode) {
@@ -373,7 +379,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
     } catch (e) {
       _isLoading = false;
       // $e ichida javob tanasi, ya'ni karta raqami bo'ladi — uni ekranga chiqarib bo'lmaydi.
-      if (kDebugMode) debugPrint("cards JSON xatosi: $e");
+      if (kDebugMode) debugPrint("mijoz-cards JSON xatosi: $e");
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("error"))));
       }
@@ -403,7 +409,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
   Future<void> deleteCard(MySettings settings, String pan) async {
     String fcmToken = await Utils.getToken();
 
-    final uri = Uri.parse("${settings.serverUrl}/api-djolis/cards-delete");
+    final uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-cards-delete");
 
     Response? res;
     res = await post(
@@ -416,6 +422,8 @@ class _BankCardsPageState extends State<BankCardsPage> {
         "Authorization": "Bearer ${settings.token}",
       },
       body: jsonEncode({
+        "mijoz_id": settings,
+        "clientId": settings,
         "pan": pan,
       }),
     );
@@ -432,7 +440,7 @@ class _BankCardsPageState extends State<BankCardsPage> {
   Future<void> addCard(MySettings settings, String cleanedCardNumber, String cleanedExpiry ) async {
     String fcmToken = await Utils.getToken();
 
-    final uri = Uri.parse("${settings.serverUrl}/api-djolis/cards-add");
+    final uri = Uri.parse("${settings.serverUrl}/api-djolis/mijoz-cards-add");
 
     Response? res;
     res = await post(
@@ -445,20 +453,21 @@ class _BankCardsPageState extends State<BankCardsPage> {
         "Authorization": "Bearer ${settings.token}",
       },
       body: jsonEncode({
+        "mijoz_id": settings.mijozId,
         "name": nameController.text,
         "pan": cleanedCardNumber,
         "cvv": cvvController.text,
         "expiry": cleanedExpiry
       }),
     );
-
+print(res.body);
     Map? data;
     try {
       data = jsonDecode(res.body);
     } catch (e) {
       _isLoading = false;
       // $e ichida javob tanasi, ya'ni karta raqami bo'ladi — uni ekranga chiqarib bo'lmaydi.
-      if (kDebugMode) debugPrint("cards JSON xatosi: $e");
+      if (kDebugMode) debugPrint("mijoz-cards JSON xatosi: $e");
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("error"))));
       }

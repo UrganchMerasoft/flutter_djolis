@@ -304,6 +304,11 @@
   "from_cashback": "From cashback",
   "payment_warning": "Secure payment is available via Apple Pay and Samsung Pay, with no need to enter your card number. If you choose to pay by card, the security of the transaction is fully ensured by Ngenius.",
   "do_not_show_again": "Do not show again",
-  "got_it": "Got it"
+  "got_it": "Got it",
+  "order_accepted": "Order accepted",
+  "payment_and_order_success": "Your payment went through and your order has been accepted",
+  "order_not_sent": "Order not sent",
+  "payment_ok_order_failed": "Your payment went through, but the order was not sent to the server. You do not need to pay again — just send the order once more.",
+  "try_again": "Try again"
 
 }

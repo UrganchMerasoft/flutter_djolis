@@ -81,7 +81,6 @@ class DataService {
           "Authorization": "Bearer ${settings.token}",
         },
       );
-      debugPrint("$res");
     } catch (e) {
       if (kDebugMode) {
         print("Error data null or data['ok] != 1");

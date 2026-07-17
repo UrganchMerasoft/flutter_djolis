@@ -333,8 +333,10 @@ class _PayByBankCardState extends State<PayByBankCard> {
       data = jsonDecode(res.body);
     } catch (e) {
       _isLoading = false;
+      // $e ichida javob tanasi, ya'ni karta raqami bo'ladi — uni ekranga chiqarib bo'lmaydi.
+      if (kDebugMode) debugPrint("cards-get JSON xatosi: $e");
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error JSON.$e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate("error"))));
       }
       return;
     }
@@ -401,19 +403,19 @@ class _PayByBankCardState extends State<PayByBankCard> {
           transferId = data['d']['transfer_id'];
           showSuccessSnackBar(AppLocalizations.of(context).translate("sms_code_request"));
         } else {
-          debugPrint("Xatolik: success != 1");
+          if (kDebugMode) debugPrint("new-ipak rad etdi: ${response.body}");
           showRedSnackBar(AppLocalizations.of(context).translate("unknown_error"));
         }
       } else {
-        debugPrint("Server xatosi: ${response.statusCode}");
+        if (kDebugMode) debugPrint("new-ipak server xatosi ${response.statusCode}: ${response.body}");
         showRedSnackBar(AppLocalizations.of(context).translate("send_sms_failed"));
       }
     } catch (e) {
-      debugPrint("Ulanishda xatolik: $e");
+      if (kDebugMode) debugPrint("new-ipak ulanish xatosi: $e");
     }
   }
 
-  Future<void> verifySmsCodeAndPay(MySettings settings) async {
+    Future<void> verifySmsCodeAndPay(MySettings settings) async {
     setState(() {
       isLoading = true;
     });
@@ -462,17 +464,15 @@ class _PayByBankCardState extends State<PayByBankCard> {
           ).show();
 
         } else {
-          debugPrint("❌ Xatolik: success != 1");
+          if (kDebugMode) debugPrint("new-ipak-sms rad etdi: ${response.body}");
           _showErrorDialog(AppLocalizations.of(context).translate("payment_failed"));
         }
       } else {
-        print(response);
-        print(response.body);
-        debugPrint("❌ Server xatosii: ${response.statusCode}");
+        if (kDebugMode) debugPrint("new-ipak-sms server xatosi ${response.statusCode}: ${response.body}");
         _showErrorDialog("Server error: ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint("❌ Ulanishda xatolik: $e");
+      if (kDebugMode) debugPrint("new-ipak-sms ulanish xatosi: $e");
       _showErrorDialog(AppLocalizations.of(context).translate("connection_error"));
     } finally {
       setState(() {
